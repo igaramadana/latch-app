@@ -100,6 +100,8 @@ export function initMotion() {
     ctaHover(paused),
     scrollReveals(paused),
     howItWorksIntro(paused),
+    whyItMattersIntro(paused),
+    whyParallax(paused),
     trustedMarquee(paused),
   ];
 
@@ -377,3 +379,100 @@ function howItWorksIntro(paused: boolean): () => void {
     gsap.set([...parts, ...cards], { clearProps: "all" });
   };
 }
+
+function whyItMattersIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-why]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-why-badge]");
+  const title = section.querySelector<HTMLElement>("[data-why-title]");
+  const sub = section.querySelector<HTMLElement>("[data-why-sub]");
+  const art = section.querySelector<HTMLElement>("[data-why-art]");
+  const diagram = section.querySelector<HTMLElement>("[data-why-diagram]");
+  const halftone = section.querySelector<HTMLElement>("[data-why-halftone]");
+  const glow = section.querySelector<HTMLElement>("[data-why-glow]");
+  if (!title || !art) return () => {};
+
+  const copy = [badge, title, sub].filter(Boolean) as HTMLElement[];
+
+  // Never hide a section that is already on screen at load.
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) {
+    return () => {};
+  }
+
+  gsap.set(copy, { autoAlpha: 0, y: 24 });
+  gsap.set(art, { autoAlpha: 0, y: 32 });
+  if (diagram) gsap.set(diagram, { autoAlpha: 0, scale: 0.94 });
+  if (halftone) gsap.set(halftone, { autoAlpha: 0 });
+  if (glow) gsap.set(glow, { autoAlpha: 0, scale: 0.85 });
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+  });
+
+  tl.to(art, { autoAlpha: 1, y: 0, duration: 0.9 }, 0);
+
+  if (halftone) tl.to(halftone, { autoAlpha: 1, duration: 1.1 }, 0.15);
+
+  if (glow) tl.to(glow, { autoAlpha: 1, scale: 1, duration: 1.1 }, 0.2);
+
+  if (diagram) {
+    tl.to(
+      diagram,
+      { autoAlpha: 1, scale: 1, duration: 1, ease: "power3.out" },
+      0.25,
+    );
+  }
+
+  tl.to(copy, { autoAlpha: 1, y: 0, stagger: 0.1 }, 0.35);
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set(
+      [art, halftone, glow, diagram, ...copy].filter(Boolean) as HTMLElement[],
+      { clearProps: "all" },
+    );
+  };
+}
+
+/**
+ * Scroll parallax for the art panel. Each layer sits in its own wrapper so
+ * the drift never shares a transform with the entrance tweens, and depths
+ * are capped in px to stay inside the panel's slack.
+ */
+function whyParallax(paused: boolean): () => void {
+  const art = document.querySelector<HTMLElement>("[data-why-art]");
+  if (!art || paused) return () => {};
+
+  const layers = gsap.utils.toArray<HTMLElement>("[data-why-parallax]", art);
+  if (!layers.length) return () => {};
+
+  const tweens = layers.map((el) => {
+    const depth = Number(el.dataset.depth ?? 0);
+    return gsap.fromTo(
+      el,
+      { y: depth },
+      {
+        y: -depth,
+        ease: "none",
+        scrollTrigger: {
+          trigger: art,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      },
+    );
+  });
+
+  return () => {
+    tweens.forEach((t) => {
+      t.scrollTrigger?.kill();
+      t.kill();
+    });
+    gsap.set(layers, { clearProps: "y" });
+  };
+}
+

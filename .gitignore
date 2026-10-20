@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # local agent tooling
 .omp/
+
+# unoptimised design sources (large, not served)
+design-src/
