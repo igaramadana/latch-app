@@ -1,0 +1,163 @@
+---
+const ctas = [
+  { label: "Start for free", href: "/signup", variant: "primary" as const },
+  { label: "Book a demo", href: "/contact", variant: "secondary" as const },
+];
+
+const announcements = {
+  badge: "News",
+  text: "Security that runs as your system runs",
+  href: "/news/security-runtime",
+};
+---
+
+<section class="relative isolate overflow-hidden bg-hero-bg" aria-labelledby="hero-title" data-hero>
+  <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div class="absolute inset-x-0 bottom-0 h-[551px]" data-hero-pattern>
+      <picture>
+        <source srcset="/images/hero/pattern-mirror.webp" type="image/webp" />
+        <img
+          class="absolute inset-0 h-full w-full object-cover object-top opacity-70"
+          src="/images/hero/pattern-mirror.jpg"
+          alt=""
+          width="1440"
+          height="551"
+          loading="eager"
+          decoding="async"
+          fetchpriority="low"
+        />
+      </picture>
+
+      <div
+        class="absolute inset-x-0 top-0 h-[266px] bg-linear-to-b from-hero-bg to-[rgb(241_246_253_/_0)]"
+      >
+      </div>
+    </div>
+
+    <div
+      class="absolute inset-x-0 bottom-0 h-[674px] bg-linear-to-b from-[rgb(241_246_253_/_0)] to-hero-bg"
+    >
+    </div>
+  </div>
+
+  <div
+    class="relative mx-auto max-w-[1440px] px-6 pt-[150px] pb-16 lg:pt-[118px] lg:pb-0"
+  >
+    <div class="mx-auto flex max-w-[840px] flex-col items-center gap-8 text-center">
+      <div class="flex flex-col items-center gap-6">
+        <a
+          href={announcements.href}
+          class="inline-flex flex-wrap items-center justify-center gap-3 no-underline"
+          data-hero-badge
+        >
+          <span
+            class="inline-flex h-6 items-center justify-center rounded-sm bg-hero-badge px-2 font-sans text-[12.9px] font-medium uppercase leading-[18.4px] text-hero-badge-ink"
+          >
+            {announcements.badge}
+          </span>
+          <span class="font-sans text-sm font-medium leading-[22.5px] text-balance text-black">
+            {announcements.text}
+          </span>
+        </a>
+
+        <h1
+          id="hero-title"
+          class="font-display text-[72px] leading-[1.2] text-balance text-ink max-lg:text-[60px] max-md:text-[48px] max-sm:text-[36px] [font-weight:580]"
+          data-hero-title
+        >
+          Proven Security SaaS<br />
+          Data Security
+        </h1>
+      </div>
+
+      <p
+        class="max-w-[532px] font-sans text-[20px] leading-[1.5] text-pretty text-hero-sub max-sm:text-base"
+        data-hero-sub
+      >
+        Secure applications, identities, and data with continuous testing and
+        identity-aware protection.
+      </p>
+
+      <ul class="m-0 flex list-none flex-wrap items-center justify-center gap-[11px] p-0 max-sm:w-full max-sm:flex-col">
+        {
+          ctas.map((cta) => (
+            <li class="max-sm:w-full">
+              <a
+                href={cta.href}
+                class:list={[
+                  "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-4 py-2.5 font-sans text-sm leading-[18px] whitespace-nowrap no-underline transition duration-150 max-sm:w-full",
+                  cta.variant === "primary"
+                    ? "bg-linear-to-b from-brand-500 from-[6.579%] to-brand-400 text-[#f8fafc] shadow-cta [border:1px_solid_#758cfd] [text-shadow:0_2px_4px_#4785f0] hover:brightness-105"
+                    : "bg-linear-to-b from-hero-bg from-[8.9955%] to-white text-ink shadow-[0_4px_4px_rgb(0_0_0_/_0.05),0_0_0_1px_#edf3fc] [border:1px_solid_#ffffff] hover:shadow-[0_4px_8px_rgb(0_0_0_/_0.08),0_0_0_1px_#dfe8f7]",
+                ]}
+                data-hero-cta
+              >
+                {cta.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div
+    class="relative mx-auto mt-4 h-[440px] max-w-[1440px] overflow-hidden sm:mt-6 md:h-[560px] [@media(width>=1025px)]:mt-6 [@media(width>=1025px)]:h-[729px]"
+    data-hero-art
+  >
+    <div class="relative mx-auto w-full max-w-[1329px]">
+      <img
+        class="block w-full"
+        src="/images/hero/isometric-fresh.svg"
+        alt="Latch security platform shown as an isometric diagram of connected services"
+        width="1329"
+        height="1108"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      />
+    </div>
+
+    <div
+      class="pointer-events-none absolute inset-0 mx-auto hidden max-w-[1329px] lg:block"
+      data-hero-cards
+    >
+      <img
+        class="absolute top-[28.1%] left-[18.6%] w-[20.5%]"
+        src="/images/hero/card-left.svg"
+        alt=""
+        aria-hidden="true"
+        decoding="async"
+        width="273"
+        height="237"
+        data-hero-card="left"
+      />
+      <img
+        class="absolute top-[28.1%] left-[62.8%] w-[20.5%]"
+        src="/images/hero/card-right.svg"
+        alt=""
+        aria-hidden="true"
+        decoding="async"
+        width="273"
+        height="237"
+        data-hero-card="right"
+      />
+      <img
+        class="absolute top-[60.4%] left-[82.3%] w-[17.7%]"
+        src="/images/hero/card-far.svg"
+        alt=""
+        aria-hidden="true"
+        decoding="async"
+        width="235"
+        height="266"
+        data-hero-card="far"
+      />
+    </div>
+  </div>
+
+  <div
+    class="pointer-events-none absolute inset-x-0 bottom-0 h-[186px] bg-linear-to-b from-[rgb(241_246_253_/_0)] to-hero-bg"
+    aria-hidden="true"
+  >
+  </div>
+</section>
