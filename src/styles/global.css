@@ -1,0 +1,82 @@
+@import "tailwindcss";
+@import "./typography.css";
+
+@theme {
+  --color-brand-500: #5e76ff;
+  --color-brand-600: #4758e8;
+  --color-brand-400: #70a9fe;
+
+  --color-ink: #111729;
+  --color-ink-strong: #0b0c20;
+
+  --color-surface: #ffffff;
+  --color-border-subtle: rgb(0 0 0 / 0.1);
+
+  --container-page: 1440px;
+  --spacing-nav: 80px;
+
+  --shadow-cta: 0 4px 4px #cecfd3, 0 0 0 1px rgb(90 120 255 / 0.2);
+
+  --color-hero-bg: #f1f6fd;
+  --color-hero-sub: #4a5567;
+  --color-hero-badge: #bef9b6;
+  --color-hero-badge-ink: #0c5b39;
+
+  --font-display: "Season VF-TRIAL", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* The navbar collapses at 1024px, so `lg` starts one pixel later to keep
+     `max-lg:` inclusive of 1024 exactly as the original design had it. */
+  --breakpoint-lg: 1025px;
+}
+
+@font-face {
+  /* Variable font: one file covers the whole wght axis (hero uses 580). */
+  font-family: "Season VF-TRIAL";
+  src:
+    url("/fonts/SeasonCollectionVF-TRIAL.woff2") format("woff2-variations"),
+    url("/fonts/SeasonCollectionVF-TRIAL.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :where(*, *::before, *::after) {
+    box-sizing: border-box;
+  }
+
+  :where(body) {
+    margin: 0;
+    background: var(--color-surface);
+  }
+
+  :where(img, svg, video) {
+    display: block;
+    max-width: 100%;
+  }
+
+  :where(:focus-visible) {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  :where([tabindex="-1"]):focus {
+    outline: none;
+  }
+
+  /* SplitText creates these line wrappers at runtime. */
+  :where(.hero-line) {
+    display: block;
+    overflow: hidden;
+    padding-block: 0.08em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :where(*, *::before, *::after) {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

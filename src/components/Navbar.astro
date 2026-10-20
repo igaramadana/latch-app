@@ -1,0 +1,150 @@
+---
+import { navLinks } from "../lib/nav-data";
+
+const current = Astro.url.pathname;
+
+const isActive = (href: string) =>
+  href === "/" ? current === "/" : current.startsWith(href);
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-border-subtle bg-surface"
+  data-nav
+>
+  <nav
+    class="mx-auto flex h-[calc(var(--spacing-nav)-1px)] max-w-page items-center gap-8 px-[clamp(20px,5.7vw,82px)] max-lg:gap-4"
+    aria-label="Main"
+  >
+    <a
+      href="/"
+      class="flex flex-none items-center gap-2 no-underline"
+      aria-label="Latch — home"
+      data-nav-item
+    >
+      <svg
+        class="size-6 h-[26px] flex-none text-ink-strong"
+        width="24"
+        height="26"
+        viewBox="0 0 24 26"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d="M6.61832 12.7385L9.70992 20.7455H4.14504L2.12977 15.4909H0L5.9542 0H11.5191L6.61832 12.7385Z"
+          fill="currentColor"></path>
+        <path
+          d="M17.3817 12.7385L14.2901 4.73143H19.855L21.8702 9.98604H24L18.0458 25.4769H12.4809L17.3817 12.7385Z"
+          fill="currentColor"></path>
+      </svg>
+      <span
+        class="text-brand font-semibold leading-none tracking-tight text-ink"
+      >
+        Latch
+      </span>
+    </a>
+
+    <ul
+      id="nav-menu"
+      class="m-0 mx-auto flex list-none items-center gap-8 p-0 max-lg:absolute max-lg:inset-x-0 max-lg:top-full max-lg:mx-0 max-lg:flex-col max-lg:items-stretch max-lg:gap-0 max-lg:border-b max-lg:border-border-subtle max-lg:bg-surface max-lg:px-[clamp(20px,5.7vw,82px)] max-lg:pt-1 max-lg:pb-5 max-lg:shadow-[0_16px_24px_-12px_rgb(9_35_79_/_0.16)] max-lg:[&:not(.is-open)]:hidden"
+      data-menu
+    >
+      {
+        navLinks.map((link) => (
+          <li data-menu-item>
+            <a
+              href={link.href}
+              class:list={[
+                "inline-block py-2 text-sm font-medium leading-ui text-ink no-underline transition-colors duration-150 hover:text-brand-600 max-lg:flex max-lg:min-h-11 max-lg:w-full max-lg:items-center max-lg:justify-center max-lg:py-3 max-lg:text-center max-lg:text-menu",
+                isActive(link.href) && "text-brand-600",
+              ]}
+              aria-current={isActive(link.href) ? "page" : undefined}
+              data-nav-link
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+
+      <li class="hidden max-lg:flex max-lg:justify-center max-lg:pt-3" data-menu-item>
+        <a
+          href="/signup"
+          class="inline-flex min-h-11 w-full max-w-80 flex-none items-center justify-center gap-1.5 rounded-full bg-linear-to-b from-brand-500 to-brand-400 px-4 py-2.5 text-menu font-medium leading-ui whitespace-nowrap text-[#f8fafc] no-underline [outline:1px_solid_#758cfd] [outline-offset:-1px] [text-shadow:0_2px_4px_rgb(71_133_240)] shadow-cta transition-[filter] duration-150 hover:brightness-105"
+          data-nav-cta
+        >
+          Start for free
+        </a>
+      </li>
+    </ul>
+
+    <a
+      href="/signup"
+      class="inline-flex flex-none items-center justify-center gap-1.5 rounded-full bg-linear-to-b from-brand-500 to-brand-400 px-4 py-2.5 text-sm font-medium leading-ui whitespace-nowrap text-[#f8fafc] no-underline [outline:1px_solid_#758cfd] [outline-offset:-1px] [text-shadow:0_2px_4px_rgb(71_133_240)] shadow-cta transition-[filter] duration-150 hover:brightness-105 max-lg:hidden"
+      data-nav-cta
+    >
+      Start for free
+    </a>
+
+    <button
+      class="ml-auto hidden size-11 flex-none cursor-pointer items-center justify-center rounded-lg border border-border-subtle bg-surface text-ink transition-colors duration-200 [-webkit-tap-highlight-color:transparent] hover:border-[rgb(17_23_41_/_0.18)] hover:bg-[rgb(17_23_41_/_0.04)] max-lg:inline-flex aria-expanded:[&_[data-bar]]:top-[calc(50%-1px)]"
+      type="button"
+      aria-expanded="false"
+      aria-controls="nav-menu"
+      aria-label="Open menu"
+      data-nav-toggle
+    >
+      <span
+        class="relative size-5 [&_[data-bar]]:transition-[top] [&_[data-bar]]:duration-150"
+        aria-hidden="true"
+      >
+        <span
+          class="absolute top-[calc(50%-7px)] left-0 h-0.5 w-full rounded-full bg-current [transform-origin:50%_50%]"
+          data-bar></span>
+        <span
+          class="absolute top-[calc(50%-1px)] left-0 h-0.5 w-full rounded-full bg-current [transform-origin:50%_50%]"
+          data-bar></span>
+        <span
+          class="absolute top-[calc(50%+5px)] left-0 h-0.5 w-full rounded-full bg-current [transform-origin:50%_50%]"
+          data-bar></span>
+      </span>
+    </button>
+  </nav>
+</header>
+
+<script>
+  import { animateMenuToggle } from "../scripts/motion";
+
+  const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+  const menu = document.getElementById("nav-menu");
+
+  if (toggle && menu) {
+    let open = false;
+
+    const apply = (next: boolean) => {
+      if (next === open) return;
+      open = next;
+
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+
+      // CSS owns the open state; the motion module reads it for bar tweens.
+      menu.classList.toggle("is-open", open);
+
+      animateMenuToggle({ toggle, menu, open });
+    };
+
+    toggle.addEventListener("click", () => apply(!open));
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && open) {
+        apply(false);
+        toggle.focus();
+      }
+    });
+
+    window.matchMedia("(min-width: 1025px)").addEventListener("change", (e) => {
+      if (e.matches) apply(false);
+    });
+  }
+</script>

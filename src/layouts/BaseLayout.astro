@@ -1,0 +1,86 @@
+---
+import "../styles/global.css";
+import Navbar from "../components/Navbar.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Latch — Verified business intelligence",
+  description = "Latch gives you verified business data, credit signals and monitoring in one platform.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    {/* Preload the display font so the H1 doesn't flash the Inter fallback. */}
+    <link
+      rel="preload"
+      href="/fonts/SeasonCollectionVF-TRIAL.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <title>{title}</title>
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+    />
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-lg"
+    >
+      Skip to content
+    </a>
+
+    <Navbar />
+
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+
+    <script>
+      import { initMotion } from "../scripts/motion";
+
+      let cleanup: (() => void) | undefined;
+      let started = false;
+
+      const start = () => {
+        if (started) return;
+        started = true;
+        cleanup = initMotion();
+      };
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start, { once: true });
+      } else {
+        start();
+      }
+
+      document.addEventListener("astro:before-swap", () => {
+        cleanup?.();
+        cleanup = undefined;
+        started = false;
+      });
+
+      document.addEventListener("astro:page-load", start);
+    </script>
+  </body>
+</html>
