@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import "lenis/dist/lenis.css";
 import Navbar from "../components/Navbar.astro";
 
 interface Props {
@@ -58,14 +59,15 @@ const {
 
     <script>
       import { initMotion } from "../scripts/motion";
+      import { initSmoothScroll } from "../scripts/smooth-scroll";
 
-      let cleanup: (() => void) | undefined;
+      let cleanups: Array<() => void> = [];
       let started = false;
 
       const start = () => {
         if (started) return;
         started = true;
-        cleanup = initMotion();
+        cleanups = [initSmoothScroll(), initMotion()];
       };
 
       if (document.readyState === "loading") {
@@ -75,8 +77,8 @@ const {
       }
 
       document.addEventListener("astro:before-swap", () => {
-        cleanup?.();
-        cleanup = undefined;
+        cleanups.forEach((fn) => fn());
+        cleanups = [];
         started = false;
       });
 
