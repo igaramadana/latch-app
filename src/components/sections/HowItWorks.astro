@@ -1,0 +1,98 @@
+---
+interface Step {
+  art: { src: string; width: number; height: number };
+  title: string;
+  description: string;
+}
+
+const steps: Step[] = [
+  {
+    art: { src: "/images/howitworks/continous.svg", width: 270, height: 308 },
+    title: "Continuous testing",
+    description:
+      "We continuously test applications and APIs to identify real vulnerabilities before production.",
+  },
+  {
+    art: { src: "/images/howitworks/identity.svg", width: 298, height: 330 },
+    title: "Identity-first access",
+    description:
+      "Every user and service is evaluated in real time to prevent risky or unauthorized access.",
+  },
+  {
+    art: { src: "/images/howitworks/realtime.svg", width: 224, height: 353 },
+    title: "Real-time threat detection",
+    description:
+      "We detect abnormal behavior and respond instantly to stop threats before they escalate.",
+  },
+];
+---
+
+<section
+  class="bg-white py-16 lg:pt-[100px] lg:pb-[66px]"
+  aria-labelledby="howitworks-title"
+  data-howitworks
+>
+  <div class="mx-auto max-w-[1440px] px-6 lg:px-[120px]">
+    <div class="flex flex-col gap-10">
+      <header class="flex flex-col items-start gap-4">
+        <p
+          class="inline-flex h-8 items-center gap-2 border border-border-badge bg-white px-[9px]"
+          data-hiw-badge
+        >
+          <span class="size-2.5 bg-[#607AFF]" aria-hidden="true"></span>
+          <span class="font-sans text-sm font-medium uppercase tracking-[0.28px] text-ink-muted">
+            How It Works
+          </span>
+        </p>
+        <div class="flex flex-col items-start gap-3">
+          <h2
+            id="howitworks-title"
+            class="font-display text-[42px] leading-[1.16] text-ink [font-weight:580] max-lg:text-[32px] max-lg:leading-[1.25] max-sm:text-[26px]"
+            data-hiw-title
+          >
+            How we secure your SaaS
+          </h2>
+          <p
+            class="max-w-[788px] font-sans text-lg leading-[1.3] text-ink-muted max-sm:text-base"
+            data-hiw-sub
+          >
+            A simple, continuous process that protects your SaaS at every stage.
+          </p>
+        </div>
+      </header>
+
+      <ul class="m-0 grid list-none grid-cols-2 gap-6 p-0 max-md:grid-cols-1 max-md:gap-10 lg:grid-cols-3">
+        {
+          steps.map((step) => (
+            <li
+              class="flex flex-col gap-[26px] md:max-lg:last:col-span-2 md:max-lg:last:mx-auto md:max-lg:last:w-[calc(50%-12px)]"
+              data-hiw-card
+            >
+              <div class="flex aspect-[384/391] items-center justify-center overflow-hidden bg-panel">
+                <img
+                  src={step.art.src}
+                  alt=""
+                  aria-hidden="true"
+                  width={step.art.width}
+                  height={step.art.height}
+                  class="h-auto max-h-full max-w-full"
+                  style={`width: ${((step.art.width / 384) * 100).toFixed(2)}%`}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div class="flex flex-col items-start gap-2">
+                <h3 class="m-0 font-sans text-lg font-medium leading-[23.2px] text-ink">
+                  {step.title}
+                </h3>
+                <p class="m-0 max-w-full font-sans text-base leading-6 text-ink-muted lg:max-w-[375px]">
+                  {step.description}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

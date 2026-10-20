@@ -99,6 +99,7 @@ export function initMotion() {
     heroIntro(paused),
     ctaHover(paused),
     scrollReveals(paused),
+    howItWorksIntro(paused),
     trustedMarquee(paused),
   ];
 
@@ -339,5 +340,40 @@ function scrollReveals(paused: boolean): () => void {
   return () => {
     triggers.forEach((t) => t.kill());
     gsap.set(hidden, { clearProps: "all" });
+  };
+}
+
+function howItWorksIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-howitworks]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-hiw-badge]");
+  const title = section.querySelector<HTMLElement>("[data-hiw-title]");
+  const sub = section.querySelector<HTMLElement>("[data-hiw-sub]");
+  const cards = gsap.utils.toArray<HTMLElement>("[data-hiw-card]");
+  if (!title || !cards.length) return () => {};
+
+  const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
+
+  // Same contract as scrollReveals: never hide content that is already
+  // on screen at load, or the section reads as empty.
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.9;
+  if (onScreen) return () => {};
+
+  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(cards, { autoAlpha: 0, y: 40 });
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+  });
+
+  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.12 }, "-=0.45");
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set([...parts, ...cards], { clearProps: "all" });
   };
 }
