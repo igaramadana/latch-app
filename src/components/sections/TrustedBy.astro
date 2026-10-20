@@ -1,0 +1,91 @@
+---
+interface Logo {
+  name: string;
+  icon: string;
+}
+
+// The design shows 6 logos in the frame plus a second row starting off-frame
+// (x=2040 in the Figma export), i.e. an infinite marquee. The list is
+// repeated enough times to cover viewport + one full cycle, so the loop
+// never exposes empty space on the right.
+const logos: Logo[] = [
+  { name: "Salesforce", icon: "/images/marque/salesforce.jpg" },
+  { name: "Slack", icon: "/images/marque/slack.jpg" },
+  { name: "Notion", icon: "/images/marque/notion.png" },
+  { name: "Stripe", icon: "/images/marque/stripe.jpg" },
+  { name: "Zendesk", icon: "/images/marque/zendesk.jpg" },
+  { name: "Snowflake", icon: "/images/marque/snowflake.png" },
+];
+
+// One list is ~1034px; three copies keep the track wider than any sane
+// viewport (3102px) even during the wrap shift. Extra copies are cheap
+// (same 6 small images, browser caches them) and get clipped by overflow.
+const copies = 3;
+---
+
+<section
+  class="bg-white py-20 lg:py-[80px]"
+  aria-labelledby="trusted-title"
+  data-trusted
+>
+  <div class="mx-auto max-w-[1440px] px-6 lg:px-0">
+    <h2
+      id="trusted-title"
+      class="mx-auto max-w-[587px] text-center font-display text-[42px] leading-[1.16] text-balance text-ink [font-weight:580] max-lg:text-[32px] max-lg:leading-[1.25] max-sm:text-[26px]"
+      data-trusted-title
+      data-reveal
+    >
+      Trusted by security teams securing cloud-native systems
+    </h2>
+  </div>
+
+  {/*
+    Marquee: the track holds the list multiple times and slides by exactly
+    one list width, then repeats — the extra copies make the wrap seamless.
+    Mask fades the edges so logos dissolve instead of clipping.
+  */}
+  <div
+    class="group relative mt-12 overflow-hidden lg:mt-[48px]"
+    data-marquee
+  >
+    <div
+      class="flex w-max items-center gap-8 will-change-transform"
+      data-marquee-track
+    >
+      {
+        Array.from({ length: copies }).map(() => (
+          <ul class="m-0 flex list-none items-center gap-8 p-0">
+            {logos.map((logo) => (
+              <li class="flex items-center gap-2">
+                <img
+                  class="size-8 rounded-[10px] object-cover shadow-[0_0_0_0.5px_rgb(0_0_0_/_0.10),0_2px_2px_rgb(0_0_0_/_0.12)]"
+                  src={logo.icon}
+                  alt=""
+                  aria-hidden="true"
+                  width="32"
+                  height="32"
+                  decoding="async"
+                  loading="lazy"
+                />
+                <span class="font-sans text-[26.8px] leading-[19.2px] font-normal text-[#322e4a] max-sm:text-[20px]">
+                  {logo.name}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+
+    <div
+      class="pointer-events-none absolute inset-y-0 left-0 w-24 bg-linear-to-r from-white to-transparent"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute inset-y-0 right-0 w-24 bg-linear-to-l from-white to-transparent"
+      aria-hidden="true"
+    >
+    </div>
+  </div>
+</section>

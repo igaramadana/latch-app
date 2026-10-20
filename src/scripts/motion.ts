@@ -99,6 +99,7 @@ export function initMotion() {
     heroIntro(paused),
     ctaHover(paused),
     scrollReveals(paused),
+    trustedMarquee(paused),
   ];
 
   return () => teardowns.forEach((fn) => fn());
@@ -243,6 +244,34 @@ function heroIntro(paused: boolean): () => void {
     gsap.set([heading, sub, badge, ctas, iso, cards, pattern].filter(Boolean), {
       clearProps: "all",
     });
+  };
+}
+
+function trustedMarquee(paused: boolean): () => void {
+  const track = document.querySelector<HTMLElement>("[data-marquee-track]");
+  if (!track) return () => {};
+
+  // The track holds the list twice; shifting by the first list's width
+  // (plus its trailing gap) loops seamlessly back to the start.
+  const list = track.querySelector<HTMLElement>("ul");
+  if (!list) return () => {};
+
+  const distance = () => list.getBoundingClientRect().width + 32;
+
+  if (paused) return () => {};
+
+  const tween = gsap.to(track, {
+    x: () => -distance(),
+    ease: "none",
+    duration: 30,
+    repeat: -1,
+    // Recalculate on resize so the wrap point stays exact.
+    repeatRefresh: true,
+  });
+
+  return () => {
+    tween.kill();
+    gsap.set(track, { clearProps: "all" });
   };
 }
 
