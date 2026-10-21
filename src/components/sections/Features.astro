@@ -63,7 +63,7 @@ const features: Feature[] = [
           Security capabilities
         </h2>
         <p
-          class="max-w-[490px] font-sans text-[18px] leading-[27px] text-ink-muted max-sm:text-base"
+          class="max-w-[567px] font-sans text-[18px] leading-[27px] text-ink-muted max-sm:text-base"
           data-features-sub
         >
           Tools and capabilities designed to protect your SaaS across applications, access, and
@@ -73,16 +73,16 @@ const features: Feature[] = [
     </header>
 
     <div
-      class="mx-auto mt-12 grid max-w-[1185px] grid-cols-1 gap-[2px] bg-[#F1F4F8] p-[2px] min-[1024px]:mt-16 min-[1024px]:grid-cols-2"
+      class="mx-auto mt-12 grid max-w-[1185px] grid-cols-1 min-[1024px]:mt-16 min-[1024px]:grid-cols-2"
     >
       {
         features.map((feature) => (
           <article
-            class="group relative flex flex-col overflow-hidden bg-white min-[1024px]:h-[391px]"
+            class="group relative flex flex-col overflow-hidden bg-white max-[1023px]:border max-[1023px]:border-[#F1F4F8] min-[1024px]:h-[391px] min-[1024px]:border-t-2 min-[1024px]:border-l-2 min-[1024px]:border-[#F1F4F8] min-[1024px]:[&:nth-child(even)]:border-r-2 min-[1024px]:[&:nth-child(n+3)]:border-b-2"
             data-feature-card
           >
             <div
-              class="w-full min-[1024px]:absolute min-[1024px]:inset-x-0 min-[1024px]:top-0"
+              class="w-full py-7 min-[1024px]:absolute min-[1024px]:inset-x-0 min-[1024px]:top-0"
               data-feature-art
             >
               <img
@@ -91,7 +91,7 @@ const features: Feature[] = [
                 aria-hidden="true"
                 width={feature.width}
                 height={feature.height}
-                class="h-auto w-full origin-top transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.025] motion-reduce:transition-none"
+                class="h-auto w-full origin-top transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.025] motion-reduce:transition-none min-[1024px]:h-[335px] min-[1024px]:object-contain min-[1024px]:object-top"
                 loading="lazy"
                 decoding="async"
               />
