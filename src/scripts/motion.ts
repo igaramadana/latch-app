@@ -105,6 +105,7 @@ export function initMotion() {
     useCasesMotion(paused),
     securityImpactMotion(paused),
     featuresMotion(paused),
+    ctaSectionMotion(paused),
     trustedMarquee(paused),
   ];
 
@@ -868,4 +869,125 @@ function featuresMotion(paused: boolean): () => void {
       { clearProps: "all" },
     );
   };
+}
+
+/**
+ * Closing CTA: the panel lifts in, the headline splits into lines, and the two
+ * pattern tiles drift in opposite directions as the section crosses the
+ * viewport — the same scrubbed parallax the rest of the page uses.
+ */
+function ctaSectionMotion(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-cta]");
+  if (!section) return () => {};
+
+  const panel = section.querySelector<HTMLElement>("[data-cta-panel]");
+  const title = section.querySelector<HTMLElement>("[data-cta-title]");
+  const button = section.querySelector<HTMLElement>("[data-cta-button]");
+  const glow = section.querySelector<HTMLElement>("[data-cta-glow]");
+  const patterns = gsap.utils.toArray<HTMLElement>("[data-cta-pattern]", section);
+
+  const cleanups: Array<() => void> = [];
+  let split: SplitText | null = null;
+  let intro: gsap.core.Timeline | null = null;
+  const drifts: gsap.core.Tween[] = [];
+
+  const teardown = () => {
+    intro?.scrollTrigger?.kill();
+    intro?.kill();
+    drifts.forEach((tween) => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    });
+    split?.revert();
+    gsap.set(
+      [panel, title, button, glow, ...patterns].filter(Boolean) as HTMLElement[],
+      { clearProps: "all" },
+    );
+    cleanups.forEach((fn) => fn());
+  };
+
+  if (!paused && button) {
+    // gsap.to rather than quickTo: the entrance tween owns this element's
+    // transform too, and overwrite keeps the two from fighting.
+    const hover = (scale: number) =>
+      gsap.to(button, {
+        scale,
+        duration: 0.35,
+        ease: "power3",
+        overwrite: "auto",
+      });
+    const onEnter = () => hover(1.04);
+    const onLeave = () => hover(1);
+
+    button.addEventListener("pointerenter", onEnter);
+    button.addEventListener("pointerleave", onLeave);
+    cleanups.push(() => {
+      button.removeEventListener("pointerenter", onEnter);
+      button.removeEventListener("pointerleave", onLeave);
+    });
+  }
+
+  if (paused) return teardown;
+
+  // Scrubbed drift: each tile travels a few pixels in opposite directions so
+  // the field reads as depth rather than a flat backdrop. `ease: "none"` keeps
+  // the movement linear against scroll instead of easing per update. This is
+  // registered before the below-fold guard: unlike the entrance, it applies
+  // whether or not the section is already on screen at load.
+  patterns.forEach((tile, i) => {
+    drifts.push(
+      gsap.fromTo(
+        tile,
+        { yPercent: i === 0 ? -3 : 3 },
+        {
+          yPercent: i === 0 ? 3 : -3,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.6,
+          },
+        },
+      ),
+    );
+  });
+
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.9;
+  if (!belowFold) return teardown;
+
+  const run = () => {
+    if (title) {
+      split = SplitText.create(title, { type: "lines", linesClass: "cta-line" });
+    }
+
+    gsap.set(panel, { autoAlpha: 0, y: 32 });
+    gsap.set(split ? split.lines : title, { autoAlpha: 0, yPercent: 110 });
+    gsap.set(button, { autoAlpha: 0, y: 14 });
+    gsap.set(glow, { autoAlpha: 0 });
+
+    intro = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.8 },
+      scrollTrigger: { trigger: section, start: "top 82%", once: true },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    intro
+      .to(panel, { autoAlpha: 1, y: 0, duration: 0.9 }, 0)
+      .to(
+        split ? split.lines : title,
+        { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.09 },
+        0.18,
+      )
+      .to(button, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.46)
+      .to(glow, { autoAlpha: 1, duration: 1.2 }, 0.1);
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return teardown;
 }

@@ -1,0 +1,63 @@
+---
+const cta = { label: "Book a demo", href: "/contact" };
+---
+
+<section class="bg-white py-14" aria-labelledby="cta-title" data-cta>
+  <div class="mx-auto max-w-[1440px] px-6 min-[1360px]:px-[60px]">
+    <div
+      class="relative isolate overflow-hidden bg-[#09234F] px-6 py-16 text-center sm:px-10 lg:py-24"
+      data-cta-panel
+    >
+      <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div class="absolute inset-0 overflow-hidden">
+          <img
+            src="/images/CTA/pattern.svg"
+            alt=""
+            width="380"
+            height="387"
+            class="absolute bottom-0 left-0 w-[38%] max-w-[380px] rotate-180 sm:w-[29%]"
+            loading="lazy"
+            decoding="async"
+            data-cta-pattern="left"
+          />
+          <img
+            src="/images/CTA/pattern.svg"
+            alt=""
+            width="380"
+            height="387"
+            class="absolute top-0 right-0 w-[38%] max-w-[380px] sm:w-[29%]"
+            loading="lazy"
+            decoding="async"
+            data-cta-pattern="right"
+          />
+        </div>
+
+        {/* Sits above the tiles so the radial wash lifts the centre of the panel
+            and lets the marks fade out toward it. */}
+        <div
+          class="absolute inset-0 mix-blend-lighten [background:radial-gradient(ellipse_50%_50%_at_50%_50%,rgb(156_193_255_/_0.04)_0%,rgb(38_79_148_/_0.12)_100%)]"
+          data-cta-glow
+        >
+        </div>
+      </div>
+
+      <div class="relative mx-auto flex max-w-[634px] flex-col items-center gap-6">
+        <h2
+          id="cta-title"
+          class="font-display text-[48px] leading-[1.16] text-white max-lg:text-[40px] max-sm:text-[32px] [font-weight:580]"
+          data-cta-title
+        >
+          Security should move at the same pace as your product
+        </h2>
+
+        <a
+          href={cta.href}
+          class="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#5E71FF] px-4 py-3 font-sans text-sm leading-[18px] font-medium whitespace-nowrap text-[#F8FAFC] no-underline transition-[filter] duration-150 hover:brightness-110"
+          data-cta-button
+        >
+          {cta.label}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
