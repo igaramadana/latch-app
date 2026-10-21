@@ -103,6 +103,7 @@ export function initMotion() {
     whyItMattersIntro(paused),
     whyParallax(paused),
     useCasesMotion(paused),
+    securityImpactMotion(paused),
     trustedMarquee(paused),
   ];
 
@@ -660,6 +661,143 @@ function useCasesMotion(paused: boolean): () => void {
       [badge, sub, art, flow, ...items, ...icons].filter(Boolean) as HTMLElement[],
       { clearProps: "all" },
     );
+    cleanups.forEach((fn) => fn());
+  };
+}
+
+/**
+ * Security impact: the stats count up as the section enters, the art panel
+ * lifts in behind them, and the pattern drifts slightly slower than the page.
+ */
+function securityImpactMotion(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-impact]");
+  if (!section) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-impact-badge]");
+  const title = section.querySelector<HTMLElement>("[data-impact-title]");
+  const art = section.querySelector<HTMLElement>("[data-impact-art]");
+  const composition = section.querySelector<HTMLElement>("[data-impact-composition]");
+  const compositionWrap = section.querySelector<HTMLElement>("[data-impact-composition-wrap]");
+  const pattern = section.querySelector<HTMLElement>("[data-impact-pattern]");
+  const stats = gsap.utils.toArray<HTMLElement>("[data-impact-stat]", section);
+  const values = gsap.utils.toArray<HTMLElement>("[data-impact-value]", section);
+
+  const cleanups: Array<() => void> = [];
+  let intro: gsap.core.Timeline | null = null;
+  let split: SplitText | null = null;
+
+  // Layered scroll parallax: the pattern sits deepest and travels furthest,
+  // the composition above it moves less, so the two separate as the section
+  // passes. Both are scrubbed by their own ScrollTrigger with the same start
+  // and end, which keeps them in lockstep at any scroll speed.
+  const parallaxLayers: Array<{ el: HTMLElement | null; depth: number }> = [
+    { el: pattern, depth: 26 },
+    { el: compositionWrap, depth: 14 },
+  ];
+
+  const scrubTweens = parallaxLayers
+    .filter((layer): layer is { el: HTMLElement; depth: number } => Boolean(layer.el))
+    .map(({ el, depth }) =>
+      gsap.fromTo(
+        el,
+        { y: depth },
+        {
+          y: -depth,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        },
+      ),
+    );
+
+  const killScrub = () => {
+    scrubTweens.forEach((tween) => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    });
+    gsap.set(
+      parallaxLayers.map((layer) => layer.el).filter(Boolean) as HTMLElement[],
+      { clearProps: "y" },
+    );
+  };
+
+  if (paused) return killScrub;
+
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.9;
+  if (!belowFold) return killScrub;
+
+  const run = () => {
+    if (title) {
+      split = SplitText.create(title, { type: "lines", linesClass: "impact-line" });
+    }
+
+    gsap.set(badge, { autoAlpha: 0, y: -12 });
+    gsap.set(split ? split.lines : title, { autoAlpha: 0, yPercent: 110 });
+    gsap.set(art, { autoAlpha: 0, y: 32 });
+    if (composition) gsap.set(composition, { autoAlpha: 0, scale: 0.96 });
+    gsap.set(stats, { autoAlpha: 0, x: 28 });
+
+    // Each value animates from 0 to its target; the formatted output keeps the
+    // prefix/suffix so "<24 hours" and "3x faster" read correctly mid-count.
+    const counters = values.map((el) => {
+      const to = Number(el.dataset.countTo ?? 0);
+      const prefix = el.dataset.countPrefix ?? "";
+      const suffix = el.dataset.countSuffix ?? "";
+      const decimals = Number(el.dataset.countDecimals ?? 0);
+      const state = { value: 0 };
+
+      return gsap.to(state, {
+        value: to,
+        duration: 1.4,
+        ease: "power2.out",
+        paused: true,
+        onUpdate: () => {
+          el.textContent = `${prefix}${state.value.toFixed(decimals)}${suffix}`;
+        },
+      });
+    });
+
+    intro = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.8 },
+      scrollTrigger: { trigger: section, start: "top 78%", once: true },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    intro
+      .to(badge, { autoAlpha: 1, y: 0, duration: 0.5 }, 0)
+      .to(split ? split.lines : title, { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.08 }, 0.08)
+      .to(art, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.2)
+      .to(composition, { autoAlpha: 1, scale: 1, duration: 1, ease: "power3.out" }, 0.35)
+      .to(stats, { autoAlpha: 1, x: 0, duration: 0.7, stagger: 0.12 }, 0.4)
+      .add(() => counters.forEach((tween) => tween.play()), 0.55);
+
+    cleanups.push(() => counters.forEach((tween) => tween.kill()));
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    intro?.scrollTrigger?.kill();
+    intro?.kill();
+    killScrub();
+    split?.revert();
+    gsap.set(
+      [badge, art, composition, ...stats].filter(Boolean) as HTMLElement[],
+      { clearProps: "all" },
+    );
+    values.forEach((el) => {
+      el.textContent = el.dataset.countPrefix
+        ? `${el.dataset.countPrefix}${Number(el.dataset.countTo).toFixed(Number(el.dataset.countDecimals ?? 0))}${el.dataset.countSuffix ?? ""}`
+        : `${Number(el.dataset.countTo).toFixed(Number(el.dataset.countDecimals ?? 0))}${el.dataset.countSuffix ?? ""}`;
+    });
     cleanups.forEach((fn) => fn());
   };
 }

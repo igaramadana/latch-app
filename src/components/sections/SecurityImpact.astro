@@ -1,0 +1,130 @@
+---
+interface Stat {
+  tag: string;
+  value: string;
+  description: string;
+  count: { to: string; prefix?: string; suffix?: string; decimals?: number };
+}
+
+const stats: Stat[] = [
+  {
+    tag: "Coverage",
+    value: "99.9%",
+    description: "Critical issues found before release",
+    count: { to: "99.9", suffix: "%", decimals: 1 },
+  },
+  {
+    tag: "Speed",
+    value: "<24 hours",
+    description: "To identify high-risk issues",
+    count: { to: "24", prefix: "<", suffix: " hours" },
+  },
+  {
+    tag: "Impact",
+    value: "3x faster",
+    description: "Enterprise security approvals",
+    count: { to: "3", suffix: "x faster" },
+  },
+];
+---
+
+<section class="bg-white py-16 lg:py-[62px]" aria-labelledby="impact-title" data-impact>
+  <div class="mx-auto max-w-[1440px] px-6 min-[1360px]:px-[60px]">
+    <div class="mx-auto flex max-w-[1320px] flex-col items-center gap-12">
+      <header class="flex max-w-[438px] flex-col items-center gap-3 text-center">
+        <p
+          class="inline-flex h-8 w-fit items-center gap-2 border border-border-badge bg-white px-[9px]"
+          data-impact-badge
+        >
+          <span class="size-2.5 bg-[#607AFF]" aria-hidden="true"></span>
+          <span class="font-sans text-sm font-medium uppercase tracking-[0.28px] text-ink-muted">
+            Security Impact
+          </span>
+        </p>
+        <div class="flex flex-col items-center gap-3">
+          <h2
+            id="impact-title"
+            class="max-w-[390px] font-display text-[42px] leading-[1.16] text-ink [font-weight:580] [text-wrap:normal] max-lg:text-[32px] max-lg:leading-[1.25] max-sm:text-[26px]"
+            data-impact-title
+          >
+            Measurable security outcomes
+          </h2>
+          <p class="max-w-[490px] font-sans text-[18px] leading-[23.4px] text-ink-muted max-sm:text-base">
+            See how security improvements translate into real impact.
+          </p>
+        </div>
+      </header>
+
+      <div
+        class="grid w-full max-w-[720px] items-stretch gap-6 min-[1024px]:max-w-none min-[1024px]:grid-cols-[minmax(0,719fr)_minmax(0,565fr)] min-[1360px]:grid-cols-[719px_565px] min-[1360px]:justify-center"
+      >
+        <div
+          class="relative aspect-[719/576] w-full min-w-0 overflow-hidden bg-panel"
+          data-impact-art
+        >
+          <div class="pointer-events-none absolute inset-x-0 top-[26.2%] h-[48.3%]" aria-hidden="true">
+            <img
+              src="/images/security-impact/pattern.webp"
+              alt=""
+              class="h-full w-full object-cover"
+              width="1438"
+              height="558"
+              loading="lazy"
+              decoding="async"
+              data-impact-pattern
+            />
+          </div>
+
+          <div
+            class="absolute top-[15.8%] left-[13.8%] w-[72.3%]"
+            data-impact-composition-wrap
+          >
+            <img
+              src="/images/security-impact/vector.png"
+              alt=""
+              aria-hidden="true"
+              class="block w-full"
+              width="1044"
+              height="789"
+              loading="lazy"
+              decoding="async"
+              data-impact-composition
+            />
+          </div>
+        </div>
+
+        <div class="flex min-w-0 flex-col" data-impact-stats>
+          {
+            stats.map((stat) => (
+              <div
+                class="flex flex-col gap-4 border-b border-border-badge px-8 py-8"
+                data-impact-stat
+              >
+                <p class="m-0 inline-flex h-8 w-fit items-center rounded border border-[#C6E5F4] bg-[#DBF3FF] px-[9px]">
+                  <span class="font-sans text-[12.6px] leading-[16.1px] font-medium tracking-[0.28px] text-black uppercase">
+                    {stat.tag}
+                  </span>
+                </p>
+                <div class="flex flex-col gap-1">
+                  <p
+                    class="m-0 font-display text-[42px] leading-[1.16] text-ink [font-weight:580] max-sm:text-[32px]"
+                    data-impact-value
+                    data-count-to={stat.count.to}
+                    data-count-prefix={stat.count.prefix}
+                    data-count-suffix={stat.count.suffix}
+                    data-count-decimals={stat.count.decimals ?? 0}
+                  >
+                    {stat.value}
+                  </p>
+                  <p class="m-0 font-sans text-[18px] leading-[27px] text-ink-muted">
+                    {stat.description}
+                  </p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
