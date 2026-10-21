@@ -72,7 +72,7 @@
   }
 
   /* SplitText creates these line wrappers at runtime. */
-  :where(.hero-line, .uc-line, .impact-line) {
+  :where(.hero-line, .uc-line, .impact-line, .features-line) {
     display: block;
     overflow: hidden;
     padding-block: 0.08em;

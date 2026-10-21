@@ -104,6 +104,7 @@ export function initMotion() {
     whyParallax(paused),
     useCasesMotion(paused),
     securityImpactMotion(paused),
+    featuresMotion(paused),
     trustedMarquee(paused),
   ];
 
@@ -799,5 +800,72 @@ function securityImpactMotion(paused: boolean): () => void {
         : `${Number(el.dataset.countTo).toFixed(Number(el.dataset.countDecimals ?? 0))}${el.dataset.countSuffix ?? ""}`;
     });
     cleanups.forEach((fn) => fn());
+  };
+}
+
+/**
+ * Features: the four capability cards are laid out as one 2x2 panel, so the
+ * entrance runs as a diagonal sweep instead of four independent reveals. The
+ * art is absolutely positioned inside each card, which keeps the copy pinned
+ * to the bottom while the illustration stays flush with the card's top edge.
+ */
+function featuresMotion(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-features]");
+  if (!section) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-features-badge]");
+  const title = section.querySelector<HTMLElement>("[data-features-title]");
+  const sub = section.querySelector<HTMLElement>("[data-features-sub]");
+  const cards = gsap.utils.toArray<HTMLElement>("[data-feature-card]", section);
+  const arts = gsap.utils.toArray<HTMLElement>("[data-feature-art]", section);
+
+  let split: SplitText | null = null;
+  let intro: gsap.core.Timeline | null = null;
+
+  if (paused) return () => {};
+
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.9;
+  if (!belowFold) return () => {};
+
+  const run = () => {
+    if (title) split = SplitText.create(title, { type: "lines", linesClass: "features-line" });
+
+    gsap.set(badge, { autoAlpha: 0, y: -12 });
+    gsap.set(split ? split.lines : title, { autoAlpha: 0, yPercent: 110 });
+    gsap.set(sub, { autoAlpha: 0, y: 16 });
+    gsap.set(cards, { autoAlpha: 0, y: 28 });
+    // The art scales from its own top edge so it grows into the card rather
+    // than sliding out of it.
+    gsap.set(arts, { autoAlpha: 0, scale: 0.96, transformOrigin: "50% 0%" });
+
+    intro = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.8 },
+      scrollTrigger: { trigger: section, start: "top 78%", once: true },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    intro
+      .to(badge, { autoAlpha: 1, y: 0, duration: 0.5 }, 0)
+      .to(split ? split.lines : title, { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.08 }, 0.1)
+      .to(sub, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.3)
+      .to(cards, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.09 }, 0.34)
+      .to(arts, { autoAlpha: 1, scale: 1, duration: 0.9, stagger: 0.09 }, 0.42);
+
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    intro?.scrollTrigger?.kill();
+    intro?.kill();
+    split?.revert();
+    gsap.set(
+      [badge, sub, title, ...cards, ...arts].filter(Boolean) as HTMLElement[],
+      { clearProps: "all" },
+    );
   };
 }

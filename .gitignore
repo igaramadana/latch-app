@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # unoptimised design sources (large, not served)
 design-src/
+
+# local scratch (crops, render scripts)
+.scratch/

@@ -1,0 +1,115 @@
+---
+interface Feature {
+  title: string;
+  description: string;
+  art: string;
+  width: number;
+  height: number;
+}
+
+const features: Feature[] = [
+  {
+    title: "Application security testing",
+    description:
+      "Identify vulnerabilities across your application and APIs through ongoing security testing.",
+    art: "/images/features/security_testing.svg",
+    width: 593,
+    height: 380,
+  },
+  {
+    title: "Identity access protection",
+    description:
+      "Control and secure access for users and services across your SaaS environment.",
+    art: "/images/features/identity_access.svg",
+    width: 593,
+    height: 366,
+  },
+  {
+    title: "Threat detection and response",
+    description: "Monitor activity and respond to suspicious behavior in real time.",
+    art: "/images/features/threat_detection.svg",
+    width: 593,
+    height: 354,
+  },
+  {
+    title: "Security reporting and compliance support",
+    description:
+      "Generate structured reports for audits, compliance, and enterprise security reviews.",
+    art: "/images/features/security_report.svg",
+    width: 593,
+    height: 354,
+  },
+];
+---
+
+<section class="bg-white pt-16 pb-20 lg:pt-[68px] lg:pb-[88px]" aria-labelledby="features-title" data-features>
+  <div class="mx-auto max-w-[1440px] px-6">
+    <header class="mx-auto flex max-w-[567px] flex-col items-center gap-4 text-center">
+      <p
+        class="inline-flex h-8 w-fit items-center gap-2 border border-border-badge bg-white px-[9px]"
+        data-features-badge
+      >
+        <span class="size-2.5 bg-[#607AFF]" aria-hidden="true"></span>
+        <span class="font-sans text-sm font-medium uppercase tracking-[0.28px] text-ink-muted">
+          Features
+        </span>
+      </p>
+      <div class="flex flex-col items-center gap-3">
+        <h2
+          id="features-title"
+          class="font-display text-[42px] leading-[1.16] text-ink [font-weight:580] max-lg:text-[32px] max-lg:leading-[1.25] max-sm:text-[26px]"
+          data-features-title
+        >
+          Security capabilities
+        </h2>
+        <p
+          class="max-w-[490px] font-sans text-[18px] leading-[27px] text-ink-muted max-sm:text-base"
+          data-features-sub
+        >
+          Tools and capabilities designed to protect your SaaS across applications, access, and
+          ongoing security needs.
+        </p>
+      </div>
+    </header>
+
+    <div
+      class="mx-auto mt-12 grid max-w-[1185px] grid-cols-1 gap-[2px] bg-[#F1F4F8] p-[2px] min-[1024px]:mt-16 min-[1024px]:grid-cols-2"
+    >
+      {
+        features.map((feature) => (
+          <article
+            class="group relative flex flex-col overflow-hidden bg-white min-[1024px]:h-[391px]"
+            data-feature-card
+          >
+            <div
+              class="w-full min-[1024px]:absolute min-[1024px]:inset-x-0 min-[1024px]:top-0"
+              data-feature-art
+            >
+              <img
+                src={feature.art}
+                alt=""
+                aria-hidden="true"
+                width={feature.width}
+                height={feature.height}
+                class="h-auto w-full origin-top transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.025] motion-reduce:transition-none"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+
+            <div class="relative mt-auto w-full px-8 pb-7 pt-6 min-[1024px]:pt-0">
+              <div class="flex w-full max-w-[375px] flex-col gap-2 p-2">
+                <h3 class="m-0 font-sans text-[18px] font-medium leading-[20.88px] text-ink">
+                  {feature.title}
+                </h3>
+                <p class="m-0 font-sans text-[16px] leading-[20.8px] text-ink-muted">
+                  {feature.description}
+                </p>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
