@@ -5,6 +5,8 @@ interface Feature {
   art: string;
   width: number;
   height: number;
+  /** Mobile-only nudge (% of image height) so the drawn artwork — not the SVG canvas — sits centered. */
+  artShift: number;
 }
 
 const features: Feature[] = [
@@ -15,6 +17,7 @@ const features: Feature[] = [
     art: "/images/features/security_testing.svg",
     width: 593,
     height: 380,
+    artShift: 14,
   },
   {
     title: "Identity access protection",
@@ -23,6 +26,7 @@ const features: Feature[] = [
     art: "/images/features/identity_access.svg",
     width: 593,
     height: 366,
+    artShift: 16,
   },
   {
     title: "Threat detection and response",
@@ -30,6 +34,7 @@ const features: Feature[] = [
     art: "/images/features/threat_detection.svg",
     width: 593,
     height: 354,
+    artShift: 15,
   },
   {
     title: "Security reporting and compliance support",
@@ -38,6 +43,7 @@ const features: Feature[] = [
     art: "/images/features/security_report.svg",
     width: 593,
     height: 354,
+    artShift: 19,
   },
 ];
 ---
@@ -82,7 +88,7 @@ const features: Feature[] = [
             data-feature-card
           >
             <div
-              class="w-full py-7 min-[1024px]:absolute min-[1024px]:inset-x-0 min-[1024px]:top-0"
+              class="flex w-full items-center justify-center overflow-hidden py-7 max-[639px]:aspect-[327/240] min-[1024px]:absolute min-[1024px]:inset-x-0 min-[1024px]:top-0"
               data-feature-art
             >
               <img
@@ -91,7 +97,8 @@ const features: Feature[] = [
                 aria-hidden="true"
                 width={feature.width}
                 height={feature.height}
-                class="h-auto w-full origin-top transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.025] motion-reduce:transition-none min-[1024px]:h-[335px] min-[1024px]:object-contain min-[1024px]:object-top"
+                class="h-auto w-[130%] max-w-none origin-center transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.025] motion-reduce:transition-none max-[639px]:translate-y-[var(--art-shift)] min-[640px]:w-full min-[640px]:translate-y-0 min-[1024px]:origin-top min-[1024px]:h-[335px] min-[1024px]:object-contain min-[1024px]:object-top"
+                style={`--art-shift: ${feature.artShift}%`}
                 loading="lazy"
                 decoding="async"
               />
