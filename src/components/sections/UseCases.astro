@@ -1,0 +1,162 @@
+---
+interface Team {
+  id: string;
+  label: string;
+  description: string;
+}
+
+const teams: Team[] = [
+  {
+    id: "engineering",
+    label: "Engineering teams",
+    description:
+      "Ship faster with confidence because vulnerabilities are identified and validated before reaching production.",
+  },
+  {
+    id: "security",
+    label: "Security leaders",
+    description:
+      "See every risk in one place, with clear ownership and evidence that controls hold under real conditions.",
+  },
+  {
+    id: "compliance",
+    label: "Compliance teams",
+    description:
+      "Keep audit-ready records of continuous testing without chasing screenshots and spreadsheets.",
+  },
+  {
+    id: "sales",
+    label: "Sales teams",
+    description:
+      "Answer security questionnaires with current, verifiable proof instead of stale documents.",
+  },
+];
+
+const icons: Record<string, string> = {
+  engineering:
+    '<rect x="2" y="2" width="20" height="20" rx="4.5" fill="currentColor"/><path d="M9.6 8.6 6.4 12l3.2 3.4M14.4 8.6 17.6 12l-3.2 3.4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  security:
+    '<path d="M12 2.4 4.4 5.5v6.3c0 4.7 3.2 8.3 7.6 10 4.4-1.7 7.6-5.3 7.6-10V5.5L12 2.4Z" fill="currentColor"/><path d="m8.7 11.7 2.3 2.3 4.3-4.6" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
+  compliance:
+    '<path d="M12 2.6 21 7.9v8.2l-9 5.3-9-5.3V7.9l9-5.3Z" fill="currentColor"/><path d="M3 7.9l9 5.3 9-5.3M12 13.2v8.2" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>',
+  sales:
+    '<rect x="3" y="3" width="6" height="6" rx="1.4" fill="currentColor"/><rect x="12" y="6.6" width="5.4" height="5.4" rx="1.3" fill="currentColor"/><rect x="6.6" y="12" width="5.4" height="5.4" rx="1.3" fill="currentColor"/><path d="M13.6 15h7.2v6h-7.2z" fill="currentColor"/>',
+};
+---
+
+<section class="bg-white py-16 lg:py-[112px]" aria-labelledby="use-cases-title" data-use-cases>
+  <div class="mx-auto max-w-[1440px] px-6 min-[1360px]:pr-6 min-[1360px]:pl-[120px]">
+    <div
+      class="mx-auto grid max-w-[632px] items-start gap-12 min-[1024px]:max-w-[1200px] min-[1024px]:grid-cols-[minmax(0,530fr)_minmax(0,632fr)] min-[1024px]:gap-[38px] min-[1360px]:mx-0"
+    >
+      <div class="flex flex-col gap-6">
+        <header class="flex max-w-[428px] flex-col gap-4">
+          <p class="inline-flex h-8 w-fit items-center gap-2 border border-border-badge bg-white px-[9px]">
+            <span class="size-2.5 bg-[#607AFF]" aria-hidden="true" data-uc-badge-dot></span>
+            <span class="font-sans text-sm font-medium uppercase tracking-[0.28px] text-ink-muted">
+              Uses cases
+            </span>
+          </p>
+          <div class="flex flex-col gap-3">
+            <h2
+              id="use-cases-title"
+              class="max-w-[345px] font-display text-[38px] leading-[1.16] text-ink [font-weight:580] max-lg:text-[32px] max-lg:leading-[1.25] max-sm:text-[26px]"
+              data-use-cases-title
+            >
+              Security impact across every team
+            </h2>
+            <p class="max-w-[317px] font-sans text-[18px] leading-[27px] text-ink-muted">
+              Built to support teams with clear, reliable security processes.
+            </p>
+          </div>
+        </header>
+
+        <ul class="m-0 flex list-none flex-col p-0">
+          {
+            teams.map((team, index) => {
+              const isOpen = index === 0;
+              return (
+                <li class="border-b border-border-badge" data-use-cases-item>
+                  <h3 class="m-0">
+                    <button
+                      type="button"
+                      id={`use-case-trigger-${team.id}`}
+                      class="group flex w-full items-center justify-between gap-4 py-7 text-left"
+                      aria-expanded={isOpen ? "true" : "false"}
+                      aria-controls={`use-case-panel-${team.id}`}
+                      data-use-cases-trigger
+                    >
+                      <span class="flex items-center gap-3">
+                        <svg
+                          class="size-6 shrink-0 text-[#5E71FF]"
+                          data-uc-icon
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          aria-hidden="true"
+                          set:html={icons[team.id]}
+                        />
+                        <span class="font-sans text-[20px] font-medium leading-[23.2px] text-ink">
+                          {team.label}
+                        </span>
+                      </span>
+                      <span class="flex items-center gap-1.5" aria-hidden="true">
+                        <span
+                          class="size-2 bg-[#CDD5E0] transition-colors duration-300 group-aria-expanded:bg-ink"
+                          data-use-cases-dot
+                        >
+                        </span>
+                        <span class="font-mono text-sm font-medium uppercase tracking-[0.28px] text-[#97A3B6] transition-colors duration-300 group-aria-expanded:text-ink">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                      </span>
+                    </button>
+                  </h3>
+                  <div
+                    id={`use-case-panel-${team.id}`}
+                    role="region"
+                    aria-labelledby={`use-case-trigger-${team.id}`}
+                    class="overflow-hidden"
+                    data-use-cases-panel
+                  >
+                    <p class="m-0 max-w-[485px] pb-7 font-sans text-[18px] leading-[27px] text-ink-muted">
+                      {team.description}
+                    </p>
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+
+      <div class="relative min-[1024px]:mt-[41px] min-[1024px]:self-start" data-use-cases-art>
+        <div class="relative aspect-[1267/1004] w-full">
+          <img
+            data-uc-photo
+            src="/images/use-cases/avatar.png"
+            alt="Security engineer monitoring validated controls"
+            class="h-full w-full object-contain"
+            width="1267"
+            height="1004"
+            loading="lazy"
+            decoding="async"
+            data-use-cases-photo
+          />
+          <img
+            src="/images/use-cases/flow.svg"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute top-[21.6%] left-[4.9%] w-[91%]"
+            width="579"
+            height="319"
+            loading="lazy"
+            decoding="async"
+            data-use-cases-flow
+            data-uc-parallax
+            data-depth="14"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

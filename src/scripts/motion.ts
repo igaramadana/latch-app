@@ -102,6 +102,7 @@ export function initMotion() {
     howItWorksIntro(paused),
     whyItMattersIntro(paused),
     whyParallax(paused),
+    useCasesMotion(paused),
     trustedMarquee(paused),
   ];
 
@@ -476,3 +477,189 @@ function whyParallax(paused: boolean): () => void {
   };
 }
 
+
+/**
+ * Use cases: a scroll-triggered entrance that builds the section in reading
+ * order, a pointer parallax on the overlay art, and an accordion whose height
+ * is measured from the content so the copy can be any length.
+ */
+function useCasesMotion(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-use-cases]");
+  if (!section) return () => {};
+
+  const header = section.querySelector<HTMLElement>("header");
+  const title = section.querySelector<HTMLElement>("[data-use-cases-title]");
+  const sub = header?.querySelector<HTMLElement>("p:last-child") ?? null;
+  const badge = header?.querySelector<HTMLElement>("p") ?? null;
+  const items = gsap.utils.toArray<HTMLElement>("[data-use-cases-item]", section);
+  const icons = gsap.utils.toArray<SVGElement>("[data-uc-icon]", section);
+  const art = section.querySelector<HTMLElement>("[data-use-cases-art]");
+  const photo = section.querySelector<HTMLElement>("[data-uc-photo]");
+  const flow = section.querySelector<HTMLElement>("[data-uc-parallax]");
+  const triggers = gsap.utils.toArray<HTMLButtonElement>(
+    "[data-use-cases-trigger]",
+    section,
+  );
+  const panels = gsap.utils.toArray<HTMLElement>("[data-use-cases-panel]", section);
+
+  const cleanups: Array<() => void> = [];
+  let split: SplitText | null = null;
+  let intro: gsap.core.Timeline | null = null;
+  let loop: gsap.core.Tween | null = null;
+
+  const setPanel = (panel: HTMLElement, open: boolean, immediate: boolean) => {
+    const height = panel.scrollHeight;
+    gsap.killTweensOf(panel);
+    if (immediate || paused) {
+      gsap.set(panel, { height: open ? height : 0 });
+      return;
+    }
+    gsap.to(panel, {
+      height: open ? height : 0,
+      duration: open ? 0.55 : 0.32,
+      ease: open ? EASE : "power2.inOut",
+    });
+  };
+
+  const openPanel = (index: number) => {
+    triggers.forEach((trigger, i) => {
+      const isOpen = i === index;
+      trigger.setAttribute("aria-expanded", String(isOpen));
+      if (panels[i]) setPanel(panels[i], isOpen, false);
+    });
+  };
+
+  triggers.forEach((trigger, index) => {
+    if (panels[index]) setPanel(panels[index], index === 0, true);
+
+    const onClick = () => openPanel(index);
+    trigger.addEventListener("click", onClick);
+    cleanups.push(() => trigger.removeEventListener("click", onClick));
+  });
+
+  const onResize = () => {
+    triggers.forEach((trigger, i) => {
+      if (trigger.getAttribute("aria-expanded") === "true" && panels[i]) {
+        setPanel(panels[i], true, true);
+      }
+    });
+  };
+  window.addEventListener("resize", onResize);
+  cleanups.push(() => window.removeEventListener("resize", onResize));
+
+  if (paused) return () => cleanups.forEach((fn) => fn());
+
+  // Pointer parallax on the overlay art, mirrored from the Why section so the
+  // two sections share one interaction language.
+  if (art && flow) {
+    const flowTo = {
+      x: gsap.quickTo(flow, "x", { duration: 0.8, ease: "power3" }),
+      y: gsap.quickTo(flow, "y", { duration: 0.8, ease: "power3" }),
+    };
+    const photoTo = photo
+      ? {
+          x: gsap.quickTo(photo, "x", { duration: 1, ease: "power3" }),
+          y: gsap.quickTo(photo, "y", { duration: 1, ease: "power3" }),
+        }
+      : null;
+
+    const onMove = (e: PointerEvent) => {
+      const r = art.getBoundingClientRect();
+      const px = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+      const py = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+      flowTo.x(-px * 14);
+      flowTo.y(-py * 10);
+      photoTo?.x(-px * 5);
+      photoTo?.y(-py * 4);
+    };
+    const onLeave = () => {
+      flowTo.x(0);
+      flowTo.y(0);
+      photoTo?.x(0);
+      photoTo?.y(0);
+    };
+
+    art.addEventListener("pointermove", onMove);
+    art.addEventListener("pointerleave", onLeave);
+    cleanups.push(() => {
+      art.removeEventListener("pointermove", onMove);
+      art.removeEventListener("pointerleave", onLeave);
+      gsap.set([flow, photo].filter(Boolean) as HTMLElement[], {
+        clearProps: "x,y",
+      });
+    });
+  }
+
+  // Entrance: build the section in reading order once it scrolls in.
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.9;
+  if (!belowFold) return () => cleanups.forEach((fn) => fn());
+
+  const run = () => {
+    if (title) {
+      split = SplitText.create(title, { type: "lines", linesClass: "uc-line" });
+    }
+
+    gsap.set(badge, { autoAlpha: 0, y: -12 });
+    gsap.set(split ? split.lines : title, { autoAlpha: 0, yPercent: 110 });
+    if (sub) gsap.set(sub, { autoAlpha: 0, y: 16 });
+    gsap.set(icons, { autoAlpha: 0, scale: 0.5, rotate: -18 });
+    gsap.set(art, { autoAlpha: 0, y: 36 });
+    gsap.set(flow, { autoAlpha: 0, y: 18 });
+
+    intro = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.8 },
+      scrollTrigger: { trigger: section, start: "top 78%", once: true },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    intro
+      .to(badge, { autoAlpha: 1, y: 0, duration: 0.5 }, 0)
+      .to(split ? split.lines : title, { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.08 }, 0.1)
+      .to(sub, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.32)
+      .to(art, { autoAlpha: 1, y: 0, duration: 1 }, 0.25)
+      .to(flow, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.5)
+      .to(
+        icons,
+        {
+          autoAlpha: 1,
+          scale: 1,
+          rotate: 0,
+          duration: 0.6,
+          stagger: 0.09,
+          ease: "back.out(2)",
+        },
+        0.4,
+      )
+      .to(items, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.09 }, 0.42);
+
+    // Slow drift on the overlay keeps the art alive once it has landed.
+    if (flow) {
+      loop = gsap.to(flow, {
+        y: "-=8",
+        duration: 3.4,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 1.6,
+      });
+    }
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    intro?.scrollTrigger?.kill();
+    intro?.kill();
+    loop?.kill();
+    split?.revert();
+    gsap.set(
+      [badge, sub, art, flow, ...items, ...icons].filter(Boolean) as HTMLElement[],
+      { clearProps: "all" },
+    );
+    cleanups.forEach((fn) => fn());
+  };
+}
