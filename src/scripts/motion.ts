@@ -15,10 +15,15 @@ export function animateMenuToggle({
   toggle,
   menu,
   open,
+  onClosed,
+  skipPanel = false,
 }: {
   toggle: HTMLButtonElement;
   menu: HTMLElement;
   open: boolean;
+  onClosed?: () => void;
+  /** Desktop keeps this element as the inline nav, so only reset the bars. */
+  skipPanel?: boolean;
 }) {
   const bars = Array.from(toggle.querySelectorAll<HTMLElement>("[data-bar]"));
   const items = menu.querySelectorAll<HTMLElement>("[data-menu-item]");
@@ -34,6 +39,7 @@ export function animateMenuToggle({
       });
     });
     gsap.set(items, { autoAlpha: 1, y: 0 });
+    if (!open) onClosed?.();
     return;
   }
 
@@ -49,6 +55,9 @@ export function animateMenuToggle({
   });
 
   if (open) {
+    // Re-opening mid-exit: the close branch set pointer-events: none and its
+    // onComplete (which would clear it) is killed by overwrite.
+    gsap.set(menu, { pointerEvents: "auto" });
     gsap.fromTo(
       menu,
       { autoAlpha: 0, y: -12 },
@@ -67,15 +76,33 @@ export function animateMenuToggle({
         overwrite: true,
       },
     );
+  } else if (skipPanel) {
+    gsap.set(menu, { clearProps: "opacity,visibility,transform,pointerEvents" });
+    gsap.set(items, { clearProps: "opacity,visibility,transform" });
+    onClosed?.();
   } else {
+    // The panel stays displayed until the tween lands: removing `is-open` first
+    // would let `display: none` cut the exit animation off at frame zero.
+    gsap.set(menu, { pointerEvents: "none" });
+    gsap.to(items, {
+      autoAlpha: 0,
+      y: -6,
+      duration: 0.16,
+      stagger: { each: 0.025, from: "end" },
+      ease: "power2.in",
+      overwrite: true,
+    });
     gsap.to(menu, {
       autoAlpha: 0,
-      y: -8,
-      duration: 0.22,
+      y: -10,
+      duration: 0.26,
+      delay: 0.05,
       ease: "power2.in",
       overwrite: true,
       onComplete: () => {
-        gsap.set(menu, { clearProps: "opacity,visibility,transform" });
+        gsap.set(menu, { clearProps: "opacity,visibility,transform,pointerEvents" });
+        gsap.set(items, { clearProps: "opacity,visibility,transform" });
+        onClosed?.();
       },
     });
   }

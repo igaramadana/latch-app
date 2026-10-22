@@ -133,10 +133,16 @@ const isActive = (href: string) =>
       toggle.setAttribute("aria-expanded", String(open));
       toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
 
-      // CSS owns the open state; the motion module reads it for bar tweens.
-      menu.classList.toggle("is-open", open);
+      // Closing keeps `is-open` until the exit tween finishes; dropping it up
+      // front lets the panel's `display: none` kill the animation.
+      if (open) menu.classList.add("is-open");
 
-      animateMenuToggle({ toggle, menu, open });
+      animateMenuToggle({
+        toggle,
+        menu,
+        open,
+        onClosed: () => menu.classList.remove("is-open"),
+      });
     };
 
     toggle.addEventListener("click", () => apply(!open));
@@ -148,8 +154,16 @@ const isActive = (href: string) =>
       }
     });
 
+    // Crossing into desktop must not run the mobile exit tween: the same <ul>
+    // is the horizontal nav there, so fading it would blink the links out.
     window.matchMedia("(min-width: 1025px)").addEventListener("change", (e) => {
-      if (e.matches) apply(false);
+      if (!e.matches || !open) return;
+
+      open = false;
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Open menu");
+      menu.classList.remove("is-open");
+      animateMenuToggle({ toggle, menu, open: false, skipPanel: true });
     });
   }
 </script>
