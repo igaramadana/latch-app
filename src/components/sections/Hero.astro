@@ -7,7 +7,6 @@ const ctas = [
 const announcements = {
   badge: "News",
   text: "Security that runs as your system runs",
-  href: "/news/security-runtime",
 };
 ---
 
@@ -45,9 +44,8 @@ const announcements = {
   >
     <div class="mx-auto flex max-w-[840px] flex-col items-center gap-8 text-center">
       <div class="flex flex-col items-center gap-6">
-        <a
-          href={announcements.href}
-          class="inline-flex flex-wrap items-center justify-center gap-3 no-underline"
+        <div
+          class="inline-flex flex-wrap items-center justify-center gap-3"
           data-hero-badge
         >
           <span
@@ -58,7 +56,7 @@ const announcements = {
           <span class="font-sans text-sm font-medium leading-[22.5px] text-balance text-black">
             {announcements.text}
           </span>
-        </a>
+        </div>
 
         <h1
           id="hero-title"
