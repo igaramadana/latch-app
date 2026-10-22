@@ -15,7 +15,7 @@
   --text-base: 1rem;
   --text-md: 1.0625rem;
   --text-lg: 1.25rem;
-  --text-brand: 1.5rem; /* navbar wordmark */
+  --text-brand: 1.5rem; /* navbar + footer wordmark */
   --text-xl: clamp(1.25rem, 2.2vw, 1.6rem);
   --text-2xl: clamp(2rem, 4vw, 3rem);
 

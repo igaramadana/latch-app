@@ -106,6 +106,7 @@ export function initMotion() {
     securityImpactMotion(paused),
     featuresMotion(paused),
     ctaSectionMotion(paused),
+    footerMotion(paused),
     trustedMarquee(paused),
   ];
 
@@ -990,4 +991,39 @@ function ctaSectionMotion(paused: boolean): () => void {
   else document.fonts.ready.then(run);
 
   return teardown;
+}
+
+/**
+ * Footer: a short staggered build — brand block first, then the link columns,
+ * then the legal bar. Runs once when the footer scrolls into view.
+ */
+function footerMotion(paused: boolean): () => void {
+  const footer = document.querySelector<HTMLElement>("[data-footer]");
+  if (!footer) return () => {};
+
+  const brand = footer.querySelector<HTMLElement>("[data-footer-brand]");
+  const columns = gsap.utils.toArray<HTMLElement>("[data-footer-col]", footer);
+  const bar = footer.querySelector<HTMLElement>("[data-footer-bar]");
+
+  // Reduced motion / hidden tab: skip the entrance entirely — a paused `.from`
+  // would leave the footer stuck at its hidden start state.
+  if (paused) return () => {};
+
+  const intro = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.7 },
+    scrollTrigger: { trigger: footer, start: "top 92%", once: true },
+  });
+
+  intro
+    .from(brand, { autoAlpha: 0, y: 24 }, 0)
+    .from(columns, { autoAlpha: 0, y: 24, stagger: 0.07 }, 0.1)
+    .from(bar, { autoAlpha: 0 }, 0.4);
+
+  return () => {
+    intro?.scrollTrigger?.kill();
+    intro?.kill();
+    gsap.set([brand, ...columns, bar].filter(Boolean) as HTMLElement[], {
+      clearProps: "all",
+    });
+  };
 }

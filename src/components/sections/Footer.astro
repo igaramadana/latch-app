@@ -1,0 +1,156 @@
+---
+const columns = [
+  {
+    heading: "About Us",
+    links: ["Careers", "Partners", "Press", "Trust & Security", "Legal"],
+  },
+  {
+    heading: "Solutions",
+    links: [
+      "Cloud & Infrastructure",
+      "Application Security",
+      "Identity & Access",
+      "API Protection",
+      "Enterprise Security Teams",
+      "Compliance & Audit",
+    ],
+  },
+  {
+    heading: "About Us",
+    links: [
+      "Documentation",
+      "Security Reports",
+      "Case Studies",
+      "Blog",
+      "Changelog",
+      "Whitepapers",
+    ],
+  },
+  {
+    heading: "Developers",
+    links: ["Quick Start", "API Reference", "Architecture", "SDKs & Tools", "Status Page"],
+  },
+  {
+    heading: "Support",
+    links: ["Contact Sales", "Get Help", "FAQ", "Try for Free", "Request Demo"],
+  },
+] as const;
+
+const socials = [
+  {
+    label: "Twitter",
+    href: "https://twitter.com",
+    path: "M24 4.6c-.9.4-1.8.6-2.8.8a4.9 4.9 0 0 0 2.2-2.7c-1 .6-2 1-3.1 1.2a4.9 4.9 0 0 0-8.4 4.5A13.9 13.9 0 0 1 1.7 3.2a4.9 4.9 0 0 0 1.5 6.5c-.8 0-1.6-.2-2.2-.6v.1c0 2.4 1.7 4.4 3.9 4.8a5 5 0 0 1-2.2.1 4.9 4.9 0 0 0 4.6 3.4A9.9 9.9 0 0 1 0 19.5a13.9 13.9 0 0 0 7.5 2.2c9.1 0 14-7.5 14-14v-.6c1-.7 1.8-1.6 2.5-2.5Z",
+  },
+  {
+    label: "Facebook",
+    href: "https://facebook.com",
+    path: "M13.5 2H10.8C8.7 2 7.3 3.4 7.3 5.6v2H5v3h2.3V22h3.4v-11.4h2.8l.4-3h-3.2V6c0-.8.3-1 1-1h2.3V2Z",
+  },
+  {
+    label: "LinkedIn",
+    href: "https://linkedin.com",
+    path: "M4.98 3.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM.2 8.4h4.6V24H.2V8.4Zm7.7 0h4.4v2.1h.1c.6-1.2 2.1-2.4 4.3-2.4 4.6 0 5.5 3 5.5 7V24h-4.6v-7.9c0-1.9 0-4.3-2.6-4.3s-3 2-3 4.2V24H7.9V8.4Z",
+  },
+  {
+    label: "YouTube",
+    href: "https://youtube.com",
+    path: "M23.5 6.2a3 3 0 0 0-2.1-2.2C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12c0 2 .2 3.9.5 5.8a3 3 0 0 0 2.1 2.2c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.2c.3-1.9.5-3.8.4-5.8 0-2-.2-3.9-.5-5.8ZM9.5 15.6V8.4l6.3 3.6-6.3 3.6Z",
+  },
+  {
+    label: "Discord",
+    href: "https://discord.com",
+    path: "M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.5c1.7.4 2.5 1 3.3 1.7a16 16 0 0 0-13 0c.8-.7 1.7-1.4 3.3-1.7L8.6 3a19.8 19.8 0 0 0-4.9 1.5A20.3 20.3 0 0 0 .1 18.1a19.9 19.9 0 0 0 6 3l1.2-2c-.7-.2-1.3-.5-1.9-.9l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4c-.6.4-1.2.7-1.9.9l1.2 2a19.9 19.9 0 0 0 6-3 20.3 20.3 0 0 0-3.6-13.7ZM8 15.3c-1.2 0-2.1-1-2.1-2.3S6.8 10.7 8 10.7s2.2 1 2.1 2.3c0 1.2-1 2.3-2.1 2.3Zm8 0c-1.2 0-2.1-1-2.1-2.3s.9-2.3 2.1-2.3 2.1 1 2.1 2.3c0 1.2-.9 2.3-2.1 2.3Z",
+  },
+];
+---
+
+<footer class="bg-[#03060F] pt-20 pb-5 px-6 min-[1360px]:px-[100px]" data-footer>
+  <div class="mx-auto flex max-w-[1240px] flex-col gap-12 min-[1024px]:gap-[51px]">
+    <div class="flex flex-col gap-12 min-[1024px]:min-h-[306px] min-[1024px]:flex-row min-[1024px]:items-start min-[1024px]:justify-between">
+      <div class="flex flex-col gap-3.5" data-footer-brand>
+        <a href="/" class="flex items-center gap-2 no-underline" aria-label="Latch — home">
+          <svg
+            class="size-[25px] flex-none text-white"
+            width="24"
+            height="26"
+            viewBox="0 0 24 26"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M6.61832 12.7385L9.70992 20.7455H4.14504L2.12977 15.4909H0L5.9542 0H11.5191L6.61832 12.7385Z"
+              fill="currentColor"></path>
+            <path
+              d="M17.3817 12.7385L14.2901 4.73143H19.855L21.8702 9.98604H24L18.0458 25.4769H12.4809L17.3817 12.7385Z"
+              fill="currentColor"></path>
+          </svg>
+          <span class="font-sans text-brand font-semibold leading-none text-white">Latch</span>
+        </a>
+
+        <p class="m-0 font-sans text-[11px] leading-4 tracking-[0.15px] text-[#A1A1AA]">
+          Copyright © 2026 Latch.
+        </p>
+
+        <ul class="m-0 mt-2 flex list-none items-center gap-4 p-0">
+          {
+            socials.map((social) => (
+              <li data-footer-social>
+                <a
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  class="inline-flex size-[18px] items-center justify-center text-white/90 no-underline transition-colors duration-150 hover:text-white"
+                >
+                  <svg viewBox="0 0 24 24" class="size-[18px]" fill="currentColor" aria-hidden="true">
+                    <path d={social.path} />
+                  </svg>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <nav aria-label="Footer" class="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 min-[1024px]:flex min-[1024px]:gap-20">
+        {
+          columns.map((column) => (
+            <div class="flex flex-col gap-3" data-footer-col>
+              <p class="m-0 font-sans text-[15px] leading-[22.5px] text-white">{column.heading}</p>
+              <ul class="m-0 flex list-none flex-col gap-3 p-0">
+                {column.links.map((label) => (
+                  <li>
+                    <a
+                      href={label
+                        .toLowerCase()
+                        .replace(/&/g, "")
+                        .replace(/[^a-z0-9]+/g, "-")
+                        .replace(/(^-|-$)/g, "")}
+                      class="font-sans text-sm leading-[22.5px] text-white/70 no-underline transition-colors duration-150 hover:text-white"
+                    >
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </nav>
+    </div>
+
+    <div
+      class="m-0 flex flex-row flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-3 pb-3 min-[480px]:gap-0"
+      data-footer-bar
+    >
+      <p class="m-0 font-sans text-xs font-medium uppercase leading-[18px] tracking-[0.96px] text-[#A5B3C5]">
+        Latch © 2026
+      </p>
+      <p class="m-0 font-sans text-xs font-medium uppercase leading-[18px] tracking-[0.96px] text-[#A5B3C5]">
+        All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>
