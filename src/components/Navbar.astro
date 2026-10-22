@@ -1,5 +1,6 @@
 ---
 import { navLinks } from "../lib/nav-data";
+import CtaButton from "./CtaButton.astro";
 
 const current = Astro.url.pathname;
 
@@ -8,7 +9,7 @@ const isActive = (href: string) =>
 ---
 
 <header
-  class="sticky top-0 z-50 border-b border-border-subtle bg-surface"
+  class="fixed inset-x-0 top-0 z-50 border-b border-transparent bg-transparent transition-colors duration-200 data-[scrolled]:border-border-subtle data-[scrolled]:bg-surface/90 data-[scrolled]:backdrop-blur-md"
   data-nav
 >
   <nav
@@ -68,23 +69,27 @@ const isActive = (href: string) =>
       }
 
       <li class="hidden max-lg:flex max-lg:justify-center max-lg:pt-3" data-menu-item>
-        <a
+        <CtaButton
           href="/signup"
-          class="inline-flex min-h-11 w-full max-w-80 flex-none items-center justify-center gap-1.5 rounded-full bg-linear-to-b from-brand-500 to-brand-400 px-4 py-2.5 text-menu font-medium leading-ui whitespace-nowrap text-[#f8fafc] no-underline [outline:1px_solid_#758cfd] [outline-offset:-1px] [text-shadow:0_2px_4px_rgb(71_133_240)] shadow-cta transition-[filter] duration-150 hover:brightness-105"
+          variant="primary"
+          size="nav"
+          class="w-full max-w-80 flex-none"
           data-nav-cta
         >
           Start for free
-        </a>
+        </CtaButton>
       </li>
     </ul>
 
-    <a
+    <CtaButton
       href="/signup"
-      class="inline-flex flex-none items-center justify-center gap-1.5 rounded-full bg-linear-to-b from-brand-500 to-brand-400 px-4 py-2.5 text-sm font-medium leading-ui whitespace-nowrap text-[#f8fafc] no-underline [outline:1px_solid_#758cfd] [outline-offset:-1px] [text-shadow:0_2px_4px_rgb(71_133_240)] shadow-cta transition-[filter] duration-150 hover:brightness-105 max-lg:hidden"
+      variant="primary"
+      size="nav"
+      class="flex-none max-lg:hidden"
       data-nav-cta
     >
       Start for free
-    </a>
+    </CtaButton>
 
     <button
       class="ml-auto hidden size-11 flex-none cursor-pointer items-center justify-center rounded-lg border border-border-subtle bg-surface text-ink transition-colors duration-200 [-webkit-tap-highlight-color:transparent] hover:border-[rgb(17_23_41_/_0.18)] hover:bg-[rgb(17_23_41_/_0.04)] max-lg:inline-flex aria-expanded:[&_[data-bar]]:top-[calc(50%-1px)]"

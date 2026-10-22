@@ -4,10 +4,7 @@ interface Logo {
   icon: string;
 }
 
-// The design shows 6 logos in the frame plus a second row starting off-frame
-// (x=2040 in the Figma export), i.e. an infinite marquee. The list is
-// repeated enough times to cover viewport + one full cycle, so the loop
-// never exposes empty space on the right.
+// Figma shows a second row starting off-frame (x=2040): an infinite marquee.
 const logos: Logo[] = [
   { name: "Salesforce", icon: "/images/marque/salesforce.jpg" },
   { name: "Slack", icon: "/images/marque/slack.jpg" },
@@ -17,9 +14,7 @@ const logos: Logo[] = [
   { name: "Snowflake", icon: "/images/marque/snowflake.png" },
 ];
 
-// One list is ~1034px; three copies keep the track wider than any sane
-// viewport (3102px) even during the wrap shift. Extra copies are cheap
-// (same 6 small images, browser caches them) and get clipped by overflow.
+// Three copies keep the track wider than the viewport during the wrap shift.
 const copies = 3;
 ---
 
@@ -39,11 +34,7 @@ const copies = 3;
     </h2>
   </div>
 
-  {/*
-    Marquee: the track holds the list multiple times and slides by exactly
-    one list width, then repeats — the extra copies make the wrap seamless.
-    Mask fades the edges so logos dissolve instead of clipping.
-  */}
+  {/* Extra copies make the wrap seamless; the mask fades the edges. */}
   <div
     class="group relative mt-12 overflow-hidden lg:mt-[48px]"
     data-marquee

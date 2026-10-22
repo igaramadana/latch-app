@@ -11,10 +11,6 @@ const reducedMotion = () =>
 
 const BAR_OFFSET = 5;
 
-/**
- * Morphs the hamburger into an X and staggers the menu items in.
- * The open/close state stays owned by the Navbar's click handler.
- */
 export function animateMenuToggle({
   toggle,
   menu,
@@ -41,8 +37,6 @@ export function animateMenuToggle({
     return;
   }
 
-  // GSAP animates only rotation and opacity; the bars' spacing stays in CSS
-  // so the tween never fights the layout offset.
   bars.forEach((bar, i) => {
     gsap.to(bar, {
       rotation: angles[i],
@@ -90,11 +84,11 @@ export function animateMenuToggle({
 export function initMotion() {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Background tabs and battery-saver mode stop rAF, which leaves a
-  // from-tween's start values stuck — so skip motion entirely.
+  // Hidden tab / battery saver stops rAF, leaving from-tweens stuck mid-state.
   const paused = document.hidden || reduced;
 
   const teardowns = [
+    navScrollState(),
     navIntro(paused),
     heroIntro(paused),
     ctaHover(paused),
@@ -111,6 +105,21 @@ export function initMotion() {
   ];
 
   return () => teardowns.forEach((fn) => fn());
+}
+
+function navScrollState(): () => void {
+  const header = document.querySelector<HTMLElement>("[data-nav]");
+  if (!header) return () => {};
+
+  // Sticky + transparent would put ink text over the dark CTA panel and footer.
+  const sync = () => header.toggleAttribute("data-scrolled", window.scrollY > 8);
+  sync();
+  window.addEventListener("scroll", sync, { passive: true });
+
+  return () => {
+    window.removeEventListener("scroll", sync);
+    header.removeAttribute("data-scrolled");
+  };
 }
 
 function navIntro(paused: boolean): () => void {
@@ -259,8 +268,7 @@ function trustedMarquee(paused: boolean): () => void {
   const track = document.querySelector<HTMLElement>("[data-marquee-track]");
   if (!track) return () => {};
 
-  // The track holds the list twice; shifting by the first list's width
-  // (plus its trailing gap) loops seamlessly back to the start.
+  // Track holds the list twice; shifting by one list width loops seamlessly.
   const list = track.querySelector<HTMLElement>("ul");
   if (!list) return () => {};
 
@@ -273,7 +281,6 @@ function trustedMarquee(paused: boolean): () => void {
     ease: "none",
     duration: 30,
     repeat: -1,
-    // Recalculate on resize so the wrap point stays exact.
     repeatRefresh: true,
   });
 
@@ -288,29 +295,21 @@ function ctaHover(paused: boolean): () => void {
 
   const cleanups: Array<() => void> = [];
 
-  gsap.utils.toArray<HTMLElement>("[data-nav-cta]").forEach((el) => {
-    const xTo = gsap.quickTo(el, "x", { duration: 0.5, ease: "power3" });
-    const scaleTo = gsap.quickTo(el, "scale", { duration: 0.35, ease: "power3" });
+  // overwrite: "auto" — the hero entrance animates scale on these same nodes.
+  gsap.utils.toArray<HTMLElement>("[data-cta-scale]").forEach((el) => {
+    const tween = { duration: 0.3, ease: "power3", overwrite: "auto" } as const;
 
-    const onMove = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
-      xTo((e.clientX - (r.left + r.width / 2)) * 0.18);
-    };
-    const onEnter = () => scaleTo(1.03);
-    const onLeave = () => {
-      xTo(0);
-      scaleTo(1);
-    };
+    const onEnter = () => gsap.to(el, { ...tween, scale: 1.04 });
+    const onLeave = () => gsap.to(el, { ...tween, scale: 1 });
 
-    el.addEventListener("pointermove", onMove);
     el.addEventListener("pointerenter", onEnter);
     el.addEventListener("pointerleave", onLeave);
 
     cleanups.push(() => {
-      el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerenter", onEnter);
       el.removeEventListener("pointerleave", onLeave);
-      gsap.set(el, { clearProps: "x,scale" });
+      gsap.killTweensOf(el);
+      gsap.set(el, { clearProps: "scale" });
     });
   });
 
@@ -320,8 +319,7 @@ function ctaHover(paused: boolean): () => void {
 function scrollReveals(paused: boolean): () => void {
   if (paused) return () => {};
 
-  // Only elements still below the fold get hidden, so a section already
-  // on screen never reads as empty.
+  // Never hide content that is already on screen at load.
   const hidden = gsap
     .utils.toArray<HTMLElement>("[data-reveal]")
     .filter((el) => el.getBoundingClientRect().top > window.innerHeight * 0.9);
@@ -362,8 +360,6 @@ function howItWorksIntro(paused: boolean): () => void {
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  // Same contract as scrollReveals: never hide content that is already
-  // on screen at load, or the section reads as empty.
   const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.9;
   if (onScreen) return () => {};
 
@@ -400,7 +396,6 @@ function whyItMattersIntro(paused: boolean): () => void {
 
   const copy = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  // Never hide a section that is already on screen at load.
   if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) {
     return () => {};
   }
@@ -442,11 +437,6 @@ function whyItMattersIntro(paused: boolean): () => void {
   };
 }
 
-/**
- * Scroll parallax for the art panel. Each layer sits in its own wrapper so
- * the drift never shares a transform with the entrance tweens, and depths
- * are capped in px to stay inside the panel's slack.
- */
 function whyParallax(paused: boolean): () => void {
   const art = document.querySelector<HTMLElement>("[data-why-art]");
   if (!art || paused) return () => {};
@@ -482,11 +472,6 @@ function whyParallax(paused: boolean): () => void {
 }
 
 
-/**
- * Use cases: a scroll-triggered entrance that builds the section in reading
- * order, a pointer parallax on the overlay art, and an accordion whose height
- * is measured from the content so the copy can be any length.
- */
 function useCasesMotion(paused: boolean): () => void {
   const section = document.querySelector<HTMLElement>("[data-use-cases]");
   if (!section) return () => {};
@@ -553,8 +538,6 @@ function useCasesMotion(paused: boolean): () => void {
 
   if (paused) return () => cleanups.forEach((fn) => fn());
 
-  // Pointer parallax on the overlay art, mirrored from the Why section so the
-  // two sections share one interaction language.
   if (art && flow) {
     const flowTo = {
       x: gsap.quickTo(flow, "x", { duration: 0.8, ease: "power3" }),
@@ -594,7 +577,6 @@ function useCasesMotion(paused: boolean): () => void {
     });
   }
 
-  // Entrance: build the section in reading order once it scrolls in.
   const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.9;
   if (!belowFold) return () => cleanups.forEach((fn) => fn());
 
@@ -639,7 +621,6 @@ function useCasesMotion(paused: boolean): () => void {
       )
       .to(items, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.09 }, 0.42);
 
-    // Slow drift on the overlay keeps the art alive once it has landed.
     if (flow) {
       loop = gsap.to(flow, {
         y: "-=8",
@@ -668,10 +649,6 @@ function useCasesMotion(paused: boolean): () => void {
   };
 }
 
-/**
- * Security impact: the stats count up as the section enters, the art panel
- * lifts in behind them, and the pattern drifts slightly slower than the page.
- */
 function securityImpactMotion(paused: boolean): () => void {
   const section = document.querySelector<HTMLElement>("[data-impact]");
   if (!section) return () => {};
@@ -689,10 +666,7 @@ function securityImpactMotion(paused: boolean): () => void {
   let intro: gsap.core.Timeline | null = null;
   let split: SplitText | null = null;
 
-  // Layered scroll parallax: the pattern sits deepest and travels furthest,
-  // the composition above it moves less, so the two separate as the section
-  // passes. Both are scrubbed by their own ScrollTrigger with the same start
-  // and end, which keeps them in lockstep at any scroll speed.
+  // Same start/end on both ScrollTriggers keeps the layers in lockstep.
   const parallaxLayers: Array<{ el: HTMLElement | null; depth: number }> = [
     { el: pattern, depth: 26 },
     { el: compositionWrap, depth: 14 },
@@ -744,8 +718,6 @@ function securityImpactMotion(paused: boolean): () => void {
     if (composition) gsap.set(composition, { autoAlpha: 0, scale: 0.96 });
     gsap.set(stats, { autoAlpha: 0, x: 28 });
 
-    // Each value animates from 0 to its target; the formatted output keeps the
-    // prefix/suffix so "<24 hours" and "3x faster" read correctly mid-count.
     const counters = values.map((el) => {
       const to = Number(el.dataset.countTo ?? 0);
       const prefix = el.dataset.countPrefix ?? "";
@@ -805,12 +777,6 @@ function securityImpactMotion(paused: boolean): () => void {
   };
 }
 
-/**
- * Features: the four capability cards are laid out as one 2x2 panel, so the
- * entrance runs as a diagonal sweep instead of four independent reveals. The
- * art is absolutely positioned inside each card, which keeps the copy pinned
- * to the bottom while the illustration stays flush with the card's top edge.
- */
 function featuresMotion(paused: boolean): () => void {
   const section = document.querySelector<HTMLElement>("[data-features]");
   if (!section) return () => {};
@@ -836,8 +802,6 @@ function featuresMotion(paused: boolean): () => void {
     gsap.set(split ? split.lines : title, { autoAlpha: 0, yPercent: 110 });
     gsap.set(sub, { autoAlpha: 0, y: 16 });
     gsap.set(cards, { autoAlpha: 0, y: 28 });
-    // The art scales from its own top edge so it grows into the card rather
-    // than sliding out of it.
     gsap.set(arts, { autoAlpha: 0, scale: 0.96, transformOrigin: "50% 0%" });
 
     intro = gsap.timeline({
@@ -872,11 +836,6 @@ function featuresMotion(paused: boolean): () => void {
   };
 }
 
-/**
- * Closing CTA: the panel lifts in, the headline splits into lines, and the two
- * pattern tiles drift in opposite directions as the section crosses the
- * viewport — the same scrubbed parallax the rest of the page uses.
- */
 function ctaSectionMotion(paused: boolean): () => void {
   const section = document.querySelector<HTMLElement>("[data-cta]");
   if (!section) return () => {};
@@ -887,7 +846,6 @@ function ctaSectionMotion(paused: boolean): () => void {
   const glow = section.querySelector<HTMLElement>("[data-cta-glow]");
   const patterns = gsap.utils.toArray<HTMLElement>("[data-cta-pattern]", section);
 
-  const cleanups: Array<() => void> = [];
   let split: SplitText | null = null;
   let intro: gsap.core.Timeline | null = null;
   const drifts: gsap.core.Tween[] = [];
@@ -904,37 +862,11 @@ function ctaSectionMotion(paused: boolean): () => void {
       [panel, title, button, glow, ...patterns].filter(Boolean) as HTMLElement[],
       { clearProps: "all" },
     );
-    cleanups.forEach((fn) => fn());
   };
-
-  if (!paused && button) {
-    // gsap.to rather than quickTo: the entrance tween owns this element's
-    // transform too, and overwrite keeps the two from fighting.
-    const hover = (scale: number) =>
-      gsap.to(button, {
-        scale,
-        duration: 0.35,
-        ease: "power3",
-        overwrite: "auto",
-      });
-    const onEnter = () => hover(1.04);
-    const onLeave = () => hover(1);
-
-    button.addEventListener("pointerenter", onEnter);
-    button.addEventListener("pointerleave", onLeave);
-    cleanups.push(() => {
-      button.removeEventListener("pointerenter", onEnter);
-      button.removeEventListener("pointerleave", onLeave);
-    });
-  }
 
   if (paused) return teardown;
 
-  // Scrubbed drift: each tile travels a few pixels in opposite directions so
-  // the field reads as depth rather than a flat backdrop. `ease: "none"` keeps
-  // the movement linear against scroll instead of easing per update. This is
-  // registered before the below-fold guard: unlike the entrance, it applies
-  // whether or not the section is already on screen at load.
+  // ease: "none" keeps drift linear against scroll.
   patterns.forEach((tile, i) => {
     drifts.push(
       gsap.fromTo(
@@ -993,10 +925,6 @@ function ctaSectionMotion(paused: boolean): () => void {
   return teardown;
 }
 
-/**
- * Footer: a short staggered build — brand block first, then the link columns,
- * then the legal bar. Runs once when the footer scrolls into view.
- */
 function footerMotion(paused: boolean): () => void {
   const footer = document.querySelector<HTMLElement>("[data-footer]");
   if (!footer) return () => {};
@@ -1005,8 +933,6 @@ function footerMotion(paused: boolean): () => void {
   const columns = gsap.utils.toArray<HTMLElement>("[data-footer-col]", footer);
   const bar = footer.querySelector<HTMLElement>("[data-footer-bar]");
 
-  // Reduced motion / hidden tab: skip the entrance entirely — a paused `.from`
-  // would leave the footer stuck at its hidden start state.
   if (paused) return () => {};
 
   const intro = gsap.timeline({

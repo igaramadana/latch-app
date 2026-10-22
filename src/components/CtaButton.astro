@@ -1,0 +1,39 @@
+---
+interface Props {
+  href: string;
+  variant?: "primary" | "secondary" | "primary-solid";
+  size?: "nav" | "md";
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { href, variant = "primary", size = "md", class: className, ...rest } = Astro.props;
+
+// No CSS transition on transform: the hover scale is GSAP-driven in motion.ts.
+const base =
+  "inline-flex items-center justify-center gap-1.5 rounded-full px-4 font-sans text-sm leading-[18px] font-medium whitespace-nowrap no-underline transition-[filter,box-shadow] duration-150";
+
+const variants = {
+  primary:
+    "bg-linear-to-b from-brand-500 from-[6.579%] to-brand-400 text-[#f8fafc] shadow-cta [border:1px_solid_#758cfd] [text-shadow:0_2px_4px_#4785f0] hover:brightness-105",
+  secondary:
+    "bg-linear-to-b from-hero-bg from-[8.9955%] to-white text-ink shadow-[0_4px_4px_rgb(0_0_0_/_0.05),0_0_0_1px_#edf3fc] [border:1px_solid_#ffffff] hover:shadow-[0_4px_8px_rgb(0_0_0_/_0.08),0_0_0_1px_#dfe8f7]",
+  // Solid fill for dark panels, where the gradient loses contrast.
+  "primary-solid": "bg-[#5E71FF] text-[#F8FAFC] hover:brightness-110",
+} as const;
+
+// `nav` is the compact header size; `md` keeps the 44px touch target.
+const sizes = {
+  nav: "min-h-10 py-2.5",
+  md: "min-h-11 py-2.5",
+} as const;
+---
+
+<a
+  href={href}
+  class:list={[base, variants[variant], sizes[size], className]}
+  data-cta-scale
+  {...rest}
+>
+  <slot />
+</a>

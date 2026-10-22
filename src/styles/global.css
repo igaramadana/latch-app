@@ -27,18 +27,13 @@
 
   --font-display: "Season VF-TRIAL", "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* The navbar collapses at 1024px, so `lg` starts one pixel later to keep
-     `max-lg:` inclusive of 1024 exactly as the original design had it.
-     Must stay in rem: Tailwind v4 sorts breakpoints as strings, and a `px`
-     value would sort before every `rem` one, emitting `lg:` ahead of
-     `sm:`/`md:` and letting those override it on desktop. */
+  /* Navbar collapses at 1024px; `lg` starts 1px after so `max-lg:` is inclusive.
+     Must stay in rem: v4 sorts breakpoints as strings, so `px` would sort first. */
   --breakpoint-lg: 64.0625rem;
 }
 
 @font-face {
-  /* Collection variable font with three axes: wght (300-900), SERF (0-100) and
-     ital (0-11). `font-weight` alone only drives wght, which stays on the Sans
-     cut; the Mix cut needs the SERF axis, hence `font-mix-medium` below. */
+  /* Axes: wght 300-900, SERF 0=Sans/50=Mix/100=Serif, ital 0-11. */
   font-family: "Season VF-TRIAL";
   src:
     url("/fonts/SeasonCollectionVF-TRIAL.woff2") format("woff2-variations"),
@@ -48,10 +43,8 @@
   font-display: swap;
 }
 
-/* Season's "Mix Medium" named instance: wght 580 + SERF 50 (SERF 0 = Sans,
-   100 = Serif). Kept as a utility rather than a base rule because
-   `font-variation-settings` is not scoped to a font-family -- a global heading
-   rule would also pin `wght` on the Inter headings. */
+/* Mix Medium instance: wght 580 + SERF 50. A utility, not a base rule, because
+   font-variation-settings would also pin wght on the Inter headings. */
 @utility font-mix-medium {
   font-weight: 580;
   font-variation-settings:
@@ -67,6 +60,11 @@
   :where(body) {
     margin: 0;
     background: var(--color-surface);
+  }
+
+  /* The navbar is fixed, so anchor targets must stop below it. */
+  :where(html) {
+    scroll-padding-top: var(--spacing-nav);
   }
 
   :where(img, svg, video) {

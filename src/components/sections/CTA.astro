@@ -1,4 +1,6 @@
 ---
+import CtaButton from "../CtaButton.astro";
+
 const cta = { label: "Book a demo", href: "/contact" };
 ---
 
@@ -50,13 +52,9 @@ const cta = { label: "Book a demo", href: "/contact" };
           Security should move at the same pace as your product
         </h2>
 
-        <a
-          href={cta.href}
-          class="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#5E71FF] px-4 py-3 font-sans text-sm leading-[18px] font-medium whitespace-nowrap text-[#F8FAFC] no-underline transition-[filter] duration-150 hover:brightness-110"
-          data-cta-button
-        >
+        <CtaButton href={cta.href} variant="primary-solid" data-cta-button>
           {cta.label}
-        </a>
+        </CtaButton>
       </div>
     </div>
   </div>

@@ -1,4 +1,6 @@
 ---
+import CtaButton from "../CtaButton.astro";
+
 const ctas = [
   { label: "Start for free", href: "/signup", variant: "primary" as const },
   { label: "Book a demo", href: "/contact", variant: "secondary" as const },
@@ -40,7 +42,7 @@ const announcements = {
   </div>
 
   <div
-    class="relative mx-auto max-w-[1440px] px-6 pt-[150px] pb-16 lg:pt-[118px] lg:pb-0"
+    class="relative mx-auto max-w-[1440px] px-6 pt-[calc(var(--spacing-nav)+150px)] pb-16 lg:pt-[calc(var(--spacing-nav)+118px)] lg:pb-0"
   >
     <div class="mx-auto flex max-w-[840px] flex-col items-center gap-8 text-center">
       <div class="flex flex-col items-center gap-6">
@@ -80,18 +82,14 @@ const announcements = {
         {
           ctas.map((cta) => (
             <li class="max-sm:w-full">
-              <a
+              <CtaButton
                 href={cta.href}
-                class:list={[
-                  "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-4 py-2.5 font-sans text-sm leading-[18px] whitespace-nowrap no-underline transition duration-150 max-sm:w-full",
-                  cta.variant === "primary"
-                    ? "bg-linear-to-b from-brand-500 from-[6.579%] to-brand-400 text-[#f8fafc] shadow-cta [border:1px_solid_#758cfd] [text-shadow:0_2px_4px_#4785f0] hover:brightness-105"
-                    : "bg-linear-to-b from-hero-bg from-[8.9955%] to-white text-ink shadow-[0_4px_4px_rgb(0_0_0_/_0.05),0_0_0_1px_#edf3fc] [border:1px_solid_#ffffff] hover:shadow-[0_4px_8px_rgb(0_0_0_/_0.08),0_0_0_1px_#dfe8f7]",
-                ]}
+                variant={cta.variant}
+                class="max-sm:w-full"
                 data-hero-cta
               >
                 {cta.label}
-              </a>
+              </CtaButton>
             </li>
           ))
         }
