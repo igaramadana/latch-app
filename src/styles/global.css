@@ -36,14 +36,27 @@
 }
 
 @font-face {
-  /* Variable font: one file covers the whole wght axis (hero uses 580). */
+  /* Collection variable font with three axes: wght (300-900), SERF (0-100) and
+     ital (0-11). `font-weight` alone only drives wght, which stays on the Sans
+     cut; the Mix cut needs the SERF axis, hence `font-mix-medium` below. */
   font-family: "Season VF-TRIAL";
   src:
     url("/fonts/SeasonCollectionVF-TRIAL.woff2") format("woff2-variations"),
     url("/fonts/SeasonCollectionVF-TRIAL.ttf") format("truetype-variations");
-  font-weight: 100 900;
+  font-weight: 300 900;
   font-style: normal;
   font-display: swap;
+}
+
+/* Season's "Mix Medium" named instance: wght 580 + SERF 50 (SERF 0 = Sans,
+   100 = Serif). Kept as a utility rather than a base rule because
+   `font-variation-settings` is not scoped to a font-family -- a global heading
+   rule would also pin `wght` on the Inter headings. */
+@utility font-mix-medium {
+  font-weight: 580;
+  font-variation-settings:
+    "SERF" 50,
+    "wght" 580;
 }
 
 @layer base {
