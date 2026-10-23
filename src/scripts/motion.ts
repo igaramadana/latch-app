@@ -124,6 +124,7 @@ export function initMotion() {
     scrollReveals(paused),
     howItWorksIntro(paused),
     overviewIntro(paused),
+    capabilitiesIntro(paused),
     whyItMattersIntro(paused),
     whyParallax(paused),
     useCasesMotion(paused),
@@ -565,6 +566,44 @@ function howItWorksIntro(paused: boolean): () => void {
     tl.scrollTrigger?.kill();
     tl.kill();
     gsap.set([...parts, ...cards], { clearProps: "all" });
+  };
+}
+
+function capabilitiesIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-capabilities]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-cap-badge]");
+  const title = section.querySelector<HTMLElement>("[data-cap-title]");
+  const sub = section.querySelector<HTMLElement>("[data-cap-sub]");
+  const cards = gsap.utils.toArray<HTMLElement>("[data-cap-card]", section);
+  if (!title || !cards.length) return () => {};
+
+  // Already on screen at load: leave it alone rather than flashing a hidden state.
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) return () => {};
+
+  const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
+  const arts = cards
+    .map((card) => card.querySelector<HTMLElement>("img"))
+    .filter(Boolean) as HTMLElement[];
+
+  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(cards, { autoAlpha: 0, y: 44 });
+  gsap.set(arts, { scale: 0.94, transformOrigin: "50% 50%" });
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+  });
+
+  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.14 }, "-=0.45")
+    .to(arts, { scale: 1, duration: 1.1, stagger: 0.14, ease: "power2.out" }, "<0.1");
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set([...parts, ...cards, ...arts], { clearProps: "all" });
   };
 }
 
