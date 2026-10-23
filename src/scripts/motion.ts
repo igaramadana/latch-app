@@ -118,6 +118,7 @@ export function initMotion() {
     navScrollState(),
     navIntro(paused),
     heroIntro(paused),
+    platformHeroIntro(paused),
     ctaHover(paused),
     scrollReveals(paused),
     howItWorksIntro(paused),
@@ -286,6 +287,106 @@ function heroIntro(paused: boolean): () => void {
     loops.forEach((l) => l.kill());
     split?.revert();
     gsap.set([heading, sub, badge, ctas, iso, cards, pattern].filter(Boolean), {
+      clearProps: "all",
+    });
+  };
+}
+
+function platformHeroIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-platform-hero]");
+  if (!section) return () => {};
+
+  const eyebrow = section.querySelector<HTMLElement>("[data-ph-eyebrow]");
+  const heading = section.querySelector<HTMLElement>("[data-ph-title]");
+  const copy = section.querySelector<HTMLElement>("[data-ph-copy]");
+  const ctas = gsap.utils.toArray<HTMLElement>("[data-ph-cta]", section);
+  const art = section.querySelector<HTMLElement>("[data-ph-art]");
+  const pattern = section.querySelector<HTMLElement>("[data-ph-pattern]");
+
+  if (!heading || paused) return () => {};
+
+  let split: SplitText | null = null;
+  let tl: gsap.core.Timeline | null = null;
+  let float: gsap.core.Tween | null = null;
+
+  const run = () => {
+    split = SplitText.create(heading, { type: "lines", linesClass: "ph-line" });
+
+    tl = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.8 },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    if (pattern) {
+      tl.fromTo(
+        pattern,
+        { autoAlpha: 0, yPercent: 4 },
+        { autoAlpha: 1, yPercent: 0, duration: 1.4, ease: "power2.out" },
+        0,
+      );
+    }
+
+    if (eyebrow) {
+      tl.fromTo(
+        eyebrow,
+        { autoAlpha: 0, y: -12 },
+        { autoAlpha: 1, y: 0, duration: 0.55 },
+        0.15,
+      );
+    }
+
+    tl.fromTo(
+      split.lines,
+      { yPercent: 115, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 1, stagger: 0.1, ease: "power4.out" },
+      0.28,
+    );
+
+    if (copy) {
+      tl.fromTo(copy, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0 }, 0.52);
+    }
+
+    if (ctas.length) {
+      tl.fromTo(
+        ctas,
+        { autoAlpha: 0, y: 16, scale: 0.94 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.09, ease: "back.out(1.6)" },
+        0.64,
+      );
+    }
+
+    if (art) {
+      tl.fromTo(
+        art,
+        { autoAlpha: 0, yPercent: 6, scale: 0.975 },
+        { autoAlpha: 1, yPercent: 0, scale: 1, duration: 1.2, ease: "power3.out" },
+        0.5,
+      );
+
+      // The illustration keeps drifting once it lands, matching the hero on the
+      // home page where the floating cards breathe on their own phase.
+      float = gsap.to(art, {
+        y: -10,
+        duration: 5.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 1.9,
+      });
+    }
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    tl?.kill();
+    float?.kill();
+    split?.revert();
+    gsap.set([eyebrow, copy, art, pattern, ...ctas].filter(Boolean), {
       clearProps: "all",
     });
   };

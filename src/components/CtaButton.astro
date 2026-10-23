@@ -2,7 +2,7 @@
 interface Props {
   href: string;
   variant?: "primary" | "secondary" | "primary-solid";
-  size?: "nav" | "md";
+  size?: "sm" | "md";
   class?: string;
   [key: string]: unknown;
 }
@@ -22,9 +22,10 @@ const variants = {
   "primary-solid": "bg-[#5E71FF] text-[#F8FAFC] hover:brightness-110",
 } as const;
 
-// `nav` is the compact header size; `md` keeps the 44px touch target.
+// `sm` is the compact size used in the header and hero; `md` keeps the 44px
+// touch target.
 const sizes = {
-  nav: "min-h-10 py-2.5",
+  sm: "min-h-10 py-2.5",
   md: "min-h-11 py-2.5",
 } as const;
 ---

@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PlatformHero from "../components/sections/PlatformHero.astro";
+import CTA from "../components/sections/CTA.astro";
+import Footer from "../components/sections/Footer.astro";
+---
+
+<BaseLayout
+  title="Platform — Latch"
+  description="One layer for continuous security: continuous testing, identity-aware access, and real-time response in a single platform."
+>
+  <PlatformHero />
+  <CTA />
+  <Footer slot="footer" />
+</BaseLayout>

@@ -83,10 +83,20 @@
   }
 
   /* SplitText creates these line wrappers at runtime. */
-  :where(.hero-line, .uc-line, .impact-line, .features-line, .cta-line) {
+  :where(.hero-line, .ph-line, .uc-line, .impact-line, .features-line, .cta-line) {
     display: block;
     overflow: hidden;
+    /* Padding gives the mask room for descenders; the negative margin cancels
+       its height so splitting a heading never shifts the page. */
     padding-block: 0.08em;
+    margin-block: -0.08em;
+  }
+
+  /* Adjacent wrappers collapse their negative margins, leaving one pair of
+     padding uncancelled. A column flex parent stops that collapse. */
+  :where(h1, h2, h3, h4, p):has(> :is(.hero-line, .ph-line, .uc-line, .impact-line, .features-line, .cta-line)) {
+    display: flex;
+    flex-direction: column;
   }
 
   @media (prefers-reduced-motion: reduce) {

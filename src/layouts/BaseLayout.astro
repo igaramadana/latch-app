@@ -34,6 +34,11 @@ const {
     <title>{title}</title>
     <script is:inline>
       document.documentElement.classList.add("js");
+      // A reload should land at the top; the hero's entrance animation shifts
+      // layout for a moment, so a restored offset never matches anyway. History
+      // navigation keeps its own restoration.
+      const nav = performance.getEntriesByType?.("navigation")?.[0];
+      if (!location.hash && nav?.type === "reload") history.scrollRestoration = "manual";
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
