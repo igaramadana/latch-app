@@ -117,6 +117,7 @@ export function initMotion() {
   const teardowns = [
     navScrollState(),
     navIntro(paused),
+    navHover(paused),
     heroIntro(paused),
     platformHeroIntro(paused),
     ctaHover(paused),
@@ -147,6 +148,63 @@ function navScrollState(): () => void {
   return () => {
     window.removeEventListener("scroll", sync);
     header.removeAttribute("data-scrolled");
+  };
+}
+
+function navHover(paused: boolean): () => void {
+  const links = gsap.utils.toArray<HTMLElement>("[data-nav-link]");
+  if (!links.length || paused) return () => {};
+
+  // Desktop only: below lg the same links live in the dropdown.
+  const desktop = window.matchMedia("(min-width: 1025px)");
+  const cleanups: Array<() => void> = [];
+
+  const isActive = (link: HTMLElement) => link.getAttribute("aria-current") === "page";
+
+  const settle = () => {
+    links.forEach((link) => {
+      if (isActive(link)) return;
+      gsap.set(link.querySelector("[data-nav-label]"), { backgroundPositionX: "100%" });
+    });
+  };
+
+  links.forEach((link) => {
+    if (isActive(link)) return;
+
+    const label = link.querySelector<HTMLElement>("[data-nav-label]");
+    if (!label) return;
+
+    // background-position, not a clipped overlay: the wash travels through the
+    // glyphs themselves, so the colour change reads left to right.
+    const sweep = (to: string, duration: number, ease: string) => {
+      if (!desktop.matches) return;
+      gsap.to(label, { backgroundPositionX: to, duration, ease, overwrite: true });
+    };
+
+    const onEnter = () => sweep("0%", 0.45, "power2.out");
+    const onLeave = () => sweep("100%", 0.3, "power2.in");
+
+    link.addEventListener("pointerenter", onEnter);
+    link.addEventListener("pointerleave", onLeave);
+    link.addEventListener("focus", onEnter);
+    link.addEventListener("blur", onLeave);
+
+    cleanups.push(() => {
+      link.removeEventListener("pointerenter", onEnter);
+      link.removeEventListener("pointerleave", onLeave);
+      link.removeEventListener("focus", onEnter);
+      link.removeEventListener("blur", onLeave);
+      gsap.killTweensOf(label);
+      gsap.set(label, { clearProps: "backgroundPositionX" });
+    });
+  });
+
+  settle();
+  desktop.addEventListener("change", settle);
+
+  return () => {
+    desktop.removeEventListener("change", settle);
+    cleanups.forEach((fn) => fn());
   };
 }
 

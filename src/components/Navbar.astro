@@ -5,7 +5,7 @@ import CtaButton from "./CtaButton.astro";
 const current = Astro.url.pathname;
 
 const isActive = (href: string) =>
-  href === "/" ? current === "/" : current.startsWith(href);
+  href === "/" ? current === "/" : current === href || current.startsWith(`${href}/`);
 ---
 
 <header
@@ -56,13 +56,13 @@ const isActive = (href: string) =>
             <a
               href={link.href}
               class:list={[
-                "inline-block py-2 text-sm font-medium leading-ui text-ink no-underline transition-colors duration-150 hover:text-brand-600 max-lg:flex max-lg:min-h-11 max-lg:w-full max-lg:items-center max-lg:justify-center max-lg:py-3 max-lg:text-center max-lg:text-menu",
+                "relative inline-block py-2 text-sm font-medium leading-ui text-ink no-underline max-lg:flex max-lg:min-h-11 max-lg:w-full max-lg:items-center max-lg:justify-center max-lg:py-3 max-lg:text-center max-lg:text-menu",
                 isActive(link.href) && "text-brand-600",
               ]}
               aria-current={isActive(link.href) ? "page" : undefined}
               data-nav-link
             >
-              {link.label}
+              <span class="inline-block" data-nav-label>{link.label}</span>
             </a>
           </li>
         ))
@@ -116,6 +116,33 @@ const isActive = (href: string) =>
     </button>
   </nav>
 </header>
+
+<style>
+  /* Hover paints a brand-coloured wash across the label from left to right.
+     The gradient is 2x the text width with a hard stop, so moving its position
+     from 100% (all ink) to 0% (all brand) sweeps the boundary across the glyphs.
+     Only above the mobile breakpoint: the dropdown keeps plain ink text. */
+  @media (width >= 1025px) {
+    [data-nav-label] {
+      background-image: linear-gradient(
+        to right,
+        var(--color-brand-600) 50%,
+        var(--color-ink) 50%
+      );
+      background-size: 200% 100%;
+      background-position: 100% 0;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    /* The current page is already brand-coloured, so it needs no sweep. */
+    [data-nav-link][aria-current="page"] [data-nav-label] {
+      background-image: none;
+      color: var(--color-brand-600);
+    }
+  }
+</style>
 
 <script>
   import { animateMenuToggle } from "../scripts/motion";
