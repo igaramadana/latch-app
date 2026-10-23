@@ -123,6 +123,7 @@ export function initMotion() {
     ctaHover(paused),
     scrollReveals(paused),
     howItWorksIntro(paused),
+    overviewIntro(paused),
     whyItMattersIntro(paused),
     whyParallax(paused),
     useCasesMotion(paused),
@@ -559,6 +560,42 @@ function howItWorksIntro(paused: boolean): () => void {
 
   tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
     .to(cards, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.12 }, "-=0.45");
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set([...parts, ...cards], { clearProps: "all" });
+  };
+}
+
+function overviewIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-overview]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-ov-badge]");
+  const title = section.querySelector<HTMLElement>("[data-ov-title]");
+  const sub = section.querySelector<HTMLElement>("[data-ov-sub]");
+  const cards = gsap.utils.toArray<HTMLElement>("[data-ov-card]", section);
+  if (!title || !cards.length) return () => {};
+
+  // Already on screen at load: leave it alone rather than flashing a hidden state.
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) return () => {};
+
+  const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
+
+  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(cards, { autoAlpha: 0, y: 40 });
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+  });
+
+  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 }).to(
+    cards,
+    { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.12 },
+    "-=0.45",
+  );
 
   return () => {
     tl.scrollTrigger?.kill();

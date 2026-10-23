@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PlatformHero from "../components/sections/PlatformHero.astro";
+import Overview from "../components/sections/Overview.astro";
 import CTA from "../components/sections/CTA.astro";
 import Footer from "../components/sections/Footer.astro";
 ---
@@ -10,6 +11,7 @@ import Footer from "../components/sections/Footer.astro";
   description="One layer for continuous security: continuous testing, identity-aware access, and real-time response in a single platform."
 >
   <PlatformHero />
+  <Overview />
   <CTA />
   <Footer slot="footer" />
 </BaseLayout>
