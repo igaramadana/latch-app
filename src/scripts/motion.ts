@@ -125,6 +125,7 @@ export function initMotion() {
     howItWorksIntro(paused),
     overviewIntro(paused),
     capabilitiesIntro(paused),
+    keyBenefitsIntro(paused),
     whyItMattersIntro(paused),
     whyParallax(paused),
     useCasesMotion(paused),
@@ -604,6 +605,44 @@ function capabilitiesIntro(paused: boolean): () => void {
     tl.scrollTrigger?.kill();
     tl.kill();
     gsap.set([...parts, ...cards, ...arts], { clearProps: "all" });
+  };
+}
+
+function keyBenefitsIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-key-benefits]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-kb-badge]");
+  const title = section.querySelector<HTMLElement>("[data-kb-title]");
+  const sub = section.querySelector<HTMLElement>("[data-kb-sub]");
+  const art = section.querySelector<HTMLElement>("[data-kb-art]");
+  const items = gsap.utils.toArray<HTMLElement>("[data-kb-item]", section);
+  if (!title || !items.length) return () => {};
+
+  // Already on screen at load: leave it alone rather than flashing a hidden state.
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) return () => {};
+
+  const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
+
+  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(art, { autoAlpha: 0, scale: 0.97, transformOrigin: "50% 50%" });
+  gsap.set(items, { autoAlpha: 0, y: 20 });
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+  });
+
+  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
+    .to(art, { autoAlpha: 1, scale: 1, duration: 1, ease: "power3.out" }, "-=0.5")
+    .to(items, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08 }, "-=0.7");
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set([...parts, art, ...items].filter(Boolean) as HTMLElement[], {
+      clearProps: "all",
+    });
   };
 }
 
