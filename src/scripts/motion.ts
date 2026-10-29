@@ -126,6 +126,7 @@ export function initMotion() {
     overviewIntro(paused),
     capabilitiesIntro(paused),
     keyBenefitsIntro(paused),
+    whoWeServeIntro(paused),
     whyItMattersIntro(paused),
     whyParallax(paused),
     useCasesMotion(paused),
@@ -641,6 +642,48 @@ function keyBenefitsIntro(paused: boolean): () => void {
     tl.scrollTrigger?.kill();
     tl.kill();
     gsap.set([...parts, art, ...items].filter(Boolean) as HTMLElement[], {
+      clearProps: "all",
+    });
+  };
+}
+
+function whoWeServeIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-who-we-serve]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-wws-badge]");
+  const title = section.querySelector<HTMLElement>("[data-wws-title]");
+  const sub = section.querySelector<HTMLElement>("[data-wws-sub]");
+  const cards = gsap.utils.toArray<HTMLElement>("[data-wws-card]", section);
+  const bar = section.querySelector<HTMLElement>("[data-wws-bar]");
+  const pattern = section.querySelector<HTMLElement>("[data-wws-pattern]");
+  if (!title || !cards.length) return () => {};
+
+  // Already on screen at load: leave it alone rather than flashing a hidden state.
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) return () => {};
+
+  const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
+
+  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(cards, { autoAlpha: 0, y: 28 });
+  gsap.set(bar, { autoAlpha: 0, y: 16 });
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+  });
+
+  if (pattern) {
+    tl.fromTo(pattern, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.2 }, 0);
+  }
+  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 }, 0.1)
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.09 }, "-=0.5")
+    .to(bar, { autoAlpha: 1, y: 0, duration: 0.5 }, "-=0.45");
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set([...parts, ...cards, bar, pattern].filter(Boolean) as HTMLElement[], {
       clearProps: "all",
     });
   };
