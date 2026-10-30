@@ -22,7 +22,6 @@ export function animateMenuToggle({
   menu: HTMLElement;
   open: boolean;
   onClosed?: () => void;
-  /** Desktop keeps this element as the inline nav, so only reset the bars. */
   skipPanel?: boolean;
 }) {
   const bars = Array.from(toggle.querySelectorAll<HTMLElement>("[data-bar]"));
@@ -55,8 +54,6 @@ export function animateMenuToggle({
   });
 
   if (open) {
-    // Re-opening mid-exit: the close branch set pointer-events: none and its
-    // onComplete (which would clear it) is killed by overwrite.
     gsap.set(menu, { pointerEvents: "auto" });
     gsap.fromTo(
       menu,
@@ -81,8 +78,6 @@ export function animateMenuToggle({
     gsap.set(items, { clearProps: "opacity,visibility,transform" });
     onClosed?.();
   } else {
-    // The panel stays displayed until the tween lands: removing `is-open` first
-    // would let `display: none` cut the exit animation off at frame zero.
     gsap.set(menu, { pointerEvents: "none" });
     gsap.to(items, {
       autoAlpha: 0,
@@ -111,7 +106,6 @@ export function animateMenuToggle({
 export function initMotion() {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Hidden tab / battery saver stops rAF, leaving from-tweens stuck mid-state.
   const paused = document.hidden || reduced;
 
   const teardowns = [
@@ -126,6 +120,7 @@ export function initMotion() {
     overviewIntro(paused),
     capabilitiesIntro(paused),
     keyBenefitsIntro(paused),
+    howItWorksStepsMotion(paused),
     whoWeServeIntro(paused),
     whyItMattersIntro(paused),
     whyParallax(paused),
@@ -144,7 +139,6 @@ function navScrollState(): () => void {
   const header = document.querySelector<HTMLElement>("[data-nav]");
   if (!header) return () => {};
 
-  // Sticky + transparent would put ink text over the dark CTA panel and footer.
   const sync = () => header.toggleAttribute("data-scrolled", window.scrollY > 8);
   sync();
   window.addEventListener("scroll", sync, { passive: true });
@@ -159,7 +153,6 @@ function navHover(paused: boolean): () => void {
   const links = gsap.utils.toArray<HTMLElement>("[data-nav-link]");
   if (!links.length || paused) return () => {};
 
-  // Desktop only: below lg the same links live in the dropdown.
   const desktop = window.matchMedia("(min-width: 1025px)");
   const cleanups: Array<() => void> = [];
 
@@ -178,8 +171,6 @@ function navHover(paused: boolean): () => void {
     const label = link.querySelector<HTMLElement>("[data-nav-label]");
     if (!label) return;
 
-    // background-position, not a clipped overlay: the wash travels through the
-    // glyphs themselves, so the colour change reads left to right.
     const sweep = (to: string, duration: number, ease: string) => {
       if (!desktop.matches) return;
       gsap.to(label, { backgroundPositionX: to, duration, ease, overwrite: true });
@@ -327,7 +318,6 @@ function heroIntro(paused: boolean): () => void {
         1.05,
       );
 
-      // Each card bobs on its own sine phase so they never sync.
       loops = cards.map((card, i) =>
         gsap.to(card, {
           y: i === 2 ? -10 : -7,
@@ -428,8 +418,6 @@ function platformHeroIntro(paused: boolean): () => void {
         0.5,
       );
 
-      // The illustration keeps drifting once it lands, matching the hero on the
-      // home page where the floating cards breathe on their own phase.
       float = gsap.to(art, {
         y: -10,
         duration: 5.5,
@@ -458,7 +446,6 @@ function trustedMarquee(paused: boolean): () => void {
   const track = document.querySelector<HTMLElement>("[data-marquee-track]");
   if (!track) return () => {};
 
-  // Track holds the list twice; shifting by one list width loops seamlessly.
   const list = track.querySelector<HTMLElement>("ul");
   if (!list) return () => {};
 
@@ -485,7 +472,6 @@ function ctaHover(paused: boolean): () => void {
 
   const cleanups: Array<() => void> = [];
 
-  // overwrite: "auto" — the hero entrance animates scale on these same nodes.
   gsap.utils.toArray<HTMLElement>("[data-cta-scale]").forEach((el) => {
     const tween = { duration: 0.3, ease: "power3", overwrite: "auto" } as const;
 
@@ -509,7 +495,6 @@ function ctaHover(paused: boolean): () => void {
 function scrollReveals(paused: boolean): () => void {
   if (paused) return () => {};
 
-  // Never hide content that is already on screen at load.
   const hidden = gsap
     .utils.toArray<HTMLElement>("[data-reveal]")
     .filter((el) => el.getBoundingClientRect().top > window.innerHeight * 0.9);
@@ -686,6 +671,200 @@ function whoWeServeIntro(paused: boolean): () => void {
     gsap.set([...parts, ...cards, bar, pattern].filter(Boolean) as HTMLElement[], {
       clearProps: "all",
     });
+  };
+}
+
+function howItWorksStepsMotion(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-hiw]");
+  if (!section) return () => {};
+
+  const track = section.querySelector<HTMLElement>("[data-hiw-track]");
+  const badge = section.querySelector<HTMLElement>("[data-hiw-badge]");
+  const title = section.querySelector<HTMLElement>("[data-hiw-title]");
+  const sub = section.querySelector<HTMLElement>("[data-hiw-sub]");
+  const lineFill = section.querySelector<HTMLElement>("[data-hiw-line-fill]");
+  const list = section.querySelector<HTMLElement>("[data-hiw-list]");
+  const fade = section.querySelector<HTMLElement>("[data-hiw-fade]");
+  const steps = gsap.utils.toArray<HTMLElement>("[data-hiw-step]", section);
+
+  const nodes = steps.map((step) => step.querySelector<HTMLElement>("[data-hiw-node]"));
+  const icons = steps.map((step) => step.querySelector<HTMLElement>("[data-hiw-icon-active]"));
+
+  if (!track || !steps.length || !lineFill) return () => {};
+
+  const ACTIVE = "#5E71FF";
+  const IDLE = "#E3E8EF";
+  const PAST = 0.8;
+  // Ahead-of-active steps are washed by the white gradient, so they keep full
+  // opacity and only gain the blur the design draws on them.
+  const FUTURE_BLUR = [0, 0.25, 0.6, 1.2];
+  const n = steps.length;
+  let active = 0;
+
+  // The blue segment runs from the active circle to the next one; everything
+  // above it is already walked and stays grey. Measured from the circles, not
+  // from thirds, because Figma's gaps are 190 / 198 / 194.
+  const lineSegment = (index: number) => {
+    const line = lineFill.parentElement;
+    if (!line || !nodes.length) return { top: 0, height: 0 };
+
+    const box = line.getBoundingClientRect();
+    const centers = nodes.map((node) => {
+      const rect = node.getBoundingClientRect();
+      return rect.top + rect.height / 2 - box.top;
+    });
+    const last = centers.length - 1;
+
+    // On the last step there is no "next" to point at, and the connector above
+    // it belongs to a step that is already done: collapse the segment.
+    if (index >= last) return { top: centers[last], height: 0 };
+    return { top: centers[index], height: centers[index + 1] - centers[index] };
+  };
+
+  const placeLine = () => {
+    const segment = lineSegment(active);
+    gsap.set(lineFill, { top: segment.top, height: segment.height });
+  };
+
+  // Where the white gradient starts: at the bottom of the active block (node
+  // plus copy, not the node alone), so the description being read is never
+  // washed. Measuring the node instead cut into it by 20-44px.
+  const fadeFor = (index: number) => {
+    if (!list || !nodes[index]) return 16;
+    const box = list.getBoundingClientRect();
+    if (!box.height) return 16;
+    // The whole active block, not just its node: the fade must never wash the
+    // description the reader is on.
+    const block = steps[index].getBoundingClientRect();
+    return Math.min(100, ((block.bottom - box.top) / box.height) * 100);
+  };
+
+  const paint = (active: number, duration: number) => {
+    const ease = "power2.out";
+
+    steps.forEach((step, index) => {
+      const ahead = index - active;
+      const depth = Math.min(Math.abs(ahead), FUTURE_BLUR.length - 1);
+      const opacity = ahead === 0 ? 1 : ahead < 0 ? PAST : 1;
+      const blur = ahead > 0 ? FUTURE_BLUR[depth] : 0;
+
+      gsap.to(step, { opacity, filter: `blur(${blur}px)`, duration, ease, overwrite: "auto" });
+      gsap.to(nodes[index], {
+        backgroundColor: ahead === 0 ? ACTIVE : IDLE,
+        duration,
+        ease,
+        overwrite: "auto",
+      });
+      gsap.to(icons[index], { opacity: ahead === 0 ? 1 : 0, duration, overwrite: "auto" });
+    });
+
+    const segment = lineSegment(active);
+    gsap.to(lineFill, {
+      top: segment.top,
+      height: segment.height,
+      duration: duration * 1.3,
+      ease: "power3.inOut",
+      overwrite: "auto",
+    });
+
+    if (fade) {
+      gsap.to(fade, {
+        "--hiw-fade": fadeFor(active),
+        duration,
+        ease: "power2.inOut",
+        overwrite: "auto",
+      });
+    }
+  };
+
+  // Step one is the resting state of the design, so paint it before any
+  // ScrollTrigger exists: a deep link or a killed timeline still looks right.
+  gsap.set(nodes[0], { backgroundColor: ACTIVE });
+  gsap.set(icons[0], { opacity: 1 });
+  placeLine();
+
+  if (paused) {
+    // No tween will ever run here, so place the gradient by hand or it would
+    // fall back to a value that washes the active description.
+    fade?.style.setProperty("--hiw-fade", String(fadeFor(0)));
+    return () => {};
+  }
+
+  ScrollTrigger.addEventListener("refresh", placeLine);
+
+  const header = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 78%", once: true },
+  });
+
+  header
+    .from(badge, { autoAlpha: 0, y: 16 }, 0)
+    .from(title, { autoAlpha: 0, y: 24 }, 0.08)
+    .from(sub, { autoAlpha: 0, y: 20 }, 0.16);
+
+  const mm = gsap.matchMedia();
+
+  // The stage is sticky, not pinned: the track behind it is five viewports, so
+  // every step owns exactly one viewport of scrolling. Matches the media query
+  // in HowItWorksSteps.astro.
+  mm.add("(min-width: 1025px) and (min-height: 740px)", () => {
+    paint(0, 0);
+
+    const trigger = ScrollTrigger.create({
+      trigger: track,
+      start: "top top",
+      end: "bottom bottom",
+      onUpdate: (self) => {
+        const next = Math.min(n - 1, Math.floor(self.progress * n));
+        if (next === active) return;
+        active = next;
+        paint(next, 0.7);
+      },
+      onLeaveBack: () => {
+        if (active === 0) return;
+        active = 0;
+        paint(0, 0.7);
+      },
+    });
+
+    return () => trigger.kill();
+  });
+
+  // No sticky stage here, so the steps scroll past the viewport centre and the
+  // one crossing it becomes active.
+  mm.add("(max-width: 1024px), (min-width: 1025px) and (max-height: 739px)", () => {
+    paint(0, 0);
+
+    const focus = (index: number) => {
+      if (index === active) return;
+      active = index;
+      paint(index, 0.6);
+    };
+
+    const triggers = steps.map((step, index) =>
+      ScrollTrigger.create({
+        trigger: step,
+        start: "top center",
+        end: "bottom center",
+        onEnter: () => focus(index),
+        onEnterBack: () => focus(index),
+      }),
+    );
+
+    return () => triggers.forEach((trigger) => trigger.kill());
+  });
+
+  return () => {
+    ScrollTrigger.removeEventListener("refresh", placeLine);
+    mm.revert();
+    header.scrollTrigger?.kill();
+    header.kill();
+    gsap.set(
+      [badge, title, sub, lineFill, fade, ...steps, ...nodes, ...icons].filter(
+        Boolean,
+      ) as HTMLElement[],
+      { clearProps: "all" },
+    );
   };
 }
 
@@ -1010,7 +1189,6 @@ function securityImpactMotion(paused: boolean): () => void {
   let intro: gsap.core.Timeline | null = null;
   let split: SplitText | null = null;
 
-  // Same start/end on both ScrollTriggers keeps the layers in lockstep.
   const parallaxLayers: Array<{ el: HTMLElement | null; depth: number }> = [
     { el: pattern, depth: 26 },
     { el: compositionWrap, depth: 14 },
