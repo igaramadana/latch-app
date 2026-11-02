@@ -114,6 +114,7 @@ export function initMotion() {
     navHover(paused),
     heroIntro(paused),
     platformHeroIntro(paused),
+    solutionsHeroIntro(paused),
     ctaHover(paused),
     scrollReveals(paused),
     howItWorksIntro(paused),
@@ -341,6 +342,92 @@ function heroIntro(paused: boolean): () => void {
     gsap.set([heading, sub, badge, ctas, iso, cards, pattern].filter(Boolean), {
       clearProps: "all",
     });
+  };
+}
+
+function solutionsHeroIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-sol-hero]");
+  if (!section) return () => {};
+
+  const eyebrow = section.querySelector<HTMLElement>("[data-sol-eyebrow]");
+  const heading = section.querySelector<HTMLElement>("[data-sol-title]");
+  const copy = section.querySelector<HTMLElement>("[data-sol-copy]");
+  const ctas = gsap.utils.toArray<HTMLElement>("[data-sol-cta]", section);
+  const art = section.querySelector<HTMLElement>("[data-sol-art]");
+
+  if (!heading || paused) return () => {};
+
+  let split: SplitText | null = null;
+  let tl: gsap.core.Timeline | null = null;
+  let float: gsap.core.Tween | null = null;
+
+  const run = () => {
+    split = SplitText.create(heading, { type: "lines", linesClass: "sol-line" });
+
+    tl = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.85 },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    if (eyebrow) {
+      tl.fromTo(
+        eyebrow,
+        { autoAlpha: 0, y: -12 },
+        { autoAlpha: 1, y: 0, duration: 0.55 },
+        0.1,
+      );
+    }
+
+    tl.fromTo(
+      split.lines,
+      { yPercent: 115, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 1.05, stagger: 0.11, ease: "power4.out" },
+      0.22,
+    );
+
+    if (copy) {
+      tl.fromTo(copy, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0 }, 0.5);
+    }
+
+    if (ctas.length) {
+      tl.fromTo(
+        ctas,
+        { autoAlpha: 0, y: 16, scale: 0.94 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.09, ease: "back.out(1.6)" },
+        0.6,
+      );
+    }
+
+    if (art) {
+      tl.fromTo(
+        art,
+        { autoAlpha: 0, yPercent: 5, scale: 0.97 },
+        { autoAlpha: 1, yPercent: 0, scale: 1, duration: 1.3, ease: "power3.out" },
+        0.55,
+      );
+
+      float = gsap.to(art, {
+        y: -8,
+        duration: 6,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 2.1,
+      });
+    }
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    tl?.kill();
+    float?.kill();
+    split?.revert();
+    gsap.set([eyebrow, copy, art, ...ctas].filter(Boolean), { clearProps: "all" });
   };
 }
 

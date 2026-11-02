@@ -1,0 +1,107 @@
+---
+import CtaButton from "../../CtaButton.astro";
+
+const ctas = [
+  { label: "Start for free", href: "/signup", variant: "primary" as const },
+  { label: "Book a demo", href: "/contact", variant: "secondary" as const },
+];
+---
+
+<section
+  class="relative isolate overflow-hidden bg-hero-bg"
+  aria-labelledby="solutions-hero-title"
+  data-sol-hero
+>
+  <div class="relative mx-auto w-full max-w-[1440px]">
+    <div class="px-[clamp(24px,8.333vw,120px)] pt-[calc(var(--spacing-nav)+clamp(40px,7.2vw,104px))]">
+      <div class="mx-auto flex max-w-[860px] flex-col items-center text-center">
+        <div class="flex items-center gap-2" data-sol-eyebrow>
+          <img
+            src="/images/solutions/lock-keyhole-circle.svg"
+            alt=""
+            aria-hidden="true"
+            width="24"
+            height="24"
+            class="size-6 flex-none"
+          />
+          <p class="m-0 font-sans text-sm font-medium leading-[22.5px] text-ink">
+            Security shaped around your stack
+          </p>
+        </div>
+
+        <h1
+          id="solutions-hero-title"
+          class="mt-6 mb-0 font-display text-[clamp(36px,5vw,72px)] leading-[1.2] tracking-normal text-ink font-mix-medium"
+          data-sol-title
+        >
+          One Platform for<br class="max-md:hidden" />{" "}Every Security Problem
+        </h1>
+
+        <p
+          class="mt-6 mb-0 max-w-[728px] font-sans text-[20px] leading-[30px] text-pretty text-ink-muted max-sm:text-base max-sm:leading-6"
+          data-sol-copy
+        >
+          From cloud infrastructure to compliance audits, Latch adapts continuous
+          testing and identity-aware protection to the exact shape of your risk.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-[11px]">
+          {
+            ctas.map((cta) => (
+              <CtaButton href={cta.href} variant={cta.variant} size="sm" data-sol-cta>
+                {cta.label}
+              </CtaButton>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="relative mt-[clamp(48px,7.43vw,107px)]" data-sol-art-wrap>
+      <!-- White band from the design: 59/480 below the art top, 553 tall, edges
+           blended back into the hero background. Percentages keep it locked to
+           the illustration at every width. -->
+      <div
+        class="pointer-events-none absolute top-[12.29%] left-1/2 h-[115.2%] w-screen -translate-x-1/2 bg-white"
+        aria-hidden="true"
+      >
+        <div class="sol-pattern absolute inset-0" aria-hidden="true"></div>
+        <div
+          class="absolute inset-x-0 top-0 h-[47.9%] bg-linear-to-b from-hero-bg to-[rgb(241_246_253_/_0)]"
+        >
+        </div>
+        <div
+          class="absolute inset-x-0 bottom-0 h-[47.9%] bg-linear-to-t from-hero-bg to-[rgb(241_246_253_/_0)]"
+        >
+        </div>
+      </div>
+
+      <img
+        src="/images/solutions/hero_image.svg"
+        alt="Latch identity, credit and monitoring cards feeding one verification layer"
+        width="860"
+        height="480"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+        class="relative mx-auto block w-full max-w-[860px] px-6 lg:px-0"
+        data-sol-art
+      />
+    </div>
+
+    <div class="pb-[calc(min(132px,15.35vw)+48px)]"></div>
+  </div>
+</section>
+
+<style>
+  /* Same dot grid as the platform hero: the band's texture asset was not part
+     of the export, so the site's existing pattern stands in at matching weight. */
+  .sol-pattern {
+    background-image: radial-gradient(
+      circle at center,
+      rgb(64 105 178 / 0.065) 0 3.6px,
+      rgb(64 105 178 / 0) 6.2px
+    );
+    background-size: 16px 13px;
+  }
+</style>
