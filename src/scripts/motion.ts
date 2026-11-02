@@ -116,6 +116,7 @@ export function initMotion() {
     platformHeroIntro(paused),
     solutionsHeroIntro(paused),
     solutionsOverviewIntro(paused),
+    solutionsFeaturesIntro(paused),
     ctaHover(paused),
     scrollReveals(paused),
     howItWorksIntro(paused),
@@ -346,6 +347,65 @@ function heroIntro(paused: boolean): () => void {
   };
 }
 
+function solutionsFeaturesIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-sol-features]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-sf-badge]");
+  const title = section.querySelector<HTMLElement>("[data-sf-title]");
+  const sub = section.querySelector<HTMLElement>("[data-sf-sub]");
+  const cards = gsap.utils.toArray<HTMLElement>("[data-sf-card]", section);
+  const chips = gsap.utils.toArray<HTMLElement>("[data-sf-chip]", section);
+
+  if (!title || !cards.length) return () => {};
+
+  const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
+
+  // A reload while already scrolled here would flash the cards hidden first, so
+  // this section plays in place when it is on screen at load.
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.9;
+
+  gsap.set(header, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 22 });
+  gsap.set(cards, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 30 });
+
+  if (onScreen) {
+    const intro = gsap.timeline({ defaults: { ease: EASE } });
+
+    intro
+      .from(cards, { y: 16, duration: 0.7, stagger: 0.09 }, 0.06)
+      .from(
+        chips,
+        { autoAlpha: 0, y: 10, scale: 0.96, duration: 0.45, stagger: 0.06, ease: "back.out(1.6)" },
+        0.3,
+      );
+
+    return () => {
+      intro.kill();
+      gsap.set([...header, ...cards, ...chips], { clearProps: "all" });
+    };
+  }
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 78%", once: true },
+  });
+
+  tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.09 }, 0)
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.12 }, 0.16)
+    // Chips read as results appearing after the argument, so they land last.
+    .from(
+      chips,
+      { autoAlpha: 0, y: 10, scale: 0.96, duration: 0.45, stagger: 0.06, ease: "back.out(1.6)" },
+      0.5,
+    );
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set([...header, ...cards, ...chips], { clearProps: "all" });
+  };
+}
+
 function solutionsOverviewIntro(paused: boolean): () => void {
   const section = document.querySelector<HTMLElement>("[data-sol-overview]");
   if (!section || paused) return () => {};
@@ -359,15 +419,30 @@ function solutionsOverviewIntro(paused: boolean): () => void {
 
   if (!title || !cards.length) return () => {};
 
-  // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) return () => {};
+  // On tall viewports the section is already on screen at load. Hiding it first
+  // would flash, so it plays a short in-place reveal instead of scrolling in.
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.9;
 
   const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  gsap.set(header, { autoAlpha: 0, y: 24 });
-  gsap.set(cards, { autoAlpha: 0, y: 32 });
-  gsap.set(icons, { scale: 0.82, rotate: -6 });
-  gsap.set(copies, { autoAlpha: 0, y: 16 });
+  gsap.set(header, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 24 });
+  gsap.set(cards, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 32 });
+  gsap.set(icons, { scale: onScreen ? 1 : 0.82, rotate: onScreen ? 0 : -6 });
+  gsap.set(copies, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 16 });
+
+  if (onScreen) {
+    const intro = gsap.timeline({ defaults: { ease: EASE } });
+
+    intro
+      .from(icons, { scale: 0.8, rotate: -6, duration: 0.7, stagger: 0.09, ease: "back.out(1.7)" }, 0.1)
+      .from(copies, { autoAlpha: 0, y: 14, duration: 0.55, stagger: 0.09 }, 0.22)
+      .from(cards, { y: 18, duration: 0.7, stagger: 0.08 }, 0);
+
+    return () => {
+      intro.kill();
+      gsap.set([...header, ...cards, ...icons, ...copies], { clearProps: "all" });
+    };
+  }
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },

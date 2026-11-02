@@ -1,0 +1,136 @@
+---
+interface Chip {
+  label: string;
+  tone: "amber" | "blue" | "green";
+}
+
+interface Feature {
+  title: string;
+  description: string;
+  chips: Chip[];
+}
+
+const features: Feature[] = [
+  {
+    title: "We don't know what's exposed",
+    description:
+      "Continuous discovery maps every application, and service including the ones nobody documented so attack surface is never a guess.",
+    chips: [
+      { label: "Shadow API Found", tone: "amber" },
+      { label: "Scanning 214 Endpoints", tone: "blue" },
+    ],
+  },
+  {
+    title: "Access grew faster than control",
+    description:
+      "Identity-aware protection evaluates every user, device, and service in real time, catching risky access before it becomes an incident.",
+    chips: [
+      { label: "Suspicious Login · Jakarta", tone: "amber" },
+      { label: "Session Revoked", tone: "green" },
+    ],
+  },
+  {
+    title: "We find issues weeks too late",
+    description:
+      "Real-time threat detection and automated incident response act the moment risk appears — not after the quarterly scan finally runs.",
+    chips: [
+      { label: "Threat Detected", tone: "blue" },
+      { label: "Auto-Remediated in 42 Second", tone: "green" },
+    ],
+  },
+];
+
+// Figma draws the ring as an inset outline, which takes no space in layout.
+// A border would add 2px and push every following card down.
+const chipTones: Record<Chip["tone"], string> = {
+  amber: "outline-[#FFDEA6] bg-[#FFF6E0] text-[#F29C06]",
+  blue: "outline-[#9DC1FB] bg-[#EBF2FE] text-[#3B82F6]",
+  green: "outline-[#87DCC0] bg-[#DEF5ED] text-[#049F6C]",
+};
+---
+
+<section
+  class="bg-[#F1F5FC] py-16 lg:pt-[100px] lg:pb-[121px]"
+  aria-labelledby="solutions-features-title"
+  data-sol-features
+>
+  <div class="mx-auto max-w-[1440px] px-6 lg:px-[120px]">
+    <div class="mx-auto flex max-w-[600px] flex-col items-center gap-10 lg:gap-16">
+      <header class="flex w-full flex-col items-center gap-4 text-center">
+        <p
+          class="inline-flex h-8 items-center gap-2 border border-border-badge bg-white px-[9px]"
+          data-sf-badge
+        >
+          <span class="size-2.5 bg-[#607AFF]" aria-hidden="true"></span>
+          <span class="font-sans text-sm font-medium uppercase tracking-[0.28px] text-ink-muted">
+            Key Features
+          </span>
+        </p>
+        <div class="flex flex-col items-center gap-3">
+          <h2
+            id="solutions-features-title"
+            class="font-display text-[42px] leading-[1.16] tracking-normal text-ink font-mix-medium max-lg:text-[32px] max-lg:leading-[1.25] max-sm:text-[26px]"
+            data-sf-title
+          >
+            Built to solve problems
+          </h2>
+          <p
+            class="font-sans text-[20px] leading-[1.3] text-pretty text-ink-muted max-sm:text-base"
+            data-sf-sub
+          >
+            The same capabilities as the platform framed by what breaks.
+          </p>
+        </div>
+      </header>
+
+      <ul class="m-0 flex w-full list-none flex-col gap-6 p-0">
+        {
+          features.map((feature) => (
+            <li
+              class="flex flex-col gap-8 bg-white p-6 shadow-[0_0_0_1px_rgb(23_23_23_/_0.02),0_1px_1px_-0.5px_rgb(23_23_23_/_0.06),0_3px_3px_-1.5px_rgb(23_23_23_/_0.06),0_6px_6px_-3px_rgb(23_23_23_/_0.12)] sm:p-8"
+              data-sf-card
+            >
+              <div class="flex flex-col gap-2">
+                <div class="flex items-start gap-3">
+                  <img
+                    src="/images/solutions/Key%20Features/warning.svg"
+                    alt=""
+                    aria-hidden="true"
+                    width="28"
+                    height="28"
+                    class="mt-0.5 size-7 flex-none"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <h3
+                    class="m-0 font-sans text-[24px] font-medium leading-8 text-ink max-sm:text-xl max-sm:leading-7"
+                    data-sf-heading
+                  >
+                    {feature.title}
+                  </h3>
+                </div>
+                <p class="m-0 font-sans text-base leading-6 text-ink-muted">
+                  {feature.description}
+                </p>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-3">
+                {feature.chips.map((chip) => (
+                  <span
+                    class:list={[
+                      "inline-flex items-center rounded-[10px] px-3.5 py-2 font-sans text-base font-medium leading-6 outline-1 -outline-offset-1",
+                      chipTones[chip.tone],
+                    ]}
+                    data-sf-chip
+                  >
+                    {chip.label}
+                  </span>
+                ))}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
