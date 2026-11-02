@@ -1,0 +1,128 @@
+---
+interface Pillar {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+const pillars: Pillar[] = [
+  {
+    icon: "/images/solutions/Overview/lock-unlocked-01.svg",
+    title: "Start from the problem",
+    description:
+      "Pick the risk you are solving: exposed APIs, identity sprawl, misconfigurations.",
+  },
+  {
+    icon: "/images/solutions/Overview/Solid.svg",
+    title: "Share one source of truth",
+    description:
+      "Findings, identities, and coverage share one graph every team reads the same.",
+  },
+  {
+    icon: "/images/solutions/Overview/layers-three-02.svg",
+    title: "Grow without re-buying",
+    description:
+      "A new team, compliance framework, or product line extends the same platform.",
+  },
+];
+---
+
+<section
+  class="bg-white py-16 lg:pt-[100px] lg:pb-[100px]"
+  aria-labelledby="solutions-overview-title"
+  data-sol-overview
+>
+  <div class="mx-auto max-w-[1440px] px-6 lg:px-[120px]">
+    <div class="flex flex-col items-center gap-10 lg:gap-16">
+      <header class="flex w-full max-w-[738px] flex-col items-center gap-4 text-center">
+        <p
+          class="inline-flex h-8 items-center gap-2 border border-border-badge bg-white px-[9px]"
+          data-so-badge
+        >
+          <span class="size-2.5 bg-[#607AFF]" aria-hidden="true"></span>
+          <span class="font-sans text-sm font-medium uppercase tracking-[0.28px] text-ink-muted">
+            Overview
+          </span>
+        </p>
+        <div class="flex flex-col items-center gap-3">
+          <h2
+            id="solutions-overview-title"
+            class="font-display text-[42px] leading-[1.16] tracking-normal text-ink font-mix-medium max-lg:text-[32px] max-lg:leading-[1.25] max-sm:text-[26px]"
+            data-so-title
+          >
+            All problems. One platform.
+          </h2>
+          <p
+            class="max-w-[540px] font-sans text-[20px] leading-[1.3] text-pretty text-ink-muted max-sm:text-base"
+            data-so-sub
+          >
+            Every solution runs on the same continuous engine.
+          </p>
+        </div>
+      </header>
+
+      <ul
+        class="m-0 grid w-full list-none grid-cols-1 gap-6 p-0 md:grid-cols-3 md:gap-6"
+      >
+        {
+          pillars.map((pillar) => (
+            <li
+              class="so-card relative isolate flex min-h-[385px] flex-col justify-between gap-10 overflow-hidden bg-hero-bg p-6 sm:p-10 md:gap-0"
+              data-so-card
+            >
+              <span class="so-dots pointer-events-none absolute inset-0 -z-10" aria-hidden="true"></span>
+
+              <div
+                class="grid size-16 place-items-center rounded-[20px] bg-[#678FFE] shadow-[inset_-3.2px_-3.2px_3.2px_rgb(255_255_255_/_0.1),inset_3.2px_3.2px_3.2px_rgb(0_93_187_/_0.2)]"
+                data-so-icon
+              >
+                <img
+                  src={pillar.icon}
+                  alt=""
+                  aria-hidden="true"
+                  width="30"
+                  height="30"
+                  class="size-[27px]"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+
+              <div class="flex flex-col gap-2" data-so-copy>
+                <h3 class="m-0 font-sans text-[22px] font-medium leading-[30px] text-ink">
+                  {pillar.title}
+                </h3>
+                <p class="m-0 font-sans text-base leading-6 text-ink-muted">
+                  {pillar.description}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* The card texture in the design is a fine halftone: dots ~5px across on a
+     7.5px grid. Measured density rises towards the right (0.022 on the left
+     edge to 0.096 at the right) and dies by 34% of the card height, so it is
+     masked diagonally from the top-right corner rather than straight down. */
+  .so-dots {
+    background-image: radial-gradient(
+      circle at center,
+      rgb(64 105 178 / 0.10) 0 3.3px,
+      rgb(64 105 178 / 0) 4.1px
+    );
+    background-size: 8px 8px;
+    /* 45deg sweep out of the top-right corner, not a radial bloom. */
+    mask-image: linear-gradient(225deg, #000 0%, rgb(0 0 0 / 0.55) 16%, transparent 42%);
+  }
+
+  @media (min-width: 768px) {
+    [data-so-card] {
+      min-height: 385px;
+    }
+  }
+</style>

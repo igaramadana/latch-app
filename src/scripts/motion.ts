@@ -115,6 +115,7 @@ export function initMotion() {
     heroIntro(paused),
     platformHeroIntro(paused),
     solutionsHeroIntro(paused),
+    solutionsOverviewIntro(paused),
     ctaHover(paused),
     scrollReveals(paused),
     howItWorksIntro(paused),
@@ -342,6 +343,46 @@ function heroIntro(paused: boolean): () => void {
     gsap.set([heading, sub, badge, ctas, iso, cards, pattern].filter(Boolean), {
       clearProps: "all",
     });
+  };
+}
+
+function solutionsOverviewIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-sol-overview]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-so-badge]");
+  const title = section.querySelector<HTMLElement>("[data-so-title]");
+  const sub = section.querySelector<HTMLElement>("[data-so-sub]");
+  const cards = gsap.utils.toArray<HTMLElement>("[data-so-card]", section);
+  const icons = gsap.utils.toArray<HTMLElement>("[data-so-icon]", section);
+  const copies = gsap.utils.toArray<HTMLElement>("[data-so-copy]", section);
+
+  if (!title || !cards.length) return () => {};
+
+  // Already on screen at load: leave it alone rather than flashing a hidden state.
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) return () => {};
+
+  const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
+
+  gsap.set(header, { autoAlpha: 0, y: 24 });
+  gsap.set(cards, { autoAlpha: 0, y: 32 });
+  gsap.set(icons, { scale: 0.82, rotate: -6 });
+  gsap.set(copies, { autoAlpha: 0, y: 16 });
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 78%", once: true },
+  });
+
+  tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.09 }, 0)
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.1 }, 0.18)
+    .to(icons, { scale: 1, rotate: 0, duration: 0.7, stagger: 0.1, ease: "back.out(1.7)" }, 0.34)
+    .to(copies, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.1 }, 0.42);
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set([...header, ...cards, ...icons, ...copies], { clearProps: "all" });
   };
 }
 
