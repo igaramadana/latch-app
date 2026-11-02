@@ -1,0 +1,138 @@
+---
+interface UseCase {
+  icon: string;
+  title: string;
+  description: string;
+  href: string;
+}
+
+const useCases: UseCase[] = [
+  {
+    icon: "/images/solutions/Usecase/cloud.svg",
+    title: "Cloud and Infrastructure",
+    description:
+      "Keep multi-cloud environments visible, tested, and automatically protected as they change.",
+    href: "/solutions/",
+  },
+  {
+    icon: "/images/solutions/Usecase/application.svg",
+    title: "Application Security",
+    description:
+      "Test applications and APIs through release, so vulnerabilities never reach production.",
+    href: "/solutions/",
+  },
+  {
+    icon: "/images/solutions/Usecase/user-03.svg",
+    title: "Identity and Access",
+    description:
+      "Evaluate every human and machine identity in real time as least privilege enforces itself.",
+    href: "/solutions/",
+  },
+  {
+    icon: "/images/solutions/Usecase/check-verified-03.svg",
+    title: "Compliance and Audit",
+    description:
+      "SOC 2 and custom frameworks mapped to live coverage with evidence collected continuously.",
+    href: "/solutions/",
+  },
+  {
+    icon: "/images/solutions/Usecase/security.svg",
+    title: "Security and Operations",
+    description:
+      "Embed security checks directly into the pipeline, automated and fast for engineers.",
+    href: "/solutions/",
+  },
+  {
+    icon: "/images/solutions/Usecase/enterprise.svg",
+    title: "Enterprise Security Teams",
+    description:
+      "Consolidate point tools into one command layer with SSO and white-label reporting.",
+    href: "/solutions/",
+  },
+];
+---
+
+<section
+  class="bg-white py-16 lg:pt-[100px] lg:pb-[101px]"
+  aria-labelledby="solutions-usecase-title"
+  data-sol-usecase
+>
+  <div class="mx-auto max-w-[1440px] px-6 lg:px-[120px]">
+    <div class="flex flex-col items-center gap-10 lg:gap-16">
+      <header class="flex w-full max-w-[738px] flex-col items-center gap-4 text-center">
+        <p
+          class="inline-flex h-8 items-center gap-2 border border-border-badge bg-white px-[9px]"
+          data-su-badge
+        >
+          <span class="size-2.5 bg-[#607AFF]" aria-hidden="true"></span>
+          <span class="font-sans text-sm font-medium uppercase tracking-[0.28px] text-ink-muted">
+            Use case
+          </span>
+        </p>
+        <div class="flex flex-col items-center gap-3">
+          <h2
+            id="solutions-usecase-title"
+            class="font-display text-[42px] leading-[1.16] tracking-normal text-ink font-mix-medium max-lg:text-[32px] max-lg:leading-[1.25] max-sm:text-[26px]"
+            data-su-title
+          >
+            Wherever your risk lives
+          </h2>
+          <p
+            class="max-w-[540px] font-sans text-[20px] leading-[1.3] text-pretty text-ink-muted max-sm:text-base"
+            data-su-sub
+          >
+            Six starting points. One platform underneath all of them.
+          </p>
+        </div>
+      </header>
+
+      <ul
+        class="m-0 grid w-full list-none grid-cols-1 gap-8 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6"
+      >
+        {
+          useCases.map((useCase) => (
+            <li
+              class="flex flex-col overflow-hidden rounded-b-3xl border border-border-badge bg-white"
+              data-su-card
+            >
+              <div class="flex flex-1 flex-col gap-6 px-5 pt-10 pb-10 text-center sm:px-[22px]">
+                <span
+                  class="mx-auto grid size-11 place-items-center rounded-[10px] bg-panel"
+                  data-su-icon
+                >
+                  <img
+                    src={useCase.icon}
+                    alt=""
+                    aria-hidden="true"
+                    width="24"
+                    height="24"
+                    class="size-6"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </span>
+
+                <div class="flex flex-col gap-2" data-su-copy>
+                  <h3 class="m-0 font-sans text-[18px] font-medium leading-[27px] text-ink-strong">
+                    {useCase.title}
+                  </h3>
+                  <p class="m-0 font-sans text-base leading-6 text-[#666D80]">
+                    {useCase.description}
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href={useCase.href}
+                class="inline-flex items-center justify-center gap-2 bg-panel px-6 py-3 font-sans text-base font-semibold leading-6 text-[#3B82F6] no-underline transition-colors duration-150 hover:text-brand-600 focus-visible:text-brand-600"
+                data-su-link
+              >
+                Explore Case
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

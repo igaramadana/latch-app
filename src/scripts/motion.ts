@@ -117,6 +117,7 @@ export function initMotion() {
     solutionsHeroIntro(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
+    solutionsUseCaseIntro(paused),
     ctaHover(paused),
     scrollReveals(paused),
     howItWorksIntro(paused),
@@ -344,6 +345,59 @@ function heroIntro(paused: boolean): () => void {
     gsap.set([heading, sub, badge, ctas, iso, cards, pattern].filter(Boolean), {
       clearProps: "all",
     });
+  };
+}
+
+function solutionsUseCaseIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-sol-usecase]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-su-badge]");
+  const title = section.querySelector<HTMLElement>("[data-su-title]");
+  const sub = section.querySelector<HTMLElement>("[data-su-sub]");
+  const cards = gsap.utils.toArray<HTMLElement>("[data-su-card]", section);
+  const icons = gsap.utils.toArray<HTMLElement>("[data-su-icon]", section);
+  const links = gsap.utils.toArray<HTMLElement>("[data-su-link]", section);
+
+  if (!title || !cards.length) return () => {};
+
+  const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
+
+  // Same guard as the sibling sections: never hide what is already on screen.
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.9;
+
+  gsap.set(header, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 22 });
+  gsap.set(cards, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 28 });
+  gsap.set(icons, { scale: onScreen ? 1 : 0.85 });
+
+  const parts = [...header, ...cards, ...icons];
+
+  if (onScreen) {
+    const intro = gsap.timeline({ defaults: { ease: EASE } });
+
+    intro.from(cards, { y: 16, duration: 0.7, stagger: 0.07 }, 0.05)
+      .from(icons, { scale: 0.85, duration: 0.5, stagger: 0.07, ease: "back.out(1.7)" }, 0.2);
+
+    return () => {
+      intro.kill();
+      gsap.set(parts, { clearProps: "all" });
+    };
+  }
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 78%", once: true },
+  });
+
+  tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.09 }, 0)
+    // Six cards in reading order; a 0.07 stagger keeps the grid from pulsing.
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.07 }, 0.16)
+    .to(icons, { scale: 1, duration: 0.6, stagger: 0.07, ease: "back.out(1.7)" }, 0.34);
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set(parts, { clearProps: "all" });
   };
 }
 
