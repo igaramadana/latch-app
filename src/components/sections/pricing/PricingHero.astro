@@ -1,0 +1,348 @@
+---
+interface Plan {
+  key: "starter" | "professional" | "enterprise";
+  name: string;
+  description: string;
+  price: string;
+  art: { src: string; width: number; height: number };
+  features: string[];
+  highlighted?: boolean;
+}
+
+const plans: Plan[] = [
+  {
+    key: "starter",
+    name: "Starter",
+    description: "Perfect for small open-source projects.",
+    price: "0",
+    art: { src: "/images/pricing/hero/starter.png", width: 213, height: 183 },
+    features: [
+      "Up to 3 active projects",
+      "Basic identity verification",
+      "Weekly security scans",
+      "Community support",
+    ],
+  },
+  {
+    key: "professional",
+    name: "Professional",
+    description: "Comprehensive security for growing teams",
+    price: "99",
+    art: { src: "/images/pricing/hero/professional.png", width: 255, height: 215 },
+    features: [
+      "Unlimited projects",
+      "Identity access protection",
+      "Real-time threat detection",
+      "Compliance reporting",
+    ],
+    highlighted: true,
+  },
+  {
+    key: "enterprise",
+    name: "Enterprise",
+    description: "Tailored security solutions for large organizations",
+    price: "299",
+    art: { src: "/images/pricing/hero/enterprise.png", width: 232, height: 191 },
+    features: [
+      "Dedicated security agent",
+      "Advanced API testing",
+      "Custom compliance frameworks",
+      "SLA guarantee",
+    ],
+  },
+];
+---
+
+<section
+  class="relative isolate overflow-hidden bg-hero-bg"
+  aria-labelledby="pricing-hero-title"
+  data-pricing-hero
+>
+  <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div class="pr-pattern absolute inset-x-0 top-[39%] h-[69%]" data-pr-pattern></div>
+  </div>
+
+  <div
+    class="relative mx-auto w-full max-w-[1440px] px-6 pt-[calc(var(--spacing-nav)+clamp(40px,7vw,101px))] pb-[clamp(56px,8.9vw,128px)] lg:px-[120px]"
+  >
+    <div class="mx-auto flex max-w-[1200px] flex-col gap-8 lg:gap-12">
+      <header class="flex flex-col items-start gap-4">
+        <div class="flex items-center gap-2" data-pr-eyebrow>
+          <img
+            src="/images/solutions/Hero/lock-keyhole-circle.svg"
+            alt=""
+            aria-hidden="true"
+            width="24"
+            height="24"
+            class="size-6 flex-none"
+          />
+          <p class="m-0 font-sans text-sm font-medium leading-[22.5px] text-ink">Pricing</p>
+        </div>
+
+        <div
+          class="flex w-full flex-col items-start gap-6 min-[900px]:flex-row min-[900px]:items-end min-[900px]:justify-between"
+        >
+          <div class="flex max-w-[774px] flex-col gap-3">
+            <h1
+              id="pricing-hero-title"
+              class="m-0 font-display text-[clamp(34px,4.2vw,56px)] leading-[1.3] tracking-normal text-ink font-mix-medium"
+              data-pr-title
+            >
+              Pricing that fit with teams
+            </h1>
+            <p
+              class="m-0 font-sans text-[20px] leading-[30px] text-pretty text-ink-muted max-sm:text-base max-sm:leading-6"
+              data-pr-sub
+            >
+              All plans include continuous, identity-aware protection with no hidden fees.
+            </p>
+          </div>
+
+          <div class="flex flex-none items-center gap-2" data-pr-toggle>
+            {/* Knob sits left in the design, so the listed prices are monthly;
+                yearly is the same numbers at -20%, computed in one place. */}
+            <button
+              type="button"
+              role="switch"
+              aria-checked="false"
+              aria-label="Bill yearly and save 20 percent"
+              class="billing-switch relative inline-flex h-5 w-[45.5px] flex-none cursor-pointer items-center rounded-full bg-[#E3E8EF] p-0 shadow-[inset_0_0_2px_rgb(0_0_0_/_0.25)]"
+              data-billing-toggle
+            >
+              <span
+                class="billing-switch__knob absolute left-0 size-[25.5px] rounded-full bg-white shadow-[0_0_4px_rgb(0_0_0_/_0.15)]"
+              ></span>
+            </button>
+            <span class="font-sans text-sm font-medium text-ink">Yearly</span>
+            <span
+              class="rounded bg-hero-badge px-2 py-0.5 font-sans text-[10px] font-bold leading-none text-hero-badge-ink"
+            >
+              SAVE 20%
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <div
+        class="grid grid-cols-1 overflow-hidden bg-white shadow-[0_1px_1px_-0.5px_rgb(23_23_23_/_0.06),0_3px_3px_-1.5px_rgb(23_23_23_/_0.06)] min-[900px]:grid-cols-3"
+      >
+        {
+          plans.map((plan) => (
+            <div
+              class:list={[
+                "flex flex-col gap-6 px-5 py-[26px] max-[899px]:mx-auto max-[899px]:w-full max-[899px]:max-w-[440px]",
+                plan.key !== "enterprise" && "max-[899px]:border-b max-[899px]:border-border-badge min-[900px]:border-r min-[900px]:border-border-badge",
+              ]}
+              data-pr-card
+            >
+              <div
+                class:list={[
+                  "relative flex flex-col gap-8 overflow-hidden px-4 pt-6 pb-8",
+                  plan.highlighted
+                    ? "bg-linear-[181deg,#5E77FF_0%,#2E3C9C_100%]"
+                    : "bg-panel",
+                ]}
+                data-pr-head
+              >
+                {plan.highlighted && (
+                  <>
+                    <img
+                      src="/images/pricing/hero/card_pattern.svg"
+                      alt=""
+                      aria-hidden="true"
+                      width="218"
+                      height="222"
+                      loading="eager"
+                      decoding="async"
+                      class="pointer-events-none absolute top-0 right-0 h-auto w-[min(218px,61%)]"
+                      data-pr-card-pattern
+                    />
+                    <span class="absolute top-2 right-3 z-10 rounded bg-hero-badge px-2.5 py-1 font-sans text-[10px] font-bold leading-none text-hero-badge-ink">
+                      RECOMMENDED
+                    </span>
+                  </>
+                )}
+
+                <div class="flex max-w-[239px] flex-col gap-2">
+                  <h2
+                    class:list={[
+                      "m-0 font-sans text-[19px] font-semibold leading-[23px]",
+                      plan.highlighted ? "text-white" : "text-ink",
+                    ]}
+                  >
+                    {plan.name}
+                  </h2>
+                  <p
+                    class:list={[
+                      "m-0 font-sans text-sm leading-[21px]",
+                      plan.highlighted ? "text-white/70" : "text-ink/70",
+                    ]}
+                  >
+                    {plan.description}
+                  </p>
+                </div>
+
+                <p class="m-0 flex items-baseline gap-1" data-pr-price>
+                  <span
+                    class:list={[
+                      "font-sans text-[48px] font-medium leading-none tabular-nums",
+                      plan.highlighted ? "text-white" : "text-ink",
+                    ]}
+                    data-pr-amount
+                    data-monthly={plan.price}
+                  >
+                    ${plan.price}
+                  </span>
+                  <span
+                    class:list={[
+                      "font-sans text-base font-normal",
+                      plan.highlighted ? "text-white/50" : "text-ink/50",
+                    ]}
+                  >
+                    /mo
+                  </span>
+                </p>
+
+                <img
+                  src={plan.art.src}
+                  alt=""
+                  aria-hidden="true"
+                  width={plan.art.width}
+                  height={plan.art.height}
+                  loading="lazy"
+                  decoding="async"
+                  class="pointer-events-none absolute right-2 bottom-0 h-auto"
+                  style={`width: ${plan.art.width / 2}px`}
+                  data-pr-art
+                />
+              </div>
+
+              <ul class="m-0 flex list-none flex-col gap-3 px-2 p-0" data-pr-features>
+                {plan.features.map((feature) => (
+                  <li class="flex items-center gap-2" data-pr-feature>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      aria-hidden="true"
+                      class="size-5 flex-none"
+                    >
+                      <path
+                        d="M3.75 10.625 7.5 14.375 16.25 5.625"
+                        stroke="#3B82F6"
+                        stroke-width="1.25"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    <span class="font-sans text-sm leading-5 text-ink">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                href="/signup"
+                class:list={[
+                  "inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 font-sans text-sm no-underline",
+                  plan.highlighted
+                    ? "bg-linear-to-b from-brand-500 from-[6.579%] to-brand-400 font-medium text-[#f8fafc] shadow-cta [border:1px_solid_#758cfd] [text-shadow:0_2px_4px_#4785f0] hover:brightness-105"
+                    : "bg-linear-to-b from-hero-bg from-[8.9955%] to-white font-normal text-ink shadow-[0_4px_4px_rgb(0_0_0_/_0.05),0_0_0_1px_#edf3fc] [border:1px_solid_#ffffff] hover:shadow-[0_4px_8px_rgb(0_0_0_/_0.08),0_0_0_1px_#dfe8f7]",
+                ]}
+                data-pr-cta
+              >
+                Get Started
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M6 4l4 4-4 4"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>("[data-billing-toggle]");
+
+  if (toggle) {
+    const amounts = Array.from(document.querySelectorAll<HTMLElement>("[data-pr-amount]"));
+
+    const render = (yearly: boolean) => {
+      toggle.setAttribute("aria-checked", String(yearly));
+      for (const amount of amounts) {
+        const monthly = Number(amount.dataset.monthly ?? 0);
+        const value = yearly ? Math.round(monthly * 0.8) : monthly;
+        amount.textContent = `$${value}`;
+      }
+    };
+
+    toggle.addEventListener("click", () => {
+      render(toggle.getAttribute("aria-checked") !== "true");
+    });
+  }
+</script>
+
+<style>
+  .billing-switch__knob {
+    transition: transform 0.2s ease;
+  }
+
+  .billing-switch[aria-checked="true"] {
+    background-color: var(--color-brand-500);
+  }
+
+  .billing-switch[aria-checked="true"] .billing-switch__knob {
+    transform: translateX(20px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .billing-switch__knob {
+      transition: none;
+    }
+  }
+
+  /* Same fine halftone as the rest of the site; the export's texture was a
+     placeholder image, so the site pattern stands in at matching weight. */
+  /* Tuning values, calibrated against the reference render:
+     radius 3.3px on an 8px pitch, ink rgb(64 105 178) at alpha 0.157.
+     Rendered contrast peaks at 5.6 std in the margin strip, matching the
+     reference's 5.65; the halftone itself is a CSS grid stand-in for the
+     placeholder bitmap Figma used. */
+  .pr-pattern {
+    --dot-r: 3.3px;
+    --dot-a: 0.157;
+    background-image: radial-gradient(
+      circle at center,
+      rgb(64 105 178 / var(--dot-a)) 0 var(--dot-r),
+      rgb(64 105 178 / 0) calc(var(--dot-r) + 1.1px)
+    );
+    background-size: 8px 8px;
+    /* Measured from the reference: the texture ramps in from ~y400, peaks at
+       ~y640 and is gone by ~y880, inside a band that starts at 39% of the
+       section. Two hard stops keep the peak flat instead of a single ramp. */
+    mask-image: linear-gradient(
+      180deg,
+      rgb(0 0 0 / 0.15) 0%,
+      rgb(0 0 0 / 0.25) 3%,
+      rgb(0 0 0 / 0.51) 14.9%,
+      rgb(0 0 0 / 0.85) 26.8%,
+      rgb(0 0 0 / 0.95) 32.7%,
+      #000 38.7%,
+      #000 44.6%,
+      rgb(0 0 0 / 0.85) 50.6%,
+      rgb(0 0 0 / 0.6) 56.5%,
+      rgb(0 0 0 / 0.32) 63%,
+      rgb(0 0 0 / 0.08) 71%,
+      rgb(0 0 0 / 0) 78%
+    );
+  }
+</style>

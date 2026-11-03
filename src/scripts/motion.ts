@@ -115,6 +115,7 @@ export function initMotion() {
     heroIntro(paused),
     platformHeroIntro(paused),
     solutionsHeroIntro(paused),
+    pricingHeroIntro(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
     solutionsUseCaseIntro(paused),
@@ -512,6 +513,108 @@ function solutionsOverviewIntro(paused: boolean): () => void {
     tl.scrollTrigger?.kill();
     tl.kill();
     gsap.set([...header, ...cards, ...icons, ...copies], { clearProps: "all" });
+  };
+}
+
+function pricingHeroIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-pricing-hero]");
+  if (!section) return () => {};
+
+  const eyebrow = section.querySelector<HTMLElement>("[data-pr-eyebrow]");
+  const title = section.querySelector<HTMLElement>("[data-pr-title]");
+  const sub = section.querySelector<HTMLElement>("[data-pr-sub]");
+  const toggle = section.querySelector<HTMLElement>("[data-pr-toggle]");
+  const pattern = section.querySelector<HTMLElement>("[data-pr-pattern]");
+  const heads = gsap.utils.toArray<HTMLElement>("[data-pr-head]", section);
+  const arts = gsap.utils.toArray<HTMLElement>("[data-pr-art]", section);
+  const rows = gsap.utils.toArray<HTMLElement>("[data-pr-feature]", section);
+  const ctas = gsap.utils.toArray<HTMLElement>("[data-pr-cta]", section);
+
+  if (!title || paused) return () => {};
+
+  let split: SplitText | null = null;
+  let tl: gsap.core.Timeline | null = null;
+  let float: gsap.core.Tween | null = null;
+
+  const run = () => {
+    split = SplitText.create(title, { type: "lines", linesClass: "pr-line" });
+
+    tl = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.8 },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    if (pattern) {
+      tl.fromTo(
+        pattern,
+        { autoAlpha: 0, yPercent: 4 },
+        { autoAlpha: 1, yPercent: 0, duration: 1.4, ease: "power2.out" },
+        0,
+      );
+    }
+
+    if (eyebrow) {
+      tl.fromTo(eyebrow, { autoAlpha: 0, y: -12 }, { autoAlpha: 1, y: 0, duration: 0.55 }, 0.1);
+    }
+
+    tl.fromTo(
+      split.lines,
+      { yPercent: 115, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 1, stagger: 0.1, ease: "power4.out" },
+      0.2,
+    );
+
+    if (sub) tl.fromTo(sub, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0 }, 0.44);
+    if (toggle) tl.fromTo(toggle, { autoAlpha: 0, x: 16 }, { autoAlpha: 1, x: 0 }, 0.5);
+
+    // Cards rise in reading order, then their artwork settles.
+    tl.fromTo(heads, { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.1 }, 0.5)
+      .fromTo(
+        arts,
+        { autoAlpha: 0, scale: 0.9, y: 12 },
+        { autoAlpha: 1, scale: 1, y: 0, duration: 0.8, stagger: 0.1, ease: "power3.out" },
+        0.66,
+      )
+      .fromTo(
+        rows,
+        { autoAlpha: 0, x: -10 },
+        { autoAlpha: 1, x: 0, duration: 0.4, stagger: 0.03 },
+        0.72,
+      )
+      .fromTo(
+        ctas,
+        { autoAlpha: 0, y: 12, scale: 0.96 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.55, stagger: 0.09, ease: "back.out(1.6)" },
+        0.9,
+      );
+
+    if (arts.length) {
+      float = gsap.to(arts, {
+        y: -6,
+        duration: 4.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        stagger: 0.4,
+        delay: 2.2,
+      });
+    }
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    tl?.kill();
+    float?.kill();
+    split?.revert();
+    gsap.set(
+      [eyebrow, sub, toggle, pattern, ...heads, ...arts, ...rows, ...ctas].filter(Boolean) as HTMLElement[],
+      { clearProps: "all" },
+    );
   };
 }
 
