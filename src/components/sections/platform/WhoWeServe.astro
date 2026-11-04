@@ -9,28 +9,28 @@ interface Audience {
 const audiences: Audience[] = [
   {
     key: "leaders",
-    icon: "/images/platforms/who-we-serve/shield-03.svg",
+    icon: "/images/platform/who-we-serve/shield-03.svg",
     title: "Security leaders",
     description:
       "Full-stack visibility and audit-ready reporting in one place for CISOs and security teams.",
   },
   {
     key: "devsecops",
-    icon: "/images/platforms/who-we-serve/devsecops.svg",
+    icon: "/images/platform/who-we-serve/devsecops.svg",
     title: "DevSecOps",
     description:
       "Security that runs inside the pipeline so engineers ship fast without trade-offs.",
   },
   {
     key: "detect",
-    icon: "/images/platforms/who-we-serve/Solid.svg",
+    icon: "/images/platform/who-we-serve/Solid.svg",
     title: "Detect",
     description:
       "AI models surface and prioritize abnormal behavior before it becomes a breach.",
   },
   {
     key: "cloud",
-    icon: "/images/platforms/who-we-serve/building-07.svg",
+    icon: "/images/platform/who-we-serve/building-07.svg",
     title: "Cloud-native companies",
     description:
       "Protection designed for modern, fast-moving SaaS from startup to enterprise scale.",
@@ -46,7 +46,7 @@ const cellRules: Record<Audience["key"], string> = {
 };
 
 const avatars = [1, 2, 3, 4].map(
-  (n) => `/images/platforms/who-we-serve/avatar${n}.webp`,
+  (n) => `/images/platform/who-we-serve/avatar${n}.webp`,
 );
 ---
 
@@ -58,7 +58,7 @@ const avatars = [1, 2, 3, 4].map(
   <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
     <div class="absolute inset-x-0 top-[245px] h-[674px]" data-wws-pattern>
       <img
-        src="/images/platforms/who-we-serve/pattern.webp"
+        src="/images/platform/who-we-serve/pattern.webp"
         alt=""
         class="absolute inset-x-0 top-0 h-auto w-full opacity-[0.095]"
         loading="lazy"
@@ -163,7 +163,7 @@ const avatars = [1, 2, 3, 4].map(
             }
             <span class="grid size-5 place-items-center rounded-full bg-white outline-2 outline-[#6689FF]">
               <img
-                src="/images/platforms/who-we-serve/plus.svg"
+                src="/images/platform/who-we-serve/plus.svg"
                 alt=""
                 width="10"
                 height="10"
