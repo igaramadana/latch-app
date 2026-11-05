@@ -116,6 +116,7 @@ export function initMotion() {
     platformHeroIntro(paused),
     solutionsHeroIntro(paused),
     pricingHeroIntro(paused),
+    comparePlansIntro(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
     solutionsUseCaseIntro(paused),
@@ -365,7 +366,7 @@ function solutionsUseCaseIntro(paused: boolean): () => void {
   const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
   // Same guard as the sibling sections: never hide what is already on screen.
-  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.9;
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
 
   gsap.set(header, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 22 });
   gsap.set(cards, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 28 });
@@ -387,7 +388,7 @@ function solutionsUseCaseIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 78%", once: true },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
   tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.09 }, 0)
@@ -418,7 +419,7 @@ function solutionsFeaturesIntro(paused: boolean): () => void {
 
   // A reload while already scrolled here would flash the cards hidden first, so
   // this section plays in place when it is on screen at load.
-  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.9;
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
 
   gsap.set(header, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 22 });
   gsap.set(cards, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 30 });
@@ -442,7 +443,7 @@ function solutionsFeaturesIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 78%", once: true },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
   tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.09 }, 0)
@@ -476,7 +477,7 @@ function solutionsOverviewIntro(paused: boolean): () => void {
 
   // On tall viewports the section is already on screen at load. Hiding it first
   // would flash, so it plays a short in-place reveal instead of scrolling in.
-  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.9;
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
 
   const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
@@ -501,7 +502,7 @@ function solutionsOverviewIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 78%", once: true },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
   tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.09 }, 0)
@@ -857,14 +858,14 @@ function scrollReveals(paused: boolean): () => void {
 
   const hidden = gsap
     .utils.toArray<HTMLElement>("[data-reveal]")
-    .filter((el) => el.getBoundingClientRect().top > window.innerHeight * 0.9);
+    .filter((el) => el.getBoundingClientRect().top > window.innerHeight * 0.75);
 
   if (!hidden.length) return () => {};
 
   gsap.set(hidden, { autoAlpha: 0, y: 32 });
 
   const triggers = ScrollTrigger.batch(hidden, {
-    start: "top 88%",
+    start: "top 75%",
     once: true,
     onEnter: (els) =>
       gsap.to(els, {
@@ -895,7 +896,7 @@ function howItWorksIntro(paused: boolean): () => void {
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.9;
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
   if (onScreen) return () => {};
 
   gsap.set(parts, { autoAlpha: 0, y: 24 });
@@ -903,7 +904,7 @@ function howItWorksIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
   tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
@@ -927,7 +928,7 @@ function capabilitiesIntro(paused: boolean): () => void {
   if (!title || !cards.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
   const arts = cards
@@ -940,7 +941,7 @@ function capabilitiesIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
   tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
@@ -966,7 +967,7 @@ function keyBenefitsIntro(paused: boolean): () => void {
   if (!title || !items.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
@@ -976,7 +977,7 @@ function keyBenefitsIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
   tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
@@ -1005,7 +1006,7 @@ function whoWeServeIntro(paused: boolean): () => void {
   if (!title || !cards.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
@@ -1015,7 +1016,7 @@ function whoWeServeIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
   if (pattern) {
@@ -1054,35 +1055,12 @@ function howItWorksStepsMotion(paused: boolean): () => void {
 
   const ACTIVE = "#5E71FF";
   const IDLE = "#E3E8EF";
-  const PAST = 0.8;
-  // Ahead-of-active steps are washed by the white gradient, so they keep full
-  // opacity and only gain the blur the design draws on them.
   const FUTURE_BLUR = [0, 0.25, 0.6, 1.2];
   const n = steps.length;
   let active = 0;
 
-  // The blue segment runs from the active circle to the next one; everything
-  // above it is already walked and stays grey. Measured from the circles, not
-  // from thirds, because Figma's gaps are 190 / 198 / 194.
-  const lineSegment = (index: number) => {
-    const line = lineFill.parentElement;
-    if (!line || !nodes.length) return { top: 0, height: 0 };
-
-    const box = line.getBoundingClientRect();
-    const centers = nodes.map((node) => {
-      const rect = node.getBoundingClientRect();
-      return rect.top + rect.height / 2 - box.top;
-    });
-    const last = centers.length - 1;
-
-    // On the last step there is no "next" to point at, and the connector above
-    // it belongs to a step that is already done: collapse the segment.
-    if (index >= last) return { top: centers[last], height: 0 };
-    return { top: centers[index], height: centers[index + 1] - centers[index] };
-  };
-
   const placeLine = () => {
-    const segment = lineSegment(active);
+    const segment = lineSegmentUpTo(active);
     gsap.set(lineFill, { top: segment.top, height: segment.height });
   };
 
@@ -1099,26 +1077,28 @@ function howItWorksStepsMotion(paused: boolean): () => void {
     return Math.min(100, ((block.bottom - box.top) / box.height) * 100);
   };
 
-  const paint = (active: number, duration: number) => {
+  // Progressive completion: every step up to `last` is lit. Scroll unlocks
+  // them one by one, so the bottom of the track shows them all active.
+  const paintUpTo = (last: number, duration: number) => {
     const ease = "power2.out";
 
     steps.forEach((step, index) => {
-      const ahead = index - active;
+      const reached = index <= last;
+      const ahead = index - last;
       const depth = Math.min(Math.abs(ahead), FUTURE_BLUR.length - 1);
-      const opacity = ahead === 0 ? 1 : ahead < 0 ? PAST : 1;
       const blur = ahead > 0 ? FUTURE_BLUR[depth] : 0;
 
-      gsap.to(step, { opacity, filter: `blur(${blur}px)`, duration, ease, overwrite: "auto" });
+      gsap.to(step, { opacity: 1, filter: `blur(${blur}px)`, duration, ease, overwrite: "auto" });
       gsap.to(nodes[index], {
-        backgroundColor: ahead === 0 ? ACTIVE : IDLE,
+        backgroundColor: reached ? ACTIVE : IDLE,
         duration,
         ease,
         overwrite: "auto",
       });
-      gsap.to(icons[index], { opacity: ahead === 0 ? 1 : 0, duration, overwrite: "auto" });
+      gsap.to(icons[index], { opacity: reached ? 1 : 0, duration, overwrite: "auto" });
     });
 
-    const segment = lineSegment(active);
+    const segment = lineSegmentUpTo(last);
     gsap.to(lineFill, {
       top: segment.top,
       height: segment.height,
@@ -1129,7 +1109,7 @@ function howItWorksStepsMotion(paused: boolean): () => void {
 
     if (fade) {
       gsap.to(fade, {
-        "--hiw-fade": fadeFor(active),
+        "--hiw-fade": fadeFor(Math.min(last, n - 1)),
         duration,
         ease: "power2.inOut",
         overwrite: "auto",
@@ -1137,11 +1117,23 @@ function howItWorksStepsMotion(paused: boolean): () => void {
     }
   };
 
+  // Fill from the top of the line through the last reached node.
+  const lineSegmentUpTo = (last: number) => {
+    const line = lineFill.parentElement;
+    if (!line || !nodes.length) return { top: 0, height: 0 };
+    const box = line.getBoundingClientRect();
+    const node = nodes[Math.min(Math.max(last, 0), n - 1)];
+    if (!node) return { top: 0, height: 0 };
+    const nb = node.getBoundingClientRect();
+    return { top: 0, height: Math.max(0, nb.bottom - box.top) };
+  };
+
   // Step one is the resting state of the design, so paint it before any
   // ScrollTrigger exists: a deep link or a killed timeline still looks right.
   gsap.set(nodes[0], { backgroundColor: ACTIVE });
   gsap.set(icons[0], { opacity: 1 });
   placeLine();
+  gsap.set(lineFill, { height: 0 });
 
   if (paused) {
     // No tween will ever run here, so place the gradient by hand or it would
@@ -1154,7 +1146,7 @@ function howItWorksStepsMotion(paused: boolean): () => void {
 
   const header = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 78%", once: true },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
   header
@@ -1168,37 +1160,55 @@ function howItWorksStepsMotion(paused: boolean): () => void {
   // every step owns exactly one viewport of scrolling. Matches the media query
   // in HowItWorksSteps.astro.
   mm.add("(min-width: 1025px) and (min-height: 740px)", () => {
-    paint(0, 0);
+    // One step lit at rest; scrolling unlocks the rest cumulatively, so the
+    // bottom of the track shows every number active. The step trigger is a
+    // plain onUpdate (no scrub) so it fires on every scroll event; the fill
+    // line below scrubs through its own tween.
+    paintUpTo(0, 0);
 
     const trigger = ScrollTrigger.create({
       trigger: track,
       start: "top top",
       end: "bottom bottom",
       onUpdate: (self) => {
-        const next = Math.min(n - 1, Math.floor(self.progress * n));
-        if (next === active) return;
-        active = next;
-        paint(next, 0.7);
-      },
-      onLeaveBack: () => {
-        if (active === 0) return;
-        active = 0;
-        paint(0, 0.7);
+        const last = Math.min(n - 1, Math.max(0, Math.round(self.progress * (n - 1))));
+        if (last === active) return;
+        active = last;
+        paintUpTo(last, 0);
       },
     });
 
-    return () => trigger.kill();
+    const fillTween = gsap.fromTo(
+      lineFill,
+      { height: 0 },
+      {
+        height: () => lineSegmentUpTo(n - 1).height,
+        ease: "none",
+        scrollTrigger: {
+          trigger: track,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+        },
+      },
+    );
+
+    return () => {
+      trigger.kill();
+      fillTween.scrollTrigger?.kill();
+      fillTween.kill();
+    };
   });
 
   // No sticky stage here, so the steps scroll past the viewport centre and the
   // one crossing it becomes active.
   mm.add("(max-width: 1024px), (min-width: 1025px) and (max-height: 739px)", () => {
-    paint(0, 0);
+    paintUpTo(0, 0);
 
     const focus = (index: number) => {
       if (index === active) return;
       active = index;
-      paint(index, 0.6);
+      paintUpTo(index, 0.6);
     };
 
     const triggers = steps.map((step, index) =>
@@ -1239,7 +1249,7 @@ function overviewIntro(paused: boolean): () => void {
   if (!title || !cards.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
@@ -1248,7 +1258,7 @@ function overviewIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
   tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 }).to(
@@ -1279,7 +1289,7 @@ function whyItMattersIntro(paused: boolean): () => void {
 
   const copy = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.9) {
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) {
     return () => {};
   }
 
@@ -1291,7 +1301,7 @@ function whyItMattersIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
   tl.to(art, { autoAlpha: 1, y: 0, duration: 0.9 }, 0);
@@ -1460,7 +1470,7 @@ function useCasesMotion(paused: boolean): () => void {
     });
   }
 
-  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.9;
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.75;
   if (!belowFold) return () => cleanups.forEach((fn) => fn());
 
   const run = () => {
@@ -1477,7 +1487,7 @@ function useCasesMotion(paused: boolean): () => void {
 
     intro = gsap.timeline({
       defaults: { ease: EASE, duration: 0.8 },
-      scrollTrigger: { trigger: section, start: "top 78%", once: true },
+      scrollTrigger: { trigger: section, start: "top 75%", once: true },
       onComplete: () => {
         split?.revert();
         split = null;
@@ -1586,7 +1596,7 @@ function securityImpactMotion(paused: boolean): () => void {
 
   if (paused) return killScrub;
 
-  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.9;
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.75;
   if (!belowFold) return killScrub;
 
   const run = () => {
@@ -1620,7 +1630,7 @@ function securityImpactMotion(paused: boolean): () => void {
 
     intro = gsap.timeline({
       defaults: { ease: EASE, duration: 0.8 },
-      scrollTrigger: { trigger: section, start: "top 78%", once: true },
+      scrollTrigger: { trigger: section, start: "top 75%", once: true },
       onComplete: () => {
         split?.revert();
         split = null;
@@ -1674,7 +1684,7 @@ function featuresMotion(paused: boolean): () => void {
 
   if (paused) return () => {};
 
-  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.9;
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.75;
   if (!belowFold) return () => {};
 
   const run = () => {
@@ -1688,7 +1698,7 @@ function featuresMotion(paused: boolean): () => void {
 
     intro = gsap.timeline({
       defaults: { ease: EASE, duration: 0.8 },
-      scrollTrigger: { trigger: section, start: "top 78%", once: true },
+      scrollTrigger: { trigger: section, start: "top 75%", once: true },
       onComplete: () => {
         split?.revert();
         split = null;
@@ -1768,7 +1778,7 @@ function ctaSectionMotion(paused: boolean): () => void {
     );
   });
 
-  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.9;
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.75;
   if (!belowFold) return teardown;
 
   const run = () => {
@@ -1783,7 +1793,7 @@ function ctaSectionMotion(paused: boolean): () => void {
 
     intro = gsap.timeline({
       defaults: { ease: EASE, duration: 0.8 },
-      scrollTrigger: { trigger: section, start: "top 82%", once: true },
+      scrollTrigger: { trigger: section, start: "top 75%", once: true },
       onComplete: () => {
         split?.revert();
         split = null;
@@ -1805,6 +1815,127 @@ function ctaSectionMotion(paused: boolean): () => void {
   else document.fonts.ready.then(run);
 
   return teardown;
+}
+
+function comparePlansIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-compare-plans]");
+  if (!section) return () => {};
+
+  const title = section.querySelector<HTMLElement>("[data-cp-title]");
+  const sub = section.querySelector<HTMLElement>("[data-cp-sub]");
+  const art = section.querySelector<HTMLElement>("[data-cp-art]");
+  const layers = gsap.utils.toArray<HTMLElement>("[data-cp-art-layer]", section);
+  const rows = gsap.utils.toArray<HTMLTableRowElement>("[data-cp-row]", section);
+  const hints = gsap.utils.toArray<HTMLElement>("[data-cp-hint-panel]", section);
+  const strip = section.querySelector<HTMLElement>("[data-cp-scroll]");
+
+  if (!title || paused) return () => {};
+
+  let split: SplitText | null = null;
+  let drift: gsap.core.Tween | null = null;
+
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.85;
+  if (onScreen) return () => {};
+
+  const run = () => {
+    split = SplitText.create(title, { type: "lines", linesClass: "cp-line" });
+
+    const tl = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.8 },
+      scrollTrigger: { trigger: section, start: "top 75%", once: true },
+      onComplete: () => {
+        // Restoring the unsplit heading keeps the text reflowable on resize.
+        split?.revert();
+        split = null;
+      },
+    });
+
+    tl.fromTo(
+      split.lines,
+      { yPercent: 110, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 0.9, stagger: 0.08, ease: "power4.out" },
+      0,
+    )
+      .fromTo(sub, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.24)
+      .fromTo(
+        layers,
+        { autoAlpha: 0, y: 18, scale: 0.96 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 1.1, stagger: 0.09, ease: "power2.out" },
+        0.18,
+      )
+      .fromTo(
+        rows,
+        { autoAlpha: 0, y: 10 },
+        { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.055 },
+        0.4,
+      );
+
+    // Idle drift, started only once the entrance has settled.
+    if (art && layers.length) {
+      drift = gsap.to(layers, {
+        y: (index) => (index === layers.length - 1 ? -8 : -4),
+        duration: 4.6,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        stagger: 0.35,
+      });
+    }
+  };
+
+  // Core parallax on the illustration, scrubbed rather than looped so it stops
+  // costing frames when the section is off screen.
+  const artTween =
+    art && layers.length
+      ? gsap.fromTo(
+          layers,
+          { yPercent: 4 },
+          {
+            yPercent: -4,
+            ease: "none",
+            scrollTrigger: { trigger: art, start: "top bottom", end: "bottom top", scrub: 0.6 },
+          },
+        )
+      : null;
+
+  const cleanups: Array<() => void> = [];
+
+  // Only a table that actually overflows should be reachable by Tab; otherwise
+  // the container becomes a dead tab stop on wide screens.
+  if (strip) {
+    const sync = () => {
+      const scrollable = strip.scrollWidth > strip.clientWidth + 1;
+      if (scrollable) strip.setAttribute("tabindex", "0");
+      else strip.removeAttribute("tabindex");
+      strip.classList.toggle("cp-has-overflow", scrollable);
+    };
+
+    sync();
+
+    const observer = new ResizeObserver(sync);
+    observer.observe(strip);
+    const onResize = () => sync();
+    window.addEventListener("resize", onResize);
+
+    cleanups.push(() => {
+      observer.disconnect();
+      window.removeEventListener("resize", onResize);
+    });
+  }
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    split?.revert();
+    drift?.kill();
+    artTween?.scrollTrigger?.kill();
+    artTween?.kill();
+    cleanups.forEach((fn) => fn());
+    gsap.set([sub, art, ...layers, ...rows, ...hints].filter(Boolean) as HTMLElement[], {
+      clearProps: "all",
+    });
+  };
 }
 
 function footerMotion(paused: boolean): () => void {
