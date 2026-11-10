@@ -1823,7 +1823,6 @@ function comparePlansIntro(paused: boolean): () => void {
 
   const title = section.querySelector<HTMLElement>("[data-cp-title]");
   const sub = section.querySelector<HTMLElement>("[data-cp-sub]");
-  const art = section.querySelector<HTMLElement>("[data-cp-art]");
   const layers = gsap.utils.toArray<HTMLElement>("[data-cp-art-layer]", section);
   const rows = gsap.utils.toArray<HTMLTableRowElement>("[data-cp-row]", section);
   const hints = gsap.utils.toArray<HTMLElement>("[data-cp-hint-panel]", section);
@@ -1871,7 +1870,7 @@ function comparePlansIntro(paused: boolean): () => void {
       );
 
     // Idle drift, started only once the entrance has settled.
-    if (art && layers.length) {
+    if (layers.length) {
       drift = gsap.to(layers, {
         y: (index) => (index === layers.length - 1 ? -8 : -4),
         duration: 4.6,
@@ -1886,14 +1885,14 @@ function comparePlansIntro(paused: boolean): () => void {
   // Core parallax on the illustration, scrubbed rather than looped so it stops
   // costing frames when the section is off screen.
   const artTween =
-    art && layers.length
+    layers.length
       ? gsap.fromTo(
           layers,
           { yPercent: 4 },
           {
             yPercent: -4,
             ease: "none",
-            scrollTrigger: { trigger: art, start: "top bottom", end: "bottom top", scrub: 0.6 },
+            scrollTrigger: { trigger: layers[0], start: "top bottom", end: "bottom top", scrub: 0.6 },
           },
         )
       : null;
@@ -1932,7 +1931,7 @@ function comparePlansIntro(paused: boolean): () => void {
     artTween?.scrollTrigger?.kill();
     artTween?.kill();
     cleanups.forEach((fn) => fn());
-    gsap.set([sub, art, ...layers, ...rows, ...hints].filter(Boolean) as HTMLElement[], {
+    gsap.set([sub, ...layers, ...rows, ...hints].filter(Boolean) as HTMLElement[], {
       clearProps: "all",
     });
   };

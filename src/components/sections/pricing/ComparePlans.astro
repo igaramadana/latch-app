@@ -1,0 +1,574 @@
+---
+interface Plan {
+  key: "starter" | "professional" | "enterprise";
+  name: string;
+  price: string;
+  art: { src: string; width: number; height: number };
+}
+
+interface PlanCell {
+  value?: string;
+  check?: boolean;
+  /** A dash on a row the plan does not cover, versus one it covers weakly. */
+  muted?: boolean;
+}
+
+interface Feature {
+  label: string;
+  hint: string;
+  cells: [PlanCell, PlanCell, PlanCell];
+}
+
+const plans: Plan[] = [
+  {
+    key: "starter",
+    name: "Starter",
+    price: "$0/mo",
+    art: { src: "/images/pricing/hero/starter.png", width: 213, height: 183 },
+  },
+  {
+    key: "professional",
+    name: "Professional",
+    price: "$99/mo",
+    art: { src: "/images/pricing/hero/professional.png", width: 255, height: 215 },
+  },
+  {
+    key: "enterprise",
+    name: "Enterprise",
+    price: "$299/mo",
+    art: { src: "/images/pricing/hero/enterprise.png", width: 232, height: 191 },
+  },
+];
+
+const dash = (muted = true): PlanCell => ({ muted });
+const tick: PlanCell = { check: true };
+
+const features: Feature[] = [
+  {
+    label: "Projects",
+    hint: "How many environments you can protect at once.",
+    cells: [{ value: "3" }, { value: "Unlimited" }, { value: "Unlimited" }],
+  },
+  {
+    label: "Identity Network",
+    hint: "Least-privilege access for human and machine identities.",
+    cells: [dash(), tick, tick],
+  },
+  {
+    label: "Threat Detection",
+    hint: "How much of the detection engine is available to you.",
+    cells: [{ value: "Basic" }, { value: "Advanced" }, { value: "Full AI Agent" }],
+  },
+  {
+    label: "Continuous Testing",
+    hint: "Ongoing testing of applications and APIs before release.",
+    cells: [dash(false), tick, tick],
+  },
+  {
+    label: "Compliance (SOC 2/ISO)",
+    hint: "Frameworks mapped to live evidence you can hand to an auditor.",
+    cells: [dash(), tick, tick],
+  },
+  {
+    label: "API Support",
+    hint: "How far the API reaches into your own tooling.",
+    cells: [{ value: "Limited" }, { value: "Full" }, { value: "White-label" }],
+  },
+  {
+    label: "SSO/SAML",
+    hint: "Single sign-on through your existing identity provider.",
+    cells: [dash(), dash(), tick],
+  },
+];
+---
+
+<section
+  class="relative overflow-hidden bg-white py-16 lg:py-[150px]"
+  aria-labelledby="compare-plans-title"
+  data-compare-plans
+>
+  <div class="mx-auto max-w-[1440px] px-6 lg:px-[120px]">
+    <header class="flex flex-col gap-6 lg:gap-[32px]" data-cp-header>
+      <div class="flex flex-col gap-[2px]">
+        <h2
+          id="compare-plans-title"
+          class="m-0 max-w-[620px] font-display text-[32px] leading-[1.16] tracking-normal text-ink font-mix-medium max-sm:text-[26px] lg:text-[42px] lg:leading-[1.16]"
+          data-cp-title
+        >
+          Compare Plans
+        </h2>
+        <p class="m-0 max-w-full lg:max-w-[360px] font-sans text-base leading-7 text-ink-muted max-lg:text-base lg:text-[18px] lg:leading-[27px]" data-cp-sub>
+          More details about the plans
+        </p>
+      </div>
+
+    </header>
+
+    {/* The table can scroll sideways, so keyboard users need a focus stop. */}
+    <div
+      class="cp-table-scroll mt-6 lg:mt-[29px] [contain:paint]"
+      data-cp-scroll
+      role="region"
+      aria-labelledby="compare-plans-title"
+    >
+        <table class="cp-table" data-cp-table>
+          <caption class="sr-only">
+            Plan features side by side across Starter, Professional and Enterprise.
+          </caption>
+
+          <colgroup>
+            <col class="cp-col-feature" />
+            <col />
+            <col />
+            <col />
+          </colgroup>
+
+          <thead>
+            <tr class="cp-row cp-row--head" data-cp-row>
+              <th scope="col" class="cp-head cp-head--spacer">
+                <span class="sr-only">Feature</span>
+              </th>
+              {
+                plans.map((plan) => (
+                  <th scope="col" class="cp-head" data-cp-col>
+                    <img
+                      class="cp-head__art"
+                      style={`--art-h: ${plan.art.height / 2}px`}
+                      src={plan.art.src}
+                      alt=""
+                      aria-hidden="true"
+                      width={plan.art.width}
+                      height={plan.art.height}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span class="cp-head__name">{plan.name}</span>
+                    <span class="cp-head__price">{plan.price}</span>
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+
+          <tbody>
+            {
+              features.map((feature) => (
+                <tr class="cp-row" data-cp-row>
+                  <th scope="row" class="cp-cell cp-cell--label" data-cp-label>
+                    <span class="cp-cell__label">
+                      {feature.label}
+                      <button
+                        type="button"
+                        class="cp-hint"
+                        data-cp-hint
+                        aria-expanded="false"
+                        aria-label={`About ${feature.label}`}
+                      >
+                        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                          <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.25" />
+                          <path
+                            d="M10 9v4.6"
+                            stroke="currentColor"
+                            stroke-width="1.25"
+                            stroke-linecap="round"
+                          />
+                          <circle cx="10" cy="6.6" r="0.95" fill="currentColor" />
+                        </svg>
+                      </button>
+                      <span class="cp-hint-panel" role="note">{feature.hint}</span>
+                    </span>
+                  </th>
+                  {feature.cells.map((cell) => (
+                    <td class="cp-cell">
+                      {cell.check ? (
+                        <img
+                          class="cp-tick"
+                          src="/images/pricing/compare_plans/checklist.svg"
+                          alt=""
+                          aria-hidden="true"
+                          width="17"
+                          height="17"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : cell.value ? (
+                        <span class="cp-value">{cell.value}</span>
+                      ) : (
+                        <span
+                          class:list={["cp-dash", cell.muted && "cp-dash--muted"]}
+                          aria-label="Not included"
+                          role="img"
+                        >
+                        </span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cp-table-scroll {
+    /* Scroll shadows only appear when the table actually overflows. */
+    background:
+      linear-gradient(to right, #fff 30%, rgb(255 255 255 / 0)) left center / 32px 100% no-repeat,
+      linear-gradient(to left, #fff 30%, rgb(255 255 255 / 0)) right center / 32px 100% no-repeat,
+      radial-gradient(farthest-side at 0 50%, rgb(13 13 18 / 0.07), transparent) left center / 12px 100%
+        no-repeat,
+      radial-gradient(farthest-side at 100% 50%, rgb(13 13 18 / 0.07), transparent) right center / 12px 100%
+        no-repeat;
+    background-attachment: local, local, scroll, scroll;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cp-table {
+    /* Art hangs above the first row; keep it out of the scroll clipping box. */
+    /* Tallest art (108px) plus its 2px gap; anything less clips the top
+       because the scroll container also contains its paint. */
+    margin-top: var(--cp-art-band, 110px);
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--color-border-badge);
+    text-align: left;
+  }
+
+  .cp-col-feature {
+    width: 348px;
+  }
+
+  /* Full-width row rules: collapsed borders so no gutter interrupts them. */
+  .cp-row + .cp-row > * {
+    border-top: 1px solid var(--color-border-badge);
+  }
+
+  /* The header sits in `thead`, so the body's first row needs its own rule. */
+  .cp-table tbody > tr:first-child > * {
+    border-top: 1px solid var(--color-border-badge);
+  }
+
+
+
+  /* Zebra banding matches the reference tint exactly. */
+  .cp-table tbody tr:nth-child(even) > * {
+    background: #f7f9fd;
+  }
+
+  /* The detailed hint opens downward, so rows cannot be a paint boundary. */
+  .cp-table th,
+  .cp-table td {
+    position: relative;
+  }
+
+  .cp-head {
+    padding: 16px 24px;
+    vertical-align: bottom;
+  }
+
+  .cp-head--spacer {
+    padding: 16px 24px;
+  }
+
+  /* Text block keeps the reference row height once the art sits above it. */
+  .cp-head__name {
+    line-height: 27px;
+  }
+
+  .cp-head__price {
+    line-height: 21px;
+  }
+
+  /* In the reference the plan art sits ABOVE the table's top border (y192-270,
+     while the table starts at 270). It is therefore taken out of the cell's
+     height and hung over the row, so the header keeps its 79px rhythm. */
+  .cp-head {
+    position: relative;
+  }
+
+  .cp-head__art {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    translate: -50% 0;
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: var(--art-h, 92px);
+    margin-bottom: 2px;
+    object-fit: contain;
+    object-position: bottom;
+  }
+
+  .cp-head__name {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 27px;
+    text-align: center;
+    color: var(--color-ink-strong);
+  }
+
+  .cp-head__price {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+    text-align: center;
+    color: var(--color-ink);
+  }
+
+  .cp-cell {
+    position: relative;
+    padding: 18px 24px;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  /* The feature label reads as a left-aligned list; only the plan columns are
+     centred, matching the reference's centred marks and values. */
+  .cp-cell--label {
+    text-align: left;
+  }
+
+  .cp-cell--label {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 27px;
+    text-align: left;
+    color: var(--color-ink-strong);
+  }
+
+  .cp-cell__label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cp-hint {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: #545658;
+    opacity: 0.5;
+    cursor: help;
+    transition: opacity 0.18s ease;
+  }
+
+  .cp-hint:hover,
+  .cp-hint:focus-visible,
+  .cp-hint[aria-expanded="true"] {
+    opacity: 1;
+  }
+
+  /* The hint copy opens as a popover above the row so it never changes the
+     height of a table cell. */
+
+  .cp-hint-panel {
+    position: absolute;
+    z-index: 2;
+    top: calc(100% - 2px);
+    left: 21px;
+    display: block;
+    width: max-content;
+    max-width: 32ch;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border-badge);
+    border-radius: 2px;
+    background: #fff;
+    box-shadow: 0 6px 16px -6px rgb(17 23 41 / 0.18);
+    opacity: 0;
+    visibility: hidden;
+    translate: 0 -4px;
+    transition:
+      opacity 0.18s ease,
+      translate 0.18s ease,
+      visibility 0s linear 0.18s;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+    color: var(--color-ink-muted);
+  }
+
+  .cp-value {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--color-ink-strong);
+    white-space: nowrap;
+  }
+
+  /* Checked cells use the exported checklist glyph as-is: the check is a hole
+     in the disc, so the cell background shows through exactly like the design. */
+  .cp-tick {
+    display: block;
+    width: 17px;
+    height: 17px;
+    margin-inline: auto;
+  }
+
+  .cp-dash {
+    display: block;
+    width: 12px;
+    height: 2px;
+    margin-inline: auto;
+    background: var(--color-ink-strong);
+  }
+
+  .cp-dash--muted {
+    background: #cdd5e0;
+  }
+
+  /* Tablet: the feature column gives up its fixed width first so the table can
+     shrink before any horizontal scrolling is needed. */
+  @media (width < 64.0625rem) {
+    .cp-col-feature {
+      width: 34%;
+    }
+
+    .cp-cell,
+    .cp-head {
+      padding-inline: 14px;
+    }
+
+    .cp-cell--label,
+    .cp-head__name {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .cp-value {
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    .cp-head__art {
+      height: calc(var(--art-h, 92px) * 0.8);
+    }
+
+    .cp-table {
+      --cp-art-band: 90px;
+      margin-top: var(--cp-art-band);
+    }
+  }
+
+  /* Phones: the three plan columns cannot shrink further without crushing the
+     values, so the table keeps a readable minimum and scrolls sideways. The
+     sticky feature column keeps the row label in view while it does. */
+  @media (width < 40rem) {
+    .cp-table-scroll {
+      /* Fade the right edge only; the left is pinned by the sticky column. */
+      background:
+        linear-gradient(to left, #fff 18%, rgb(255 255 255 / 0)) right center / 24px 100% no-repeat,
+        radial-gradient(farthest-side at 100% 50%, rgb(13 13 18 / 0.09), transparent) right center / 10px 100%
+          no-repeat;
+      background-attachment: local, scroll;
+    }
+
+    .cp-table {
+      min-width: 34rem;
+    }
+
+    .cp-col-feature {
+      width: 11rem;
+    }
+
+    .cp-table .cp-cell--label {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      background: #fff;
+      white-space: normal;
+    }
+
+    .cp-table tbody tr:nth-child(even) > .cp-cell--label {
+      background: #f7f9fd;
+    }
+
+    /* A hairline on the pinned column separates it from the sliding content. */
+    .cp-table .cp-cell--label::after {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      right: 0;
+      width: 1px;
+      background: var(--color-border-badge);
+    }
+
+    .cp-cell--label,
+    .cp-head__name {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .cp-cell,
+    .cp-head {
+      padding-block: 14px;
+      padding-inline: 12px;
+    }
+
+    .cp-value {
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .cp-head__art {
+      height: calc(var(--art-h, 92px) * 0.62);
+    }
+
+    /* The header band that the art hangs into shrinks with the art. */
+    .cp-table {
+      --cp-art-band: 70px;
+      margin-top: var(--cp-art-band);
+    }
+  }
+
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>("[data-compare-plans]");
+
+  if (section) {
+    for (const hint of section.querySelectorAll<HTMLButtonElement>("[data-cp-hint]")) {
+      hint.addEventListener("click", () => {
+        hint.setAttribute("aria-expanded", String(hint.getAttribute("aria-expanded") !== "true"));
+      });
+    }
+  }
+</script>
+
+<style is:global>
+  .cp-table-scroll:focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+
+  .cp-hint[aria-expanded="true"] + .cp-hint-panel {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+    transition-delay: 0s;
+  }
+</style>
