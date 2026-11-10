@@ -119,6 +119,7 @@ export function initMotion() {
     comparePlansIntro(paused),
     faqSectionMotion(paused),
     testimonialIntro(paused),
+    resourcesHeroIntro(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
     solutionsUseCaseIntro(paused),
@@ -2130,6 +2131,54 @@ function faqSectionMotion(paused: boolean): () => void {
     gsap.set([intro, badge, sub, art, ...items, ...panels].filter(Boolean) as HTMLElement[], {
       clearProps: "all",
     });
+  };
+}
+
+function resourcesHeroIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-res-hero]");
+  if (!section || paused) return () => {};
+
+  const eyebrow = section.querySelector<HTMLElement>("[data-res-eyebrow]");
+  const title = section.querySelector<HTMLElement>("[data-res-title]");
+  const search = section.querySelector<HTMLElement>("[data-res-search]");
+  if (!title) return () => {};
+
+  let split: SplitText | null = null;
+  let tl: gsap.core.Timeline | null = null;
+
+  const run = () => {
+    split = SplitText.create(title, { type: "lines", linesClass: "res-line" });
+
+    tl = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.8 },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    tl.fromTo(eyebrow, { autoAlpha: 0, y: -10 }, { autoAlpha: 1, y: 0, duration: 0.5 }, 0)
+      .fromTo(
+        split.lines,
+        { yPercent: 115, autoAlpha: 0 },
+        { yPercent: 0, autoAlpha: 1, duration: 1, stagger: 0.1, ease: "power4.out" },
+        0.12,
+      )
+      .fromTo(
+        search,
+        { autoAlpha: 0, y: 18, scale: 0.98 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "power3.out" },
+        0.44,
+      );
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    tl?.kill();
+    split?.revert();
+    gsap.set([eyebrow, title, search].filter(Boolean) as HTMLElement[], { clearProps: "all" });
   };
 }
 

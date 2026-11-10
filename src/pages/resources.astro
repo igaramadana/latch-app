@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ResourcesHero from "../components/sections/resources/ResourcesHero.astro";
+import Footer from "../components/sections/shared/Footer.astro";
+---
+
+<BaseLayout
+  title="Resources — Latch"
+  description="Security guides and answers from Latch: articles, playbooks and product documentation for teams securing cloud-native systems."
+>
+  <ResourcesHero />
+  <Footer slot="footer" />
+</BaseLayout>
