@@ -1,0 +1,181 @@
+---
+interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+const items: FaqItem[] = [
+  {
+    id: "faq-plan-changes",
+    question: "Can I upgrade or downgrade my plan at any time?",
+    answer:
+      "Yes, you can change your plan whenever you need. Pricing will be prorated automatically based on your billing cycle.",
+  },
+  {
+    id: "faq-project-limit",
+    question: "What happens if I exceed my project limit?",
+    answer:
+      "Projects stay live while we notify you. You can add capacity on the current plan or move up a tier; nothing is paused mid-investigation.",
+  },
+  {
+    id: "faq-discounts",
+    question: "Do you offer discounts for educational non-profits?",
+    answer:
+      "Yes. Accredited non-profits and educational institutions receive a standing discount — reach out from your organisation address and we will apply it to the account.",
+  },
+  {
+    id: "faq-contract",
+    question: "Is there a long-term contract requirement?",
+    answer:
+      "No. Plans run month to month. Annual billing is optional and simply saves you twenty percent.",
+  },
+];
+---
+
+<section class="bg-white py-16 lg:py-[100px]" aria-labelledby="faq-title" data-faq>
+  <div
+    class="mx-auto flex max-w-[1440px] flex-col gap-12 px-6 lg:flex-row lg:items-start lg:gap-[80px] lg:px-[120px]"
+  >
+    <div class="flex w-full max-w-[428px] flex-col gap-4" data-faq-intro>
+      <img
+        class="w-full max-w-[180px] self-start sm:max-w-[220px] lg:max-w-[286px]"
+        src="/images/pricing/FAQ/illustration.svg"
+        alt=""
+        aria-hidden="true"
+        width="286"
+        height="213"
+        loading="lazy"
+        decoding="async"
+        data-faq-art
+      />
+      <p
+        class="inline-flex h-8 w-fit items-center gap-2 border border-border-badge bg-white px-[9px] py-2"
+        data-faq-badge
+      >
+        <span class="size-2.5 bg-[#607AFF]" aria-hidden="true"></span>
+        <span
+          class="font-sans text-sm font-medium uppercase leading-[16.8px] tracking-[0.28px] text-ink-muted"
+        >
+          FAQ
+        </span>
+      </p>
+
+      <div class="flex flex-col gap-3">
+        <h2
+          id="faq-title"
+          class="m-0 font-display text-[32px] leading-[1.16] tracking-normal text-ink font-mix-medium max-sm:text-[26px] lg:text-[42px]"
+          data-faq-title
+        >
+          Questions
+        </h2>
+        <p class="m-0 max-w-[428px] font-sans text-base leading-7 text-ink-muted lg:text-[18px]" data-faq-sub>
+          Can't find what you're looking for? Reach out to our support team for help.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="w-full flex-1" data-faq-list>
+      {
+        items.map((item, index) => (
+          <div class="flex flex-col gap-3 border-b border-border-badge py-7" data-faq-item>
+            <h3 class="m-0">
+              <button
+                type="button"
+                class="faq-trigger flex w-full items-center justify-between gap-3 text-left"
+                aria-expanded={index === 0 ? "true" : "false"}
+                aria-controls={item.id}
+                id={`${item.id}-trigger`}
+                data-faq-trigger
+              >
+                <span class="font-sans text-lg font-medium leading-[23.2px] text-ink lg:text-[20px]">
+                  {item.question}
+                </span>
+                <span class="faq-index shrink-0" aria-hidden="true" data-faq-index>
+                  <span class="faq-index__dot" />
+                  <span class="faq-index__num">{String(index + 1).padStart(2, "0")}</span>
+                </span>
+              </button>
+            </h3>
+            <div
+              class="faq-panel"
+              id={item.id}
+              role="region"
+              aria-labelledby={`${item.id}-trigger`}
+              hidden={index !== 0}
+              data-faq-panel
+            >
+              <p class="m-0 font-sans text-base leading-7 text-ink-muted lg:text-[18px] lg:leading-[27px]">
+                {item.answer}
+              </p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-trigger {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: var(--color-ink);
+    transition: opacity 0.18s ease;
+  }
+
+  .faq-trigger:hover {
+    opacity: 0.72;
+  }
+
+  .faq-index {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding-inline: 9px;
+    color: #97a3b6;
+    font-family: ui-monospace, "SFMono-Regular", "Cascadia Mono", monospace;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16.8px;
+    letter-spacing: 0.28px;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+  }
+
+  .faq-index__dot {
+    width: 8px;
+    height: 8px;
+    background: #cdd5e0;
+    transition: background-color 0.2s ease;
+  }
+
+  /* The open item carries the darker marker from the design. */
+  [aria-expanded="true"] .faq-index {
+    color: var(--color-ink);
+  }
+
+  [aria-expanded="true"] .faq-index__dot {
+    background: var(--color-ink);
+  }
+
+  /* Panels animate their height; `hidden` stays as the no-JS fallback and is
+     removed the moment the script takes over. */
+  .faq-panel {
+    overflow: hidden;
+  }
+
+  .faq-panel[hidden] {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-trigger,
+    .faq-index,
+    .faq-index__dot {
+      transition: none;
+    }
+  }
+</style>

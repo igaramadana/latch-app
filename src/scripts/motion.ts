@@ -117,6 +117,7 @@ export function initMotion() {
     solutionsHeroIntro(paused),
     pricingHeroIntro(paused),
     comparePlansIntro(paused),
+    faqSectionMotion(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
     solutionsUseCaseIntro(paused),
@@ -1932,6 +1933,144 @@ function comparePlansIntro(paused: boolean): () => void {
     artTween?.kill();
     cleanups.forEach((fn) => fn());
     gsap.set([sub, ...layers, ...rows, ...hints].filter(Boolean) as HTMLElement[], {
+      clearProps: "all",
+    });
+  };
+}
+
+function faqSectionMotion(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-faq]");
+  if (!section) return () => {};
+
+  const intro = section.querySelector<HTMLElement>("[data-faq-intro]");
+  const badge = section.querySelector<HTMLElement>("[data-faq-badge]");
+  const title = section.querySelector<HTMLElement>("[data-faq-title]");
+  const sub = section.querySelector<HTMLElement>("[data-faq-sub]");
+  const art = section.querySelector<HTMLElement>("[data-faq-art]");
+  const items = gsap.utils.toArray<HTMLElement>("[data-faq-item]", section);
+  const triggers = gsap.utils.toArray<HTMLButtonElement>("[data-faq-trigger]", section);
+  const panels = gsap.utils.toArray<HTMLElement>("[data-faq-panel]", section);
+
+  if (!triggers.length || !panels.length) return () => {};
+
+  const reduced = reducedMotion();
+  // Reveal animation is skipped when the section is already on screen, but the
+  // accordion must stay interactive either way.
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
+
+  let tl: gsap.core.Timeline | null = null;
+  let split: SplitText | null = null;
+  let drift: gsap.core.Tween | null = null;
+
+  // Height animation is owned by GSAP; `hidden` is cleared so the panel keeps a
+  // measurable height, and aria-expanded stays the single source of truth.
+  const initialOpen = triggers.map((trigger) => trigger.getAttribute("aria-expanded") === "true");
+
+  const setOpen = (index: number, open: boolean, animate = true) => {
+    const trigger = triggers[index];
+    const panel = panels[index];
+    const others = triggers.findIndex((t) => t !== trigger && t.getAttribute("aria-expanded") === "true");
+
+    trigger.setAttribute("aria-expanded", String(open));
+    panel.hidden = false;
+
+    const duration = animate && !reduced ? 0.32 : 0;
+    gsap.to(panel, {
+      height: open ? "auto" : 0,
+      autoAlpha: open ? 1 : 0,
+      duration,
+      ease: "power2.inOut",
+      overwrite: true,
+      onComplete: () => {
+        if (!open) panel.hidden = true;
+      },
+    });
+
+    // Single-open accordion: close whichever other item is expanded.
+    if (open && others > -1) setOpen(others, false, animate);
+  };
+
+  panels.forEach((panel, index) => {
+    panel.hidden = false;
+    gsap.set(panel, { height: initialOpen[index] ? "auto" : 0, autoAlpha: initialOpen[index] ? 1 : 0 });
+    if (!initialOpen[index]) panel.hidden = true;
+  });
+
+  const cleanups: Array<() => void> = [];
+
+  triggers.forEach((trigger, index) => {
+    const onClick = () => {
+      const open = trigger.getAttribute("aria-expanded") !== "true";
+      setOpen(index, open);
+    };
+    trigger.addEventListener("click", onClick);
+    cleanups.push(() => trigger.removeEventListener("click", onClick));
+  });
+
+  if (paused) {
+    return () => cleanups.forEach((fn) => fn());
+  }
+
+  if (!onScreen) {
+    const run = () => {
+      split = SplitText.create(title, { type: "lines", linesClass: "faq-line" });
+
+      tl = gsap.timeline({
+        defaults: { ease: EASE, duration: 0.8 },
+        scrollTrigger: { trigger: section, start: "top 75%", once: true },
+        onComplete: () => {
+          split?.revert();
+          split = null;
+        },
+      });
+
+      tl.fromTo(
+        split.lines,
+        { yPercent: 110, autoAlpha: 0 },
+        { yPercent: 0, autoAlpha: 1, duration: 0.9, stagger: 0.08, ease: "power4.out" },
+        0,
+      )
+        .fromTo(badge, { autoAlpha: 0, y: -10 }, { autoAlpha: 1, y: 0, duration: 0.5 }, 0)
+        .fromTo(sub, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.24)
+        .fromTo(
+          items,
+          { autoAlpha: 0, y: 16 },
+          { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.07 },
+          0.3,
+        );
+
+      if (art) {
+        tl.fromTo(
+          art,
+          { autoAlpha: 0, y: 24, scale: 0.97 },
+          { autoAlpha: 1, y: 0, scale: 1, duration: 0.9, ease: "power2.out" },
+          0.36,
+        );
+      }
+    };
+
+    if (document.fonts.status === "loaded") run();
+    else document.fonts.ready.then(run);
+  }
+
+  if (art && !reduced) {
+    drift = gsap.to(art, {
+      y: -6,
+      duration: 5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      delay: 1.4,
+    });
+  }
+
+  return () => {
+    cleanups.forEach((fn) => fn());
+    tl?.scrollTrigger?.kill();
+    tl?.kill();
+    drift?.kill();
+    split?.revert();
+    gsap.set([intro, badge, sub, art, ...items, ...panels].filter(Boolean) as HTMLElement[], {
       clearProps: "all",
     });
   };
