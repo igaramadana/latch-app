@@ -118,6 +118,7 @@ export function initMotion() {
     pricingHeroIntro(paused),
     comparePlansIntro(paused),
     faqSectionMotion(paused),
+    testimonialIntro(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
     solutionsUseCaseIntro(paused),
@@ -1935,6 +1936,62 @@ function comparePlansIntro(paused: boolean): () => void {
     gsap.set([sub, ...layers, ...rows, ...hints].filter(Boolean) as HTMLElement[], {
       clearProps: "all",
     });
+  };
+}
+
+function testimonialIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-testimonial]");
+  if (!section || paused) return () => {};
+
+  const text = section.querySelector<HTMLElement>("[data-tst-text]");
+  const author = section.querySelector<HTMLElement>("[data-tst-author]");
+  const avatar = section.querySelector<HTMLElement>(".tst-avatar");
+  const stats = gsap.utils.toArray<HTMLElement>("[data-tst-stat]", section);
+  if (!text || !stats.length) return () => {};
+
+  // Already on screen at load: leave it alone rather than flashing a hidden state.
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
+
+  let split: SplitText | null = null;
+  let tl: gsap.core.Timeline | null = null;
+
+  const run = () => {
+    split = SplitText.create(text, { type: "lines", linesClass: "tst-line" });
+
+    tl = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.8 },
+      scrollTrigger: { trigger: section, start: "top 75%", once: true },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    // The quote reads first, then the attribution settles, then the proof points.
+    tl.fromTo(
+      split.lines,
+      { yPercent: 110, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 0.95, stagger: 0.09, ease: "power4.out" },
+      0,
+    )
+      .fromTo(avatar, { autoAlpha: 0, scale: 0.8 }, { autoAlpha: 1, scale: 1, duration: 0.55, ease: "back.out(1.7)" }, 0.42)
+      .fromTo(author, { autoAlpha: 0, x: -12 }, { autoAlpha: 1, x: 0, duration: 0.6 }, 0.46)
+      .fromTo(
+        stats,
+        { autoAlpha: 0, y: 22 },
+        { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.1 },
+        0.56,
+      );
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    tl?.scrollTrigger?.kill();
+    tl?.kill();
+    split?.revert();
+    gsap.set([text, author, avatar, ...stats].filter(Boolean) as HTMLElement[], { clearProps: "all" });
   };
 }
 

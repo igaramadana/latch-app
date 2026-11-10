@@ -1,0 +1,141 @@
+---
+interface Stat {
+  label: string;
+  value: string;
+  caption: string;
+}
+
+const quote =
+  "We replaced three separate tools with Latch and cut our security spend by 40% while shipping faster. The pricing scaled exactly with our team, with no surprises.";
+
+const author = {
+  name: "Devon Alvarez",
+  role: "VP of Engineering, Northwind",
+  avatar: "/images/pricing/testimonials/avatar.jpg",
+};
+
+const stats: Stat[] = [
+  { label: "Coverage", value: "40%", caption: "Lower security spend" },
+  { label: "Speed", value: "<24 hours", caption: "To identify high-risk issues" },
+  { label: "Impact", value: "3x faster", caption: "Enterprise security approvals" },
+];
+---
+
+<section class="overflow-hidden bg-white py-16 lg:py-[100px]" aria-labelledby="testimonial-title" data-testimonial>
+  <div
+    class="mx-auto flex max-w-[1440px] flex-col items-center gap-12 px-6 lg:gap-[80px] lg:px-[120px]"
+  >
+    <figure class="m-0 flex max-w-[794px] flex-col items-center gap-8" data-tst-quote>
+      <blockquote class="m-0" cite="">
+        <p
+          id="testimonial-title"
+          class="text-balance text-center font-display text-[24px] leading-[1.36] text-ink font-mix-medium max-sm:text-[20px] lg:text-[32px] lg:leading-[43.52px]"
+          data-tst-text
+        >
+          {quote}
+        </p>
+      </blockquote>
+
+      <figcaption class="flex items-center gap-3" data-tst-author>
+        <span class="tst-avatar block shrink-0 overflow-hidden rounded-full">
+          <img
+            class="size-full object-cover"
+            src={author.avatar}
+            alt=""
+            aria-hidden="true"
+            width="52"
+            height="52"
+            loading="lazy"
+            decoding="async"
+          />
+        </span>
+        <span class="flex flex-col gap-2">
+          <span class="tst-name flex items-center gap-[6px] font-sans text-lg font-medium leading-[20.88px] text-ink">
+            {author.name}
+            <span class="tst-verified" aria-label="Verified customer">
+              <svg viewBox="0 0 19 19" fill="none" aria-hidden="true">
+                <circle cx="9.36" cy="9.36" r="9.36" fill="#42D0A1" />
+                <path
+                  d="M5.6 9.6 8.2 12.1 13.2 6.8"
+                  stroke="#fff"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+          </span>
+          <span class="font-sans text-base leading-[20.8px] text-ink-muted">{author.role}</span>
+        </span>
+      </figcaption>
+    </figure>
+
+    <dl class="m-0 grid w-full grid-cols-1 min-[900px]:grid-cols-3" data-tst-stats>
+      {
+        stats.map((stat) => (
+          <div
+            class="flex flex-col items-center gap-4 border-t border-border-badge px-6 py-6 min-[900px]:px-8 min-[900px]:py-8"
+            data-tst-stat
+          >
+            <dt class="tst-badge">{stat.label}</dt>
+            <dd class="m-0 flex flex-col items-center gap-1 text-center">
+              <span class="font-display text-[32px] leading-[1.16] text-ink font-mix-medium lg:text-[42px] lg:leading-[48.72px]">
+                {stat.value}
+              </span>
+              <span class="font-sans text-base leading-7 text-ink-muted lg:text-[18px]">
+                {stat.caption}
+              </span>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  .tst-avatar {
+    width: 56px;
+    height: 56px;
+    box-shadow:
+      0 0 0 1px rgb(23 23 23 / 0.02),
+      0 1px 1px -0.5px rgb(23 23 23 / 0.06),
+      0 3px 3px -1.5px rgb(23 23 23 / 0.06),
+      0 6px 6px -3px rgb(23 23 23 / 0.12);
+  }
+
+  .tst-verified {
+    display: inline-flex;
+    width: 18.72px;
+    height: 18.72px;
+  }
+
+  .tst-verified svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Stat label chip: pale blue pill over a hairline outline. */
+  @media (width < 900px) {
+    [data-tst-stat] + [data-tst-stat] {
+      border-top: 1px solid var(--color-border-badge);
+    }
+  }
+
+  .tst-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding-inline: 9px;
+    border: 1px solid #c6e5f4;
+    border-radius: 4px;
+    background: #dbf3ff;
+    font-family: var(--font-sans);
+    font-size: 12.6px;
+    font-weight: 500;
+    line-height: 16.1px;
+    letter-spacing: 0.28px;
+    text-transform: uppercase;
+    color: #000;
+  }
+</style>
