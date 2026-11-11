@@ -54,6 +54,15 @@
     "wght" 580;
 }
 
+/* Serif extreme (SERF 100) at 650: the editorial display face used where the
+   design's letterforms are serif rather than mixed. */
+@utility font-serif-display {
+  font-weight: 650;
+  font-variation-settings:
+    "SERF" 100,
+    "wght" 650;
+}
+
 @layer base {
   :where(*, *::before, *::after) {
     box-sizing: border-box;
@@ -85,7 +94,7 @@
   }
 
   /* SplitText creates these line wrappers at runtime. */
-  :where(.hero-line, .ph-line, .sol-line, .pr-line, .uc-line, .impact-line, .features-line, .cta-line, .cp-line, .faq-line, .tst-line, .res-line) {
+  :where(.hero-line, .ph-line, .sol-line, .pr-line, .uc-line, .impact-line, .features-line, .cta-line, .cp-line, .faq-line, .tst-line, .res-line, .car-line) {
     display: block;
     overflow: hidden;
     /* Padding gives the mask room for descenders; the negative margin cancels

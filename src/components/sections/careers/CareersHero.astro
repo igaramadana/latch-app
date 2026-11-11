@@ -1,0 +1,110 @@
+---
+import CtaButton from "../../CtaButton.astro";
+
+// Copy is verbatim from the design. The illustration is a single 1280×1076
+// render placed at 640×528 on desktop and scaled down from there.
+---
+
+<section
+  class="relative isolate overflow-hidden bg-hero-bg pb-[clamp(56px,13.05vw,188px)]"
+  aria-labelledby="careers-hero-title"
+  data-car-hero
+>
+  <div class="relative mx-auto w-full max-w-[1440px] px-6 lg:px-[82px]">
+    <div
+      class="mx-auto flex w-full max-w-[692px] flex-col items-center gap-10 pt-[calc(var(--spacing-nav)+clamp(32px,5.2vw,74px))] text-center"
+    >
+      <div class="flex flex-col items-center gap-6">
+        <h1
+          id="careers-hero-title"
+          class="m-0 w-full text-balance font-display text-[clamp(38px,5vw,72px)] leading-[1.2] tracking-normal text-ink font-serif-display"
+          data-car-title
+        >
+          Join Our Mission<br class="max-md:hidden" /> to Make Data Safer
+        </h1>
+        <p
+          class="m-0 max-w-[700px] font-sans text-[20px] leading-[30px] text-ink-muted max-sm:text-base max-sm:leading-6"
+          data-car-copy
+        >
+          Be part of a team building trusted security solutions that help businesses protect
+          sensitive data, reduce risk, and operate with confidence.
+        </p>
+      </div>
+
+      <CtaButton href="#open-roles" size="md" data-car-cta>View Positions</CtaButton>
+    </div>
+
+    <div class="mt-[clamp(40px,8vw,115px)]" data-car-art>
+      {/* The frame is exactly as wide as the artwork, so the dot lattice can
+          size itself from the artwork width (cqw) and stay proportional when
+          the illustration scales down. */}
+      <div
+        class="relative mx-auto w-full max-w-[420px] [container-type:inline-size] sm:max-w-[520px] lg:max-w-[640px]"
+      >
+        <div
+          class="car-pattern pointer-events-none absolute top-[-4.3%] left-1/2 h-[102.5%] w-screen -translate-x-1/2"
+          aria-hidden="true"
+          data-car-dots
+        ></div>
+
+        <img
+          class="relative block h-auto w-full lg:h-[528px] lg:object-contain"
+          src="/images/careers/hero/illustration.webp"
+          alt="Latch teammates connected to the product core, surrounded by the tools and providers they work with"
+          width="1280"
+          height="1076"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+          data-car-illustration
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Measured from the reference at 1440. The artwork sits at y621..1127, and
+     the wash behind it fades in linearly from y583 (alpha 0) to y820 (alpha 1),
+     holds to y890, then fades out symmetrically to y1124. Dots and the white
+     sheet share that triangle. The lattice is 21.65px across and 10.8px per
+     row, alternate rows shifted half a step, dots 12px so neighbours touch. */
+  .car-pattern {
+    /* Derived from the 640px reference frame: 21.65px across, 10.8px per row
+       and 12.1px dots are 3.3828cqw, 0.4988x and 0.559x of the artwork width. */
+    --pitch-x: 3.3828cqw;
+    --pitch-y: calc(var(--pitch-x) * 0.4988);
+    --dot-d: calc(var(--pitch-x) * 0.559);
+    /* The white sheet is the element's own background colour; the mask below
+       fades it and the dots together, so the band has one ramp instead of two
+       multiplied ones. */
+    background-color: #fff;
+    background-image:
+      radial-gradient(
+        circle at center,
+        #e6ecff 0 calc(var(--dot-d) / 2),
+        rgb(230 236 255 / 0) calc(var(--dot-d) / 2 + 0.75px)
+      ),
+      radial-gradient(
+        circle at center,
+        #e6ecff 0 calc(var(--dot-d) / 2),
+        rgb(230 236 255 / 0) calc(var(--dot-d) / 2 + 0.75px)
+      );
+    /* One dot per 21.65x21.6 tile; the second layer is shifted half a tile
+       across and a full tile down, which lands it on the odd 10.8px row. */
+    background-size:
+      var(--pitch-x) calc(var(--pitch-y) * 2),
+      var(--pitch-x) calc(var(--pitch-y) * 2);
+    background-position:
+      0 0,
+      calc(var(--pitch-x) / 2) var(--pitch-y);
+    background-repeat: repeat;
+    mask-image: linear-gradient(
+      180deg,
+      rgb(0 0 0 / 0) 0%,
+      rgb(0 0 0 / 1) 43.1%,
+      rgb(0 0 0 / 1) 56.9%,
+      rgb(0 0 0 / 0) 100%
+    );
+  }
+</style>

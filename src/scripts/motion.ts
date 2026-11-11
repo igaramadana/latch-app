@@ -120,6 +120,7 @@ export function initMotion() {
     faqSectionMotion(paused),
     testimonialIntro(paused),
     resourcesHeroIntro(paused),
+    careersHeroIntro(paused),
     blogGridIntro(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
@@ -2274,5 +2275,83 @@ function blogGridIntro(paused: boolean): () => void {
     pagerTween?.scrollTrigger?.kill();
     pagerTween?.kill();
     gsap.set([...tabs, ...cards, pager].filter(Boolean) as HTMLElement[], { clearProps: "all" });
+  };
+}
+
+function careersHeroIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-car-hero]");
+  if (!section || paused) return () => {};
+
+  const title = section.querySelector<HTMLElement>("[data-car-title]");
+  const copy = section.querySelector<HTMLElement>("[data-car-copy]");
+  const cta = section.querySelector<HTMLElement>("[data-car-cta]");
+  const art = section.querySelector<HTMLElement>("[data-car-art]");
+  const dots = section.querySelector<HTMLElement>("[data-car-dots]");
+  if (!title) return () => {};
+
+  let split: SplitText | null = null;
+  let tl: gsap.core.Timeline | null = null;
+  let float: gsap.core.Tween | null = null;
+
+  const run = () => {
+    split = SplitText.create(title, { type: "lines", linesClass: "car-line" });
+
+    tl = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.85 },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    tl.fromTo(
+      split.lines,
+      { yPercent: 115, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 1.05, stagger: 0.11, ease: "power4.out" },
+      0.1,
+    );
+
+    if (copy) tl.fromTo(copy, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0 }, 0.42);
+
+    if (cta) {
+      tl.fromTo(
+        cta,
+        { autoAlpha: 0, y: 16, scale: 0.94 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(1.6)" },
+        0.56,
+      );
+    }
+
+    if (dots) {
+      tl.fromTo(dots, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.1 }, 0.5);
+    }
+
+    if (art) {
+      tl.fromTo(
+        art,
+        { autoAlpha: 0, yPercent: 6, scale: 0.97 },
+        { autoAlpha: 1, yPercent: 0, scale: 1, duration: 1.25, ease: "power3.out" },
+        0.5,
+      );
+
+      float = gsap.to(art, {
+        y: -10,
+        duration: 6.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 2,
+      });
+    }
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    tl?.kill();
+    float?.kill();
+    split?.revert();
+    gsap.set([title, copy, cta, art, dots].filter(Boolean) as HTMLElement[], { clearProps: "all" });
   };
 }
