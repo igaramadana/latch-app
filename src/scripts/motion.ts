@@ -120,6 +120,7 @@ export function initMotion() {
     faqSectionMotion(paused),
     testimonialIntro(paused),
     resourcesHeroIntro(paused),
+    blogGridIntro(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
     solutionsUseCaseIntro(paused),
@@ -2208,5 +2209,70 @@ function footerMotion(paused: boolean): () => void {
     gsap.set([brand, ...columns, bar].filter(Boolean) as HTMLElement[], {
       clearProps: "all",
     });
+  };
+}
+
+function blogGridIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-res-blog]");
+  if (!section) return () => {};
+
+  const tabs = gsap.utils.toArray<HTMLElement>("[data-blog-tab]", section);
+  const cards = gsap.utils.toArray<HTMLElement>("[data-blog-card]", section);
+  const pager = section.querySelector<HTMLElement>("[data-blog-pager]");
+
+  if (paused || !cards.length) return () => {};
+
+  // Only cards below the fold animate; anything already on screen at load
+  // would flash from invisible to visible for no reason.
+  const fold = window.innerHeight * 0.85;
+  const hidden = cards.filter((card) => card.getBoundingClientRect().top > fold);
+
+  let timeline: gsap.core.Timeline | null = null;
+  let pagerTween: gsap.core.Tween | null = null;
+
+  // immediateRender: false keeps every card painted until the trigger fires,
+  // so a filter click can never land on an element stuck at opacity 0.
+  timeline = gsap.timeline({
+    scrollTrigger: { trigger: section, start: "top 80%", once: true },
+    defaults: { ease: EASE, duration: 0.6 },
+  });
+
+  // immediateRender: false keeps every card painted until the trigger fires,
+  // so a filter click can never land on an element stuck at opacity 0.
+  timeline
+    .fromTo(
+      tabs,
+      { autoAlpha: 0, y: -8 },
+      { autoAlpha: 1, y: 0, stagger: 0.03, immediateRender: false },
+      0,
+    )
+    .fromTo(
+      hidden,
+      { autoAlpha: 0, y: 28 },
+      { autoAlpha: 1, y: 0, stagger: 0.06, immediateRender: false },
+      0.08,
+    );
+
+  if (pager) {
+    pagerTween = gsap.fromTo(
+      pager,
+      { autoAlpha: 0, y: 12 },
+      {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.5,
+        ease: EASE,
+        immediateRender: false,
+        scrollTrigger: { trigger: pager, start: "top 92%", once: true },
+      },
+    );
+  }
+
+  return () => {
+    timeline?.scrollTrigger?.kill();
+    timeline?.kill();
+    pagerTween?.scrollTrigger?.kill();
+    pagerTween?.kill();
+    gsap.set([...tabs, ...cards, pager].filter(Boolean) as HTMLElement[], { clearProps: "all" });
   };
 }

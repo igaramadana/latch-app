@@ -1,0 +1,497 @@
+---
+// Copy and categories mirror the design export; image files ship as two WebP
+// widths so the grid never downloads more pixels than it paints.
+type CategoryId = "featured" | "announcement" | "guide" | "resources" | "tutorials" | "changelog" | "demo";
+
+interface Category {
+  id: CategoryId;
+  label: string;
+  /** Chip ink and its 10% wash, sampled from the design. */
+  fg: string;
+  bg: string;
+}
+
+interface Post {
+  slug: string;
+  category: CategoryId;
+  title: string;
+  excerpt: string;
+  author: string;
+  iso: string;
+  date: string;
+  image: string;
+  avatar: string;
+  alt: string;
+}
+
+const categories: Category[] = [
+  { id: "featured", label: "Featured", fg: "#6EA1FE", bg: "rgb(110 161 254 / 0.10)" },
+  { id: "announcement", label: "Announcement", fg: "#19966D", bg: "rgb(25 150 109 / 0.10)" },
+  { id: "guide", label: "Guide", fg: "#D44C1D", bg: "rgb(212 76 29 / 0.10)" },
+  { id: "resources", label: "Resources", fg: "#5E76FF", bg: "rgb(94 118 255 / 0.10)" },
+  { id: "tutorials", label: "Tutorials", fg: "#C59810", bg: "rgb(197 152 16 / 0.10)" },
+  { id: "changelog", label: "Changelog", fg: "#7C5CFF", bg: "rgb(124 92 255 / 0.10)" },
+  { id: "demo", label: "Demo", fg: "#0F8BA8", bg: "rgb(15 139 168 / 0.10)" },
+];
+
+const filters = [
+  { id: "all", label: "All" },
+  ...categories.map(({ id, label }) => ({ id, label })),
+];
+
+const byId = new Map(categories.map((category) => [category.id, category]));
+
+const posts: Post[] = [
+  {
+    slug: "point-in-time-security",
+    category: "featured",
+    title: "Why point-in-time security can't keep up with cloud-native systems",
+    excerpt:
+      "Systems change by the minute, but most security still runs on a schedule. Here's how continuous, identity-aware protection closes the gap.",
+    author: "Alex Norman",
+    iso: "2026-03-12",
+    date: "March 12, 2026",
+    image: "/images/resources/blog/blog_1",
+    avatar: "/images/resources/blog/avatar_1.webp",
+    alt: "Server corridor lit in blue with network nodes overlaid",
+  },
+  {
+    slug: "continuous-testing-cicd",
+    category: "guide",
+    title: "A practical guide to continuous testing in your CI/CD pipeline",
+    excerpt:
+      "Step-by-step: how to catch real vulnerabilities before production without slowing your team's release cadence.",
+    author: "Kevin Almeda",
+    iso: "2026-03-12",
+    date: "March 12, 2026",
+    image: "/images/resources/blog/blog_2",
+    avatar: "/images/resources/blog/avatar_2.webp",
+    alt: "Dark dashboard showing a green pipeline flowing from build to deploy",
+  },
+  {
+    slug: "identity-aware-access",
+    category: "announcement",
+    title: "Introducing identity-aware access, now live for every workspace",
+    excerpt:
+      "Latch now evaluates every user and service in real time, so access decisions follow context instead of standing permissions.",
+    author: "Axel David",
+    iso: "2026-03-12",
+    date: "March 12, 2026",
+    image: "/images/resources/blog/blog_3",
+    avatar: "/images/resources/blog/avatar_3.webp",
+    alt: "Network of violet identity nodes linked across a dark grid",
+  },
+  {
+    slug: "security-blind-spots",
+    category: "featured",
+    title: "The real cost of security blind spots across a fragmented stack",
+    excerpt:
+      "When each tool sees only a slice, risk hides in the gaps. We break down what unified visibility actually changes.",
+    author: "Sofia Alvarez",
+    iso: "2026-03-12",
+    date: "March 12, 2026",
+    image: "/images/resources/blog/blog_4",
+    avatar: "/images/resources/blog/avatar_4.webp",
+    alt: "Magenta security diagram with a padlock and shield around a stack of services",
+  },
+  {
+    slug: "connect-latch-api-oauth",
+    category: "tutorials",
+    title: "Connect Latch to your stack with API and OAuth in 10 minutes",
+    excerpt:
+      "Walk through a full setup: link your cloud, identity provider, and repos with no agents, then verify coverage end to end.",
+    author: "Arjun Kapoor",
+    iso: "2026-03-12",
+    date: "March 12, 2026",
+    image: "/images/resources/blog/blog_5",
+    avatar: "/images/resources/blog/avatar_5.webp",
+    alt: "Screen showing connected services wired into a central control node",
+  },
+  {
+    slug: "automated-response",
+    category: "announcement",
+    title: "Automated response is here: contain threats the moment they appear",
+    excerpt:
+      "New runbooks let Latch remediate confirmed risks automatically, shrinking the window between detection and fix.",
+    author: "Marcus Reed",
+    iso: "2026-03-12",
+    date: "March 12, 2026",
+    image: "/images/resources/blog/blog_6",
+    avatar: "/images/resources/blog/avatar_6.webp",
+    alt: "Glowing shield over a map of risk signals",
+  },
+  {
+    slug: "identity-first-access-rules",
+    category: "featured",
+    title: "Setting up identity-first access rules for teams and services",
+    excerpt:
+      "Learn how to model context-aware policies so access is granted on real signals, not permanent, over-broad permissions.",
+    author: "Arjun",
+    iso: "2026-03-12",
+    date: "March 12, 2026",
+    image: "/images/resources/blog/blog_7",
+    avatar: "/images/resources/blog/avatar_7.webp",
+    alt: "Blueprint of identity cards arranged in a control panel",
+  },
+  {
+    slug: "continuous-security-loop",
+    category: "guide",
+    title: "Building a continuous security loop: connect, monitor, detect, respond",
+    excerpt:
+      "A framework for keeping protection in step with a system that never stops changing, mapped to real workflows.",
+    author: "Marcus Reed",
+    iso: "2026-03-12",
+    date: "March 12, 2026",
+    image: "/images/resources/blog/blog_8",
+    avatar: "/images/resources/blog/avatar_8.webp",
+    alt: "Circular diagram labelled connect, monitor, detect and respond",
+  },
+  {
+    slug: "compliance-reporting",
+    category: "announcement",
+    title: "Compliance reporting: audit-ready evidence, generated for you",
+    excerpt:
+      "Turn continuous monitoring into structured reports for security reviews and enterprise approvals, no manual collection.",
+    author: "Devi Lestari",
+    iso: "2026-03-12",
+    date: "March 12, 2026",
+    image: "/images/resources/blog/blog_9",
+    avatar: "/images/resources/blog/avatar_9.webp",
+    alt: "Compliance score of 92 percent next to an evidence report",
+  },
+];
+
+/** One grid row per page, matching the design. */
+const PAGE_SIZE = 9;
+---
+
+<section class="bg-white pb-10" aria-labelledby="resources-blog-title" data-res-blog>
+  <div class="mx-auto w-full max-w-[1440px] px-6 lg:px-[82px]">
+    <h2 id="resources-blog-title" class="sr-only">Guides and articles</h2>
+
+    <div class="flex flex-col gap-8">
+      <div
+        class="-mx-6 flex gap-1 overflow-x-auto px-6 lg:mx-0 lg:flex-wrap lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        role="group"
+        aria-label="Filter articles by category"
+        data-blog-tabs
+      >
+        {
+          filters.map((filter) => (
+            <button
+              type="button"
+              class="h-10 shrink-0 appearance-none rounded-lg px-4 font-tight text-base font-medium leading-6 text-[#666D80] transition-colors duration-200 hover:bg-[#F8FAFC] hover:text-ink aria-pressed:rounded-none aria-pressed:bg-[#F8FAFC] aria-pressed:text-[#5F77FF]"
+              aria-pressed={filter.id === "all" ? "true" : "false"}
+              data-blog-tab
+              data-filter={filter.id}
+            >
+              {filter.label}
+            </button>
+          ))
+        }
+      </div>
+
+      <p class="sr-only" role="status" aria-live="polite" data-blog-status></p>
+
+      <div
+        class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        data-blog-grid
+        data-page-size={PAGE_SIZE}
+      >
+        {
+          posts.map((post) => {
+            const category = byId.get(post.category)!;
+            const heading = `blog-title-${post.slug}`;
+            return (
+              <article
+                class="group flex flex-col gap-4 self-stretch border border-[#F1F4F8] bg-white p-4 shadow-[0_1px_2px_rgb(13_13_18/0.04),0_1px_3px_rgb(13_13_18/0.05)] transition-shadow duration-300 hover:shadow-[0_1px_2px_rgb(13_13_18/0.06),0_8px_24px_rgb(13_13_18/0.07)] motion-reduce:transition-none"
+                aria-labelledby={heading}
+                data-blog-card
+                data-category={post.category}
+              >
+                <span class="overflow-hidden">
+                  <img
+                    class="aspect-[377/224] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    src={`${post.image}-755.webp`}
+                    srcset={`${post.image}-377.webp 377w, ${post.image}-755.webp 755w`}
+                    sizes="(min-width: 1025px) 380px, (min-width: 640px) 46vw, 88vw"
+                    alt={post.alt}
+                    width="755"
+                    height="448"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </span>
+
+                <div class="flex flex-1 flex-col justify-between gap-6 p-3">
+                  <div class="flex flex-col gap-2">
+                    <span
+                      class="inline-flex h-[26px] w-fit items-center rounded-md px-2.5 font-tight text-xs font-medium leading-[19.2px]"
+                      style={`color:${category.fg};background:${category.bg}`}
+                    >
+                      {category.label}
+                    </span>
+                    <h3
+                      id={heading}
+                      class="m-0 text-pretty font-tight text-[24px] font-medium leading-[31.2px] tracking-normal text-[#0D0D12]"
+                    >
+                      {post.title}
+                    </h3>
+                    <p class="m-0 text-pretty font-tight text-sm font-normal leading-[22.4px] text-[#666D80]">
+                      {post.excerpt}
+                    </p>
+                  </div>
+
+                  <div class="flex items-center gap-2.5">
+                    <img
+                      class="size-8 shrink-0 rounded-full object-cover"
+                      src={post.avatar}
+                      alt=""
+                      aria-hidden="true"
+                      width="64"
+                      height="64"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="flex flex-col">
+                      <span class="font-tight text-sm font-medium leading-[22.4px] text-[#0D0D12]">
+                        {post.author}
+                      </span>
+                      <time
+                        class="font-tight text-xs font-medium leading-[19.2px] text-[#666D80]"
+                        datetime={post.iso}
+                      >
+                        {post.date}
+                      </time>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            );
+          })
+        }
+      </div>
+
+      <p class="m-0 py-6 text-center font-tight text-base leading-6 text-[#666D80]" hidden data-blog-empty>
+        No articles in this category yet.
+      </p>
+
+      <nav
+        class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-4"
+        aria-label="Article pages"
+        data-blog-pager
+      >
+        <button
+          type="button"
+          class="blog-pager-arrow flex w-fit items-center gap-0.5 border-0 bg-transparent p-0 font-tight text-base leading-6 text-ink"
+          data-blog-prev
+        >
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" class="size-4">
+            <path
+              d="M10 3 5 8l5 5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+          <span class="max-[359px]:sr-only">Previous</span>
+        </button>
+
+        <ol class="m-0 flex list-none items-center gap-2 p-0" data-blog-pages></ol>
+
+        <button
+          type="button"
+          class="blog-pager-arrow ml-auto flex w-fit items-center gap-0.5 border-0 bg-transparent p-0 font-tight text-base leading-6 text-ink"
+          data-blog-next
+        >
+          <span class="max-[359px]:sr-only">Next</span>
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" class="size-4">
+            <path
+              d="M6 3l5 5-5 5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <template data-blog-page-tpl>
+    <li>
+      <button
+        type="button"
+        class="blog-page grid h-9 w-9 place-items-center rounded-lg bg-white font-tight text-base leading-6 text-[#677489] transition-colors duration-200 hover:bg-[#F8FAFC] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+      ></button>
+    </li>
+  </template>
+</section>
+
+<style is:global>
+  /* Pager buttons are cloned from a template, so their rules cannot live in a
+     scoped style block. Everything here is namespaced with `blog-`. */
+  .blog-page[aria-current="page"] {
+    background: linear-gradient(180deg, #5e77ff 0%, #6fa5fe 100%);
+    color: #eff0ff;
+  }
+
+  .blog-page[aria-current="page"]:hover {
+    background: linear-gradient(180deg, #5e77ff 0%, #6fa5fe 100%);
+  }
+
+  .blog-pager-arrow:disabled {
+    color: #97a3b6;
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blog-page,
+    .blog-pager-arrow {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import gsap from "gsap";
+  import { Flip } from "gsap/Flip";
+
+  gsap.registerPlugin(Flip);
+
+  const root = document.querySelector<HTMLElement>("[data-res-blog]");
+
+  if (root) {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-blog-tab]"));
+    const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-blog-card]"));
+    const grid = root.querySelector<HTMLElement>("[data-blog-grid]");
+    const status = root.querySelector<HTMLElement>("[data-blog-status]");
+    const empty = root.querySelector<HTMLElement>("[data-blog-empty]");
+    const pager = root.querySelector<HTMLElement>("[data-blog-pager]");
+    const pageList = root.querySelector<HTMLOListElement>("[data-blog-pages]");
+    const pageTpl = root.querySelector<HTMLTemplateElement>("[data-blog-page-tpl]");
+    const prev = root.querySelector<HTMLButtonElement>("[data-blog-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-blog-next]");
+
+    const pageSize = Number(grid?.dataset.pageSize) || 9;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let filter = "all";
+    let page = 1;
+
+    const filtered = () =>
+      filter === "all" ? cards : cards.filter((card) => card.dataset.category === filter);
+
+    const pageCount = () => Math.max(1, Math.ceil(filtered().length / pageSize));
+
+    const renderPages = () => {
+      if (!pageList || !pageTpl) return;
+      const total = pageCount();
+      pageList.replaceChildren();
+
+      for (let index = 1; index <= total; index += 1) {
+        const item = pageTpl.content.firstElementChild!.cloneNode(true) as HTMLLIElement;
+        const button = item.querySelector("button")!;
+        button.textContent = String(index);
+        button.dataset.page = String(index);
+        button.setAttribute("aria-label", `Page ${index}`);
+        if (index === page) button.setAttribute("aria-current", "page");
+        pageList.append(item);
+      }
+
+      // `pageCount` clamps to 1, so an empty result set would still render a
+      // lone "1" button. Hide the whole pager when nothing matches.
+      if (pager) pager.hidden = filtered().length === 0;
+      if (prev) prev.disabled = page <= 1;
+      if (next) next.disabled = page >= total;
+    };
+
+    /** Show one page of the filtered set; everything else is removed from the DOM flow. */
+    const apply = () => {
+      const matches = filtered();
+      page = Math.min(Math.max(page, 1), pageCount());
+
+      const start = (page - 1) * pageSize;
+      const visible = new Set(matches.slice(start, start + pageSize));
+
+      for (const card of cards) card.hidden = !visible.has(card);
+
+      if (empty) empty.hidden = matches.length > 0;
+      renderPages();
+
+      if (status) {
+        const what = filter === "all" ? "all categories" : `the ${filter} category`;
+        status.textContent = matches.length
+          ? `${matches.length} article${matches.length === 1 ? "" : "s"} in ${what}, page ${page} of ${pageCount()}.`
+          : `No articles in ${what}.`;
+      }
+    };
+
+    /** Reflow survivors with FLIP, then fade the cards that just became page-visible. */
+    const applyAnimated = () => {
+      if (reduced) {
+        apply();
+        return;
+      }
+
+      const before = Flip.getState(cards.filter((card) => !card.hidden));
+      const wasHidden = cards.filter((card) => card.hidden);
+
+      apply();
+
+      Flip.from(before, {
+        duration: 0.5,
+        ease: "power3.inOut",
+        absolute: true,
+        nested: true,
+      });
+
+      const entering = wasHidden.filter((card) => !card.hidden);
+      if (entering.length) {
+        gsap.fromTo(
+          entering,
+          { autoAlpha: 0, y: 12 },
+          { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.03, ease: "power3.out", overwrite: "auto" },
+        );
+      }
+    };
+
+    const setFilter = (id: string) => {
+      if (id === filter) return;
+      filter = id;
+      page = 1;
+      for (const tab of tabs) tab.setAttribute("aria-pressed", String(tab.dataset.filter === id));
+      applyAnimated();
+    };
+
+    const goTo = (target: number) => {
+      const clamped = Math.min(Math.max(target, 1), pageCount());
+      if (clamped === page) return;
+      page = clamped;
+      applyAnimated();
+    };
+
+    const onTabClick = (event: Event) => {
+      const button = (event.currentTarget as HTMLElement).closest<HTMLButtonElement>("[data-blog-tab]");
+      if (button?.dataset.filter) setFilter(button.dataset.filter);
+    };
+
+    const onPagesClick = (event: Event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-page]");
+      if (button?.dataset.page) goTo(Number(button.dataset.page));
+    };
+
+    const onPrev = () => goTo(page - 1);
+    const onNext = () => goTo(page + 1);
+
+    for (const tab of tabs) tab.addEventListener("click", onTabClick);
+    pageList?.addEventListener("click", onPagesClick);
+    prev?.addEventListener("click", onPrev);
+    next?.addEventListener("click", onNext);
+
+    apply();
+
+    // MPA navigation (Astro's client router) replaces the body, so the listeners
+    // above die with it. Nothing to tear down here.
+  }
+</script>

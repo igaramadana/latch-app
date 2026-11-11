@@ -26,6 +26,8 @@
   --color-panel: #f1f5fc;
 
   --font-display: "Season VF-TRIAL", "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Design export for editorial copy; narrower than Inter at the same size. */
+  --font-tight: "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /* Navbar collapses at 1024px; `lg` starts 1px after so `max-lg:` is inclusive.
      Must stay in rem: v4 sorts breakpoints as strings, so `px` would sort first. */
