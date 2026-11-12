@@ -110,6 +110,7 @@ export function initMotion() {
 
   const teardowns = [
     navScrollState(),
+    loginIntro(paused),
     navIntro(paused),
     navHover(paused),
     heroIntro(paused),
@@ -522,6 +523,74 @@ function solutionsOverviewIntro(paused: boolean): () => void {
     tl.scrollTrigger?.kill();
     tl.kill();
     gsap.set([...header, ...cards, ...icons, ...copies], { clearProps: "all" });
+  };
+}
+
+function loginIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-login]");
+  if (!section || paused) return () => {};
+
+  const card = section.querySelector<HTMLElement>("[data-login-card]");
+  const pattern = section.querySelector<HTMLElement>("[data-login-pattern]");
+  const title = section.querySelector<HTMLElement>("[data-login-title]");
+  const oauth = gsap.utils.toArray<HTMLElement>("[data-login-oauth]", section);
+  const fields = gsap.utils.toArray<HTMLElement>("[data-login-field]", section);
+  const submit = section.querySelector<HTMLElement>("[data-login-submit]");
+  if (!card || !title) return () => {};
+
+  let split: SplitText | null = null;
+  let tl: gsap.core.Timeline | null = null;
+
+  const run = () => {
+    split = SplitText.create(title, { type: "lines", linesClass: "login-line" });
+
+    tl = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.7 },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    // The lattice drifts up as it fades in; the card lands on top of it.
+    if (pattern) {
+      tl.fromTo(
+        pattern,
+        { autoAlpha: 0, yPercent: 6 },
+        { autoAlpha: 1, yPercent: 0, duration: 1.6, ease: "power2.out" },
+        0,
+      );
+    }
+
+    tl.fromTo(
+      card,
+      { autoAlpha: 0, y: 28, scale: 0.985 },
+      { autoAlpha: 1, y: 0, scale: 1, duration: 0.9, ease: "power3.out" },
+      0.08,
+    )
+      .fromTo(split.lines, { yPercent: 115, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.9, ease: "power4.out" }, 0.3)
+      .fromTo(oauth, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.07 }, 0.42)
+      .fromTo(fields, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.08 }, 0.56);
+
+    if (submit) {
+      tl.fromTo(
+        submit,
+        { autoAlpha: 0, y: 12, scale: 0.97 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(1.4)" },
+        0.72,
+      );
+    }
+  };
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    tl?.kill();
+    split?.revert();
+    gsap.set([pattern, card, ...oauth, ...fields, submit].filter(Boolean) as HTMLElement[], {
+      clearProps: "all",
+    });
   };
 }
 
