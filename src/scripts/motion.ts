@@ -123,6 +123,7 @@ export function initMotion() {
     careersHeroIntro(paused),
     careersPerksIntro(paused),
     careersProcessStory(paused),
+    careersRolesIntro(paused),
     blogGridIntro(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
@@ -1244,6 +1245,49 @@ function careersProcessStory(paused: boolean): () => void {
       ) as HTMLElement[],
       { clearProps: "all" },
     );
+  };
+}
+
+function careersRolesIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-roles]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-roles-badge]");
+  const title = section.querySelector<HTMLElement>("[data-roles-title]");
+  const sub = section.querySelector<HTMLElement>("[data-roles-sub]");
+  const groups = gsap.utils.toArray<HTMLElement>("[data-roles-group]", section);
+  const rows = gsap.utils.toArray<HTMLElement>("[data-roles-row]", section);
+  const footer = section.querySelector<HTMLElement>("[data-roles-footer]");
+  const cta = section.querySelector<HTMLElement>("[data-roles-cta]");
+  if (!title || !rows.length) return () => {};
+
+  // Already on screen at load: leave it alone rather than flashing a hidden state.
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
+
+  const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
+  const reveal = [...groups, ...rows, footer, cta].filter(Boolean) as HTMLElement[];
+
+  gsap.set(header, { autoAlpha: 0, y: 24 });
+  gsap.set(groups, { autoAlpha: 0, y: 16 });
+  gsap.set(rows, { autoAlpha: 0, y: 14 });
+  gsap.set([footer, cta].filter(Boolean) as HTMLElement[], { autoAlpha: 0, y: 12 });
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+  });
+
+  tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.1 })
+    .to(groups, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.12 }, "-=0.4")
+    // Rows follow their own group, so the two categories read one after another
+    // instead of lighting up as a single block.
+    .to(rows, { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.06 }, "-=0.75")
+    .to([footer, cta].filter(Boolean) as HTMLElement[], { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.06 }, "-=0.3");
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set([...header, ...reveal], { clearProps: "all" });
   };
 }
 
