@@ -122,6 +122,7 @@ export function initMotion() {
     resourcesHeroIntro(paused),
     careersHeroIntro(paused),
     careersPerksIntro(paused),
+    careersProcessStory(paused),
     blogGridIntro(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
@@ -1039,6 +1040,210 @@ function careersPerksIntro(paused: boolean): () => void {
     gsap.set([...parts, card, ...cells, bar, ...avatars].filter(Boolean) as HTMLElement[], {
       clearProps: "all",
     });
+  };
+}
+
+function careersProcessStory(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-process]");
+  if (!section) return () => {};
+
+  const track = section.querySelector<HTMLElement>("[data-process-track]");
+  const badge = section.querySelector<HTMLElement>("[data-process-badge]");
+  const title = section.querySelector<HTMLElement>("[data-process-title]");
+  const sub = section.querySelector<HTMLElement>("[data-process-sub]");
+  const lineFill = section.querySelector<HTMLElement>("[data-process-line-fill]");
+  const list = section.querySelector<HTMLElement>("[data-process-list]");
+  const fade = section.querySelector<HTMLElement>("[data-process-fade]");
+  const steps = gsap.utils.toArray<HTMLElement>("[data-process-step]", section);
+
+  const nodes = steps.map((step) => step.querySelector<HTMLElement>("[data-process-node]"));
+  const icons = steps.map((step) => step.querySelector<HTMLElement>("[data-process-icon-active]"));
+
+  if (!track || !steps.length || !lineFill) return () => {};
+
+  const ACTIVE = "#5E71FF";
+  const IDLE = "#E3E8EF";
+  const FUTURE_BLUR = [0, 0.25, 0.6, 1.2];
+  const n = steps.length;
+  let active = 0;
+
+  const placeLine = () => {
+    const segment = lineSegmentUpTo(active);
+    gsap.set(lineFill, { top: segment.top, height: segment.height });
+  };
+
+  // Where the white gradient starts: at the bottom of the active block (node
+  // plus copy, not the node alone), so the description being read is never
+  // washed. Measuring the node instead cut into it by 20-44px.
+  const fadeFor = (index: number) => {
+    if (!list || !nodes[index]) return 16;
+    const box = list.getBoundingClientRect();
+    if (!box.height) return 16;
+    // The whole active block, not just its node: the fade must never wash the
+    // description the reader is on.
+    const block = steps[index].getBoundingClientRect();
+    return Math.min(100, ((block.bottom - box.top) / box.height) * 100);
+  };
+
+  // Progressive completion: every step up to `last` is lit. Scroll unlocks
+  // them one by one, so the bottom of the track shows them all active.
+  const paintUpTo = (last: number, duration: number) => {
+    const ease = "power2.out";
+
+    steps.forEach((step, index) => {
+      const reached = index <= last;
+      const ahead = index - last;
+      const depth = Math.min(Math.abs(ahead), FUTURE_BLUR.length - 1);
+      const blur = ahead > 0 ? FUTURE_BLUR[depth] : 0;
+
+      gsap.to(step, { opacity: 1, filter: `blur(${blur}px)`, duration, ease, overwrite: "auto" });
+      gsap.to(nodes[index], {
+        backgroundColor: reached ? ACTIVE : IDLE,
+        duration,
+        ease,
+        overwrite: "auto",
+      });
+      gsap.to(icons[index], { opacity: reached ? 1 : 0, duration, overwrite: "auto" });
+    });
+
+    const segment = lineSegmentUpTo(last);
+    gsap.to(lineFill, {
+      top: segment.top,
+      height: segment.height,
+      duration: duration * 1.3,
+      ease: "power3.inOut",
+      overwrite: "auto",
+    });
+
+    if (fade) {
+      gsap.to(fade, {
+        "--process-fade": fadeFor(Math.min(last, n - 1)),
+        duration,
+        ease: "power2.inOut",
+        overwrite: "auto",
+      });
+    }
+  };
+
+  // Fill from the top of the line through the last reached node.
+  const lineSegmentUpTo = (last: number) => {
+    const line = lineFill.parentElement;
+    if (!line || !nodes.length) return { top: 0, height: 0 };
+    const box = line.getBoundingClientRect();
+    const node = nodes[Math.min(Math.max(last, 0), n - 1)];
+    if (!node) return { top: 0, height: 0 };
+    const nb = node.getBoundingClientRect();
+    return { top: 0, height: Math.max(0, nb.bottom - box.top) };
+  };
+
+  // Step one is the resting state of the design, so paint it before any
+  // ScrollTrigger exists: a deep link or a killed timeline still looks right.
+  gsap.set(nodes[0], { backgroundColor: ACTIVE });
+  gsap.set(icons[0], { opacity: 1 });
+  placeLine();
+  gsap.set(lineFill, { height: 0 });
+
+  if (paused) {
+    // No tween will ever run here, so place the gradient by hand or it would
+    // fall back to a value that washes the active description.
+    fade?.style.setProperty("--process-fade", String(fadeFor(0)));
+    return () => {};
+  }
+
+  ScrollTrigger.addEventListener("refresh", placeLine);
+
+  const header = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+  });
+
+  header
+    .from(badge, { autoAlpha: 0, y: 16 }, 0)
+    .from(title, { autoAlpha: 0, y: 24 }, 0.08)
+    .from(sub, { autoAlpha: 0, y: 20 }, 0.16);
+
+  const mm = gsap.matchMedia();
+
+  // The stage is sticky, not pinned: the track behind it is five viewports, so
+  // every step owns exactly one viewport of scrolling. Matches the media query
+  // in HowItWorksSteps.astro, including the 1080px height floor: below it the
+  // fr rows squash the design's 190 / 198 / 194 gaps.
+  mm.add("(min-width: 1025px) and (min-height: 1080px)", () => {
+    // One step lit at rest; scrolling unlocks the rest cumulatively, so the
+    // bottom of the track shows every number active. The step trigger is a
+    // plain onUpdate (no scrub) so it fires on every scroll event; the fill
+    // line below scrubs through its own tween.
+    paintUpTo(0, 0);
+
+    const trigger = ScrollTrigger.create({
+      trigger: track,
+      start: "top top",
+      end: "bottom bottom",
+      onUpdate: (self) => {
+        const last = Math.min(n - 1, Math.max(0, Math.round(self.progress * (n - 1))));
+        if (last === active) return;
+        active = last;
+        paintUpTo(last, 0);
+      },
+    });
+
+    const fillTween = gsap.fromTo(
+      lineFill,
+      { height: 0 },
+      {
+        height: () => lineSegmentUpTo(n - 1).height,
+        ease: "none",
+        scrollTrigger: {
+          trigger: track,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+        },
+      },
+    );
+
+    return () => {
+      trigger.kill();
+      fillTween.scrollTrigger?.kill();
+      fillTween.kill();
+    };
+  });
+
+  // No sticky stage here, so the steps scroll past the viewport centre and the
+  // one crossing it becomes active.
+  mm.add("(max-width: 1024px), (min-width: 1025px) and (max-height: 1079px)", () => {
+    paintUpTo(0, 0);
+
+    const focus = (index: number) => {
+      if (index === active) return;
+      active = index;
+      paintUpTo(index, 0.6);
+    };
+
+    const triggers = steps.map((step, index) =>
+      ScrollTrigger.create({
+        trigger: step,
+        start: "top center",
+        end: "bottom center",
+        onEnter: () => focus(index),
+        onEnterBack: () => focus(index),
+      }),
+    );
+
+    return () => triggers.forEach((trigger) => trigger.kill());
+  });
+
+  return () => {
+    ScrollTrigger.removeEventListener("refresh", placeLine);
+    mm.revert();
+    header.scrollTrigger?.kill();
+    header.kill();
+    gsap.set(
+      [badge, title, sub, lineFill, fade, ...steps, ...nodes, ...icons].filter(
+        Boolean,
+      ) as HTMLElement[],
+      { clearProps: "all" },
+    );
   };
 }
 
