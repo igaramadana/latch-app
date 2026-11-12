@@ -87,7 +87,7 @@ const steps: Step[] = [
             </div>
 
             <ol
-              class="hiw-steps__list m-0 flex list-none flex-col gap-10 p-0"
+              class="hiw-steps__list m-0 grid list-none grid-cols-1 gap-10 p-0"
               data-hiw-list
             >
               {
@@ -198,13 +198,23 @@ const steps: Step[] = [
       0 6px 6px -3px rgb(23 23 23 / 0.12);
   }
 
+  @media (min-width: 768px) {
+    .hiw-steps__list {
+      grid-template-rows: minmax(190px, auto) minmax(198px, auto) minmax(194px, auto) auto;
+      gap: 0;
+    }
+  }
+
   @media (min-width: 1025px) {
     .hiw-stage {
       padding-top: clamp(88px, 8.8vh, 100px);
     }
   }
 
-  @media (min-width: 1025px) and (min-height: 740px) {
+  /* The sticky story only earns its keep when a viewport can hold the design's
+     own 190 / 198 / 194 rhythm. Below that the fr rows would compress the gaps
+     to ~150px, which reads cramped, so the list stays in normal flow instead. */
+  @media (min-width: 1025px) and (min-height: 1080px) {
     .hiw-track {
       --hiw-lead: clamp(0px, calc((100svh - 820px) * 0.4), 48px);
 

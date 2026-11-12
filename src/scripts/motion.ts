@@ -1207,8 +1207,9 @@ function howItWorksStepsMotion(paused: boolean): () => void {
 
   // The stage is sticky, not pinned: the track behind it is five viewports, so
   // every step owns exactly one viewport of scrolling. Matches the media query
-  // in HowItWorksSteps.astro.
-  mm.add("(min-width: 1025px) and (min-height: 740px)", () => {
+  // in HowItWorksSteps.astro, including the 1080px height floor: below it the
+  // fr rows squash the design's 190 / 198 / 194 gaps.
+  mm.add("(min-width: 1025px) and (min-height: 1080px)", () => {
     // One step lit at rest; scrolling unlocks the rest cumulatively, so the
     // bottom of the track shows every number active. The step trigger is a
     // plain onUpdate (no scrub) so it fires on every scroll event; the fill
@@ -1251,7 +1252,7 @@ function howItWorksStepsMotion(paused: boolean): () => void {
 
   // No sticky stage here, so the steps scroll past the viewport centre and the
   // one crossing it becomes active.
-  mm.add("(max-width: 1024px), (min-width: 1025px) and (max-height: 739px)", () => {
+  mm.add("(max-width: 1024px), (min-width: 1025px) and (max-height: 1079px)", () => {
     paintUpTo(0, 0);
 
     const focus = (index: number) => {
