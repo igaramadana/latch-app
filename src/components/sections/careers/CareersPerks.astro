@@ -1,0 +1,188 @@
+---
+// Benefit copy is verbatim from the design export.
+const perks = [
+  {
+    key: "medical",
+    icon: "/images/careers/perks/medical.svg",
+    title: "Medical Insurance",
+    description: "We offer private medical cover to support your wellbeing when it counts.",
+  },
+  {
+    key: "equity",
+    icon: "/images/careers/perks/significant.svg",
+    title: "Significant Equity",
+    description:
+      "Meaningful ownership so you can share our company growth and long-term success.",
+  },
+  {
+    key: "salary",
+    icon: "/images/careers/perks/salary.svg",
+    title: "Competitive Salary",
+    description: "You can expect competitive pay, aligned to your experience and skills.",
+  },
+  {
+    key: "time-off",
+    icon: "/images/careers/perks/paid_time.svg",
+    title: "Paid Time Off",
+    description: "Weeks paid time off to recharge when you need it. We believe in working hard.",
+  },
+  {
+    key: "flexible",
+    icon: "/images/careers/perks/flexible.svg",
+    title: "Flexible Work",
+    description: "Work remotely by default but try to meet weekly in central Indonesia.",
+  },
+  {
+    key: "holiday",
+    icon: "/images/careers/perks/holiday.svg",
+    title: "Generous Holiday",
+    description:
+      "25 paid days off plus 20 optional days of unpaid holiday each year flexibility.",
+  },
+] as const;
+
+const avatars = [
+  "/images/careers/perks/avatar1.png",
+  "/images/careers/perks/avatar2.png",
+  "/images/careers/perks/avatar3.png",
+  "/images/careers/perks/avatar4.png",
+  "/images/careers/perks/avatar5.png",
+] as const;
+
+// The reference splits the six perks into two explicit rows so the single
+// horizontal rule sits between them; a flat grid would need nth-child math
+// that breaks as the column count changes.
+const rows = [perks.slice(0, 3), perks.slice(3)];
+---
+
+<section
+  class="bg-white pt-[clamp(64px,7vw,100px)] pb-[clamp(64px,7vw,100px)]"
+  aria-labelledby="careers-perks-title"
+  data-perks
+>
+  <div class="mx-auto w-full max-w-[1440px] px-6 md:px-8 lg:px-[120px]">
+    <div class="flex flex-col items-center gap-10 md:gap-16">
+      <header class="flex w-full max-w-[738px] flex-col items-center gap-4 text-center">
+        <p
+          class="inline-flex h-8 items-center gap-2 border border-border-badge bg-white px-[9px]"
+          data-perks-badge
+        >
+          <span class="size-2.5 flex-none bg-[#607AFF]" aria-hidden="true"></span>
+          <span class="font-sans text-sm font-medium uppercase tracking-[0.28px] text-ink-muted">
+            Perks
+          </span>
+        </p>
+
+        <div class="flex flex-col items-center gap-3">
+          <h2
+            id="careers-perks-title"
+            class="m-0 font-display text-[clamp(28px,3.4vw,42px)] leading-[1.16] tracking-normal text-ink font-mix-medium max-sm:text-[26px]"
+            data-perks-title
+          >
+            Special benefits for you
+          </h2>
+          <p
+            class="m-0 max-w-[788px] font-sans text-[20px] leading-[26px] text-pretty text-ink-muted max-sm:text-base max-sm:leading-6"
+            data-perks-sub
+          >
+            We offer meaningful benefits designed to support your growth.
+          </p>
+        </div>
+      </header>
+
+      <div
+        class="w-full overflow-hidden rounded-b-[24px] border border-border-badge bg-panel"
+        data-perks-card
+      >
+        <div
+          class="bg-white shadow-[0_1px_1px_-0.5px_rgb(23_23_23/0.06),0_3px_3px_-1.5px_rgb(23_23_23/0.06)]"
+        >
+          {
+            rows.map((row, rowIndex) => (
+              <>
+                {rowIndex > 0 && (
+                  <div class="mx-10 hidden h-px bg-border-badge md:block" aria-hidden="true" />
+                )}
+                <div class="flex flex-col md:grid md:grid-cols-3">
+                  {row.map((perk, cellIndex) => (
+                    <div
+                      class:list={[
+                        "relative flex flex-col items-center gap-6 px-6 py-10 md:border-b-0 md:px-6 md:py-12 lg:px-10",
+                        rowIndex === rows.length - 1 && cellIndex === row.length - 1
+                          ? ""
+                          : "border-b border-border-badge",
+                      ]}
+                      data-perks-cell
+                    >
+                      {cellIndex > 0 && (
+                        <span
+                          class="absolute top-1/2 left-0 hidden h-[151px] w-px -translate-y-1/2 bg-border-badge md:block"
+                          aria-hidden="true"
+                        />
+                      )}
+
+                      <div class="flex flex-col items-center gap-6">
+                        <div class="grid size-11 place-items-center rounded-[10px] bg-panel p-1.5">
+                          <img
+                            src={perk.icon}
+                            alt=""
+                            aria-hidden="true"
+                            width="24"
+                            height="24"
+                            class="size-6"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </div>
+
+                        <div class="flex flex-col items-center gap-2 text-center">
+                          <h3 class="m-0 font-tight text-[18px] font-medium leading-[27px] text-[#0D0D12]">
+                            {perk.title}
+                          </h3>
+                          <p class="m-0 max-w-[320px] font-tight text-base leading-6 text-[#666D80] max-md:max-w-[280px]">
+                            {perk.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ))
+          }
+        </div>
+
+        <div
+          class="flex flex-col items-center justify-center gap-1 px-4 py-[15.5px] sm:flex-row"
+          data-perks-bar
+        >
+          <div class="flex items-center" aria-hidden="true">
+            {
+              avatars.map((src) => (
+                <img
+                  src={src}
+                  alt=""
+                  width="20"
+                  height="20"
+                  class="-ml-1 size-5 rounded-full object-cover outline-2 outline-panel first:ml-0"
+                  loading="lazy"
+                  decoding="async"
+                  data-perks-avatar
+                />
+              ))
+            }
+          </div>
+          <p class="m-0 text-center font-sans text-sm font-medium leading-[21px] text-[#677489] sm:text-left">
+            — With more than 500+ employees.{" "}
+            <a
+              href="#open-roles"
+              class="text-[#607AFF] underline underline-offset-2 transition-colors duration-200 hover:text-[#4758E8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            >
+              View Position
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

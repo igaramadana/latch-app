@@ -121,6 +121,7 @@ export function initMotion() {
     testimonialIntro(paused),
     resourcesHeroIntro(paused),
     careersHeroIntro(paused),
+    careersPerksIntro(paused),
     blogGridIntro(paused),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
@@ -993,6 +994,49 @@ function keyBenefitsIntro(paused: boolean): () => void {
     tl.scrollTrigger?.kill();
     tl.kill();
     gsap.set([...parts, art, ...items].filter(Boolean) as HTMLElement[], {
+      clearProps: "all",
+    });
+  };
+}
+
+function careersPerksIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-perks]");
+  if (!section || paused) return () => {};
+
+  const badge = section.querySelector<HTMLElement>("[data-perks-badge]");
+  const title = section.querySelector<HTMLElement>("[data-perks-title]");
+  const sub = section.querySelector<HTMLElement>("[data-perks-sub]");
+  const card = section.querySelector<HTMLElement>("[data-perks-card]");
+  const cells = gsap.utils.toArray<HTMLElement>("[data-perks-cell]", section);
+  const bar = section.querySelector<HTMLElement>("[data-perks-bar]");
+  const avatars = gsap.utils.toArray<HTMLElement>("[data-perks-avatar]", section);
+  if (!title || !cells.length) return () => {};
+
+  // Already on screen at load: leave it alone rather than flashing a hidden state.
+  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
+
+  const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
+
+  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(card, { autoAlpha: 0, y: 32 });
+  gsap.set(cells, { autoAlpha: 0, y: 20 });
+  gsap.set([bar, ...avatars].filter(Boolean) as HTMLElement[], { autoAlpha: 0, y: 12 });
+
+  const tl = gsap.timeline({
+    defaults: { ease: EASE, duration: 0.8 },
+    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+  });
+
+  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
+    .to(card, { autoAlpha: 1, y: 0, duration: 0.9 }, "-=0.45")
+    .to(cells, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.07 }, "-=0.6")
+    .to(bar, { autoAlpha: 1, y: 0, duration: 0.5 }, "-=0.35")
+    .to(avatars, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.05 }, "-=0.35");
+
+  return () => {
+    tl.scrollTrigger?.kill();
+    tl.kill();
+    gsap.set([...parts, card, ...cells, bar, ...avatars].filter(Boolean) as HTMLElement[], {
       clearProps: "all",
     });
   };
