@@ -111,6 +111,7 @@ export function initMotion() {
   const teardowns = [
     navScrollState(),
     loginIntro(paused),
+    signupIntro(paused),
     navIntro(paused),
     navHover(paused),
     heroIntro(paused),
@@ -591,6 +592,104 @@ function loginIntro(paused: boolean): () => void {
     gsap.set([pattern, card, ...oauth, ...fields, submit].filter(Boolean) as HTMLElement[], {
       clearProps: "all",
     });
+  };
+}
+
+function signupIntro(paused: boolean): () => void {
+  const section = document.querySelector<HTMLElement>("[data-signup]");
+  if (!section || paused) return () => {};
+
+  const card = section.querySelector<HTMLElement>("[data-signup-card]");
+  const title = section.querySelector<HTMLElement>("[data-signup-title]");
+  const heading = section.querySelector<HTMLElement>("[data-signup-heading]");
+  const art = section.querySelector<HTMLElement>("[data-signup-art]");
+  const bar = section.querySelector<HTMLElement>("[data-signup-bar]");
+  const quote = section.querySelector<HTMLElement>("[data-signup-quote]");
+  const brands = section.querySelector<HTMLElement>("[data-signup-brands]");
+  const tiles = gsap.utils.toArray<HTMLElement>("[data-signup-tile]", section);
+  const perks = gsap.utils.toArray<HTMLElement>("[data-signup-perk]", section);
+  // Step 2 ships hidden, so only the first panel is in flow at load.
+  const fields = gsap.utils.toArray<HTMLElement>("[data-signup-step=\"1\"] [data-signup-field]", section);
+  const buttons = gsap.utils.toArray<HTMLElement>("[data-signup-next],[data-signup-submit]", section);
+  if (!card || !title) return () => {};
+
+  let split: SplitText | null = null;
+  let tl: gsap.core.Timeline | null = null;
+  let float: gsap.core.Tween | null = null;
+  let stepTween: gsap.core.Tween | null = null;
+
+  const run = () => {
+    split = SplitText.create(title, { type: "lines", linesClass: "signup-line" });
+
+    tl = gsap.timeline({
+      defaults: { ease: EASE, duration: 0.7 },
+      onComplete: () => {
+        split?.revert();
+        split = null;
+      },
+    });
+
+    if (tiles.length) {
+      tl.fromTo(tiles, { autoAlpha: 0, scale: 0.94 }, { autoAlpha: 0.5, scale: 1, duration: 1.4, stagger: 0.09, ease: "power2.out" }, 0);
+      // The two reference opacities differ; the 0.8 tile is the one scoring the illustration.
+      if (tiles[0]) tl.set(tiles[0], { autoAlpha: 0.8 }, 1.4);
+    }
+
+    tl.fromTo(
+      card,
+      { autoAlpha: 0, y: 26, scale: 0.99 },
+      { autoAlpha: 1, y: 0, scale: 1, duration: 0.85, ease: "power3.out" },
+      0.05,
+    )
+      .fromTo(split.lines, { yPercent: 110, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: 0.85, ease: "power4.out" }, 0.2)
+      .fromTo(perks, { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: 0.5, stagger: 0.07 }, 0.34);
+
+    if (heading) tl.fromTo(heading, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.3);
+
+    if (art) {
+      tl.fromTo(art, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: "power2.out" }, 0.46);
+      float = gsap.to(art, { y: -8, duration: 5, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 1.5 });
+    }
+
+    if (bar) tl.fromTo(bar, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.5 }, 0.4);
+    tl.fromTo(fields, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.07 }, 0.48);
+    tl.fromTo(buttons, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.5 }, 0.66);
+
+    if (quote) tl.fromTo(quote, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.6);
+    if (brands) tl.fromTo(brands, { autoAlpha: 0 }, { autoAlpha: 0.3, duration: 0.8 }, 0.7);
+  };
+
+  // The component swaps steps with classes; the entrance is animated here so
+  // both halves of the form arrive with the same motion.
+  const onStep = () => {
+    // Both panels keep their `flex` class, so display is the only signal for
+    // which one is on screen.
+    const active = gsap
+      .utils.toArray<HTMLElement>("[data-signup-step]", section)
+      .find((step) => getComputedStyle(step).display !== "none");
+    if (!active) return;
+    stepTween?.kill();
+    stepTween = gsap.fromTo(
+      active,
+      { autoAlpha: 0, x: 16 },
+      { autoAlpha: 1, x: 0, duration: 0.35, ease: "power2.out" },
+    );
+  };
+  section.addEventListener("signup:step", onStep);
+
+  if (document.fonts.status === "loaded") run();
+  else document.fonts.ready.then(run);
+
+  return () => {
+    section.removeEventListener("signup:step", onStep);
+    tl?.kill();
+    float?.kill();
+    stepTween?.kill();
+    split?.revert();
+    gsap.set(
+      [card, art, bar, quote, brands, ...tiles, ...perks, ...fields, ...buttons].filter(Boolean) as HTMLElement[],
+      { clearProps: "all" },
+    );
   };
 }
 

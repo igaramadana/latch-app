@@ -94,7 +94,7 @@
   }
 
   /* SplitText creates these line wrappers at runtime. */
-  :where(.hero-line, .ph-line, .sol-line, .pr-line, .uc-line, .impact-line, .features-line, .cta-line, .cp-line, .faq-line, .tst-line, .res-line, .car-line, .login-line) {
+  :where(.hero-line, .ph-line, .sol-line, .pr-line, .uc-line, .impact-line, .features-line, .cta-line, .cp-line, .faq-line, .tst-line, .res-line, .car-line, .login-line, .signup-line) {
     display: block;
     overflow: hidden;
     /* Padding gives the mask room for descenders; the negative margin cancels

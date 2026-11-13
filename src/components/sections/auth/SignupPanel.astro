@@ -1,0 +1,576 @@
+---
+// Measured from the 1440×1024 reference: card x795..1350 (555), y152..804,
+// 32px inner padding, 24/44 gaps. The 24px step bar bleeds to the card edges.
+const perks = ["Continuous testing", "Identity-first access", "Real-time threat detection"];
+
+const brands = [
+  { icon: "/images/signup/brand1.png", label: "Salesforce" },
+  { icon: "/images/signup/brand2.png", label: "Slack" },
+  { icon: "/images/signup/brand3.png", label: "Notion" },
+  { icon: "/images/signup/brand4.png", label: "Stripe" },
+  { icon: "/images/signup/brand5.png", label: "Zendesk" },
+  { icon: "/images/signup/brand6.png", label: "Snowflake" },
+];
+
+const sizes = ["Less than 75", "Around 75 - 150", "Over 150+"];
+
+// Only Australia ships a flag asset; the rest fall back to the dial code.
+const dialCodes = [
+  { code: "AU", dial: "+61" },
+  { code: "NZ", dial: "+64" },
+  { code: "US", dial: "+1" },
+  { code: "GB", dial: "+44" },
+  { code: "SG", dial: "+65" },
+];
+
+const positions = [
+  "Founder / Executive",
+  "Engineering",
+  "Security",
+  "IT Operations",
+  "Product",
+  "Other",
+];
+---
+
+<section class="signup flex min-h-dvh flex-col" data-signup>
+  <div class="signup-tiles pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
+    <div class="relative mx-auto h-full max-w-[1440px]">
+      <img
+        src="/images/signup/pattern.png"
+        alt=""
+        width="218"
+        height="222"
+        class="absolute top-[517px] left-[592px] opacity-80"
+        data-signup-tile
+        decoding="async"
+      />
+      <img
+        src="/images/signup/pattern1.png"
+        alt=""
+        width="218"
+        height="222"
+        class="absolute top-[-138px] left-[218px] origin-top-left -rotate-180 opacity-50"
+        data-signup-tile
+        decoding="async"
+      />
+      <img
+        src="/images/signup/pattern2.png"
+        alt=""
+        width="218"
+        height="222"
+        class="absolute top-[1024px] left-[218px] origin-top-left -rotate-180 opacity-50"
+        data-signup-tile
+        decoding="async"
+      />
+      <img
+        src="/images/signup/pattern.png"
+        alt=""
+        width="218"
+        height="222"
+        class="absolute top-[80px] left-[1222px] opacity-50"
+        data-signup-tile
+        decoding="async"
+      />
+    </div>
+  </div>
+
+  <div
+    class="relative mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-5 pt-10 pb-10 sm:px-8 lg:px-0 lg:pt-[152px] lg:pr-[90px] lg:pl-[70px]"
+  >
+    <div class="grid flex-1 items-start lg:grid-cols-[minmax(0,1fr)_555px]">
+      <div class="relative hidden flex-col gap-6 pb-[466px] lg:flex" data-signup-hero>
+        <h1
+          class="m-0 max-w-[380px] font-display text-[clamp(38px,5vw,50px)] leading-[1.1] text-white font-serif-display"
+          data-signup-title
+        >
+          Protection that starts on day one
+        </h1>
+
+        <ul class="m-0 flex list-none flex-col gap-3 p-0">
+          {
+            perks.map((perk) => (
+              <li class="flex items-center gap-2" data-signup-perk>
+                <svg
+                  class="size-6 flex-none"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M4.5 12.75 9.5 17.25 20.25 6.75"
+                    stroke="#BEF9B6"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span class="font-sans text-lg leading-[27px] text-white">{perk}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        {/* The reference starts the art at y340, overlapping the checklist,
+            so it sits out of flow inside the hero column. */}
+        <img
+          src="/images/signup/illustration.png"
+          alt=""
+          width="516"
+          height="517"
+          class="absolute top-[188px] left-[106px] w-[500px] max-w-none"
+          data-signup-art
+          decoding="async"
+        />
+      </div>
+
+      <div
+        class="mx-auto w-full max-w-[555px] bg-surface shadow-[0_1px_1px_-0.5px_rgb(23_23_23/0.06),0_3px_3px_-1.5px_rgb(23_23_23/0.06)]"
+        data-signup-card
+      >
+        <div class="flex flex-col gap-6 py-8">
+          <a href="/" class="flex min-h-8 items-center gap-[8.53px] px-8 no-underline" aria-label="Latch — home">
+            <svg
+              class="h-[27px] w-[25.6px] flex-none text-ink-strong"
+              width="24"
+              height="26"
+              viewBox="0 0 24 26"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M6.61832 12.7385L9.70992 20.7455H4.14504L2.12977 15.4909H0L5.9542 0H11.5191L6.61832 12.7385Z"
+                fill="currentColor"></path>
+              <path
+                d="M17.3817 12.7385L14.2901 4.73143H19.855L21.8702 9.98604H24L18.0458 25.4769H12.4809L17.3817 12.7385Z"
+                fill="currentColor"></path>
+            </svg>
+            <span class="text-[25.6px] leading-none font-semibold tracking-tight text-ink">Latch</span>
+          </a>
+
+          <div class="flex flex-col gap-11">
+            <div class="flex flex-col gap-2 px-8">
+              <h2
+                class="m-0 font-display text-[clamp(26px,5vw,32px)] leading-[1.3] text-ink font-serif-display"
+                data-signup-heading
+              >
+                Started with Latch
+              </h2>
+              <p class="m-0 font-tight text-sm leading-[21px] text-ink-muted">
+                Finish a quick step of register and get started
+              </p>
+            </div>
+
+            <div class="flex flex-col gap-6">
+              <div class="flex items-center justify-between gap-4 bg-[#F6F8FA] px-8 py-1" data-signup-bar>
+                <span class="font-tight text-xs leading-4 text-[#5A637A]" data-signup-stage>
+                  Personal Information
+                </span>
+                <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-1" aria-hidden="true">
+                    <span class="h-1 w-6 rounded-full bg-[#D9D9D9] transition-colors duration-300" data-signup-dot="0"></span>
+                    <span class="h-1 w-6 rounded-full bg-[#D9D9D9] transition-colors duration-300" data-signup-dot="1"></span>
+                  </div>
+                  <span class="font-tight text-xs leading-4 text-[#5A637A]" data-signup-count>1 of 2</span>
+                </div>
+              </div>
+
+              <form class="flex flex-col gap-6" data-signup-form>
+                <div class="flex flex-col gap-4 px-8" data-signup-step="1">
+                  <div class="flex flex-col gap-2" data-signup-field>
+                    <label for="signup-name" class="font-tight text-sm leading-[21px] font-medium text-ink">
+                      Full Name
+                    </label>
+                    <input
+                      id="signup-name"
+                      name="name"
+                      type="text"
+                      autocomplete="name"
+                      required
+                      placeholder="Enter your name"
+                      class="signup-input"
+                    />
+                  </div>
+
+                  <div class="flex flex-col gap-2" data-signup-field>
+                    <label for="signup-email" class="font-tight text-sm leading-[21px] font-medium text-ink">
+                      Email Address
+                    </label>
+                    <input
+                      id="signup-email"
+                      name="email"
+                      type="email"
+                      inputmode="email"
+                      autocomplete="email"
+                      required
+                      placeholder="Enter your email address"
+                      class="signup-input"
+                    />
+                  </div>
+
+                  <div class="flex flex-col gap-2" data-signup-field>
+                    <label for="signup-phone" class="font-tight text-sm leading-[21px] font-medium text-ink">
+                      Phone Number
+                    </label>
+                    <div class="relative flex items-center gap-2 rounded-lg border border-border-badge bg-white pr-4 transition-colors duration-200 focus-within:border-brand-500 focus-within:ring-3 focus-within:ring-brand-500/16 hover:border-[#CDD5E0]">
+                      <span class="pointer-events-none flex items-center gap-1.5 pl-4" data-signup-dial>
+                        <svg
+                          class="h-4 w-6 flex-none"
+                          width="24"
+                          height="16"
+                          viewBox="0 0 24 16"
+                          fill="none"
+                          aria-hidden="true"
+                          data-signup-flag
+                        >
+                          <rect width="24" height="16" fill="#10338C"></rect>
+                          <path d="M0 0h12v8H0z" fill="#10338C"></path>
+                          <path d="M0 0h12v8H0z" fill="#D80027" opacity="0"></path>
+                          <path d="M0 0 12 8M12 0 0 8" stroke="#FFFFFF" stroke-width="1.6"></path>
+                          <path d="M0 0 12 8M12 0 0 8" stroke="#D80027" stroke-width="0.8"></path>
+                          <path d="M6 0v8M0 4h12" stroke="#FFFFFF" stroke-width="2.6"></path>
+                          <path d="M6 0v8M0 4h12" stroke="#D80027" stroke-width="1.4"></path>
+                          <circle cx="6" cy="12" r="1.1" fill="#FFFFFF"></circle>
+                          <circle cx="18" cy="4" r="0.7" fill="#FFFFFF"></circle>
+                          <circle cx="21" cy="8" r="0.7" fill="#FFFFFF"></circle>
+                          <circle cx="17" cy="11" r="0.7" fill="#FFFFFF"></circle>
+                          <circle cx="19.5" cy="13.5" r="0.55" fill="#FFFFFF"></circle>
+                        </svg>
+                        <span class="font-tight text-sm leading-[21px] text-[#0E1422]" data-signup-dial-code>+61</span>
+                        <svg class="size-4" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <path d="M4 6.5 8 10.5 12 6.5" stroke="#111729" stroke-width="1.33" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      </span>
+                      <select
+                        name="dial"
+                        class="absolute inset-y-0 left-0 w-[86px] cursor-pointer opacity-0"
+                        aria-label="Country calling code"
+                        data-signup-dial-select
+                      >
+                        {dialCodes.map((entry) => <option value={entry.dial}>{`${entry.code} ${entry.dial}`}</option>)}
+                      </select>
+                      <input
+                        id="signup-phone"
+                        name="phone"
+                        type="tel"
+                        inputmode="tel"
+                        autocomplete="tel-national"
+                        required
+                        placeholder="Enter your phone number"
+                        class="h-12 w-full min-w-0 bg-transparent font-tight text-sm leading-[21px] text-ink outline-none placeholder:text-[#97A3B6]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-4 px-8" style="display: none" data-signup-step="2">
+                  <div class="flex flex-col gap-2" data-signup-field>
+                    <label for="signup-company" class="font-tight text-sm leading-[21px] font-medium text-ink">
+                      Company Name
+                    </label>
+                    <input
+                      id="signup-company"
+                      name="company"
+                      type="text"
+                      autocomplete="organization"
+                      required
+                      placeholder="Enter your company name"
+                      class="signup-input"
+                    />
+                  </div>
+
+                  <fieldset class="m-0 flex flex-col gap-2 border-0 p-0" data-signup-field>
+                    <legend class="mb-2 font-tight text-sm leading-[21px] font-medium text-ink">Company Size</legend>
+                    <div class="flex gap-[11px] max-sm:flex-col">
+                      {
+                        sizes.map((size, index) => (
+                          <label class="signup-segment">
+                            <input
+                              type="radio"
+                              name="size"
+                              value={size}
+                              class="peer sr-only"
+                              checked={index === 0}
+                            />
+                            <span>{size}</span>
+                          </label>
+                        ))
+                      }
+                    </div>
+                  </fieldset>
+
+                  <div class="flex flex-col gap-2" data-signup-field>
+                    <label for="signup-position" class="font-tight text-sm leading-[21px] font-medium text-ink">
+                      Your Position
+                    </label>
+                    <div class="relative">
+                      <select id="signup-position" name="position" required class="signup-input appearance-none pr-12">
+                        <option value="" selected disabled>Select Position</option>
+                        {positions.map((position) => <option value={position}>{position}</option>)}
+                      </select>
+                      <svg
+                        class="pointer-events-none absolute top-1/2 right-5 size-5 -translate-y-1/2"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 7.5 10 12.5 15 7.5" stroke="#111729" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-3 px-8">
+                  <button type="button" class="signup-submit" data-signup-next data-cta-scale>
+                    Next Step
+                  </button>
+                  <button type="submit" class="signup-submit" data-signup-submit data-cta-scale hidden>
+                    Submit Register
+                  </button>
+                  <p class="m-0 flex flex-wrap items-center justify-center gap-2 text-center font-tight text-sm leading-[21px]">
+                    <span class="font-medium text-ink">Already have an account ?</span>
+                    <a href="/login" class="signup-link font-medium">Sign in</a>
+                  </p>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-auto hidden items-end justify-between gap-8 pt-10 lg:flex">
+      <p
+        class="m-0 w-[364px] shrink-0 font-display text-[24px] leading-[1.16] text-white/45 font-mix-medium"
+        data-signup-quote
+      >
+        Trusted by security teams securing cloud-native systems
+      </p>
+      <ul class="m-0 flex list-none flex-wrap items-center gap-x-[21.35px] gap-y-3 p-0 opacity-30" data-signup-brands>
+        {
+          brands.map((brand) => (
+            <li class="flex items-center gap-[5.34px]">
+              <img
+                src={brand.icon}
+                alt=""
+                aria-hidden="true"
+                width="25"
+                height="25"
+                class="size-[21.35px] flex-none rounded-[6.67px]"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="font-sans text-[17.88px] leading-none text-white">{brand.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .signup {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: linear-gradient(180deg, #5e77ff 0%, #1f2a7d 100%);
+  }
+
+  .signup-input {
+    width: 100%;
+    height: 48px;
+    padding-inline: 16px;
+    border: 1px solid var(--color-border-badge);
+    border-radius: 8px;
+    background: var(--color-surface);
+    font-family: var(--font-tight);
+    font-size: 14px;
+    line-height: 21px;
+    color: var(--color-ink);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .signup-input::placeholder {
+    color: #97a3b6;
+  }
+
+  .signup-input:hover {
+    border-color: #cdd5e0;
+  }
+
+  .signup-input:focus {
+    outline: none;
+    border-color: var(--color-brand-500);
+    box-shadow: 0 0 0 3px rgb(94 118 255 / 0.16);
+  }
+
+  /* Native select text sits on the same 14/21 scale as the inputs. */
+  select.signup-input {
+    color: var(--color-ink);
+  }
+
+  select.signup-input:invalid {
+    color: #97a3b6;
+  }
+
+  .signup-segment {
+    flex: 1 1 0;
+    display: grid;
+    place-items: center;
+    height: 48px;
+    padding-inline: 16px;
+    border: 1px solid var(--color-border-badge);
+    border-radius: 8px;
+    background: var(--color-surface);
+    cursor: pointer;
+    text-align: center;
+    font-family: var(--font-tight);
+    font-size: 14px;
+    line-height: 21px;
+    font-weight: 500;
+    color: #677489;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .signup-segment:hover {
+    border-color: #cdd5e0;
+  }
+
+  .signup-segment:has(input:checked) {
+    border-color: #3b82f6;
+    background: #ebf2fe;
+    color: #0950c3;
+    box-shadow:
+      0 1px 2px rgb(12 17 28 / 0.08),
+      0 1px 3px rgb(12 17 28 / 0.04);
+  }
+
+  .signup-segment:has(input:focus-visible) {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+
+  .signup-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    border: 1px solid #758cfd;
+    border-radius: 8px;
+    background-image: linear-gradient(180deg, #5e76ff 0%, #70a9fe 100%);
+    box-shadow:
+      0 4px 4px #cecfd3,
+      0 0 0 1px rgb(90 120 255 / 0.2);
+    color: #f8fafc;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 500;
+    text-shadow: 0 2px 4px #4785f0;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+  }
+
+  /* The attribute beats the flex display above, so a hidden step button stays gone. */
+  .signup-submit[hidden] {
+    display: none;
+  }
+
+  .signup-submit:hover {
+    filter: brightness(1.05);
+  }
+
+  .signup-submit:active {
+    filter: brightness(0.97);
+  }
+
+  .signup-link {
+    color: #5e71ff;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: color 0.2s ease;
+  }
+
+  .signup-link:hover {
+    color: var(--color-brand-600);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .signup-input,
+    .signup-segment,
+    .signup-submit,
+    .signup-link {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-signup-form]");
+  const steps = Array.from(document.querySelectorAll<HTMLElement>("[data-signup-step]"));
+  const next = document.querySelector<HTMLButtonElement>("[data-signup-next]");
+  const submit = document.querySelector<HTMLButtonElement>("[data-signup-submit]");
+  const stage = document.querySelector<HTMLElement>("[data-signup-stage]");
+  const count = document.querySelector<HTMLElement>("[data-signup-count]");
+  const dots = Array.from(document.querySelectorAll<HTMLElement>("[data-signup-dot]"));
+  const [stepOne, stepTwo] = steps;
+
+  let current = 1;
+
+  const paint = () => {
+    dots.forEach((dot, index) => {
+      dot.classList.toggle("!bg-[#4472E9]", index < current);
+    });
+    if (stage) stage.textContent = current === 1 ? "Personal Information" : "Company Information";
+    if (count) count.textContent = `${current} of 2`;
+    if (next) next.hidden = current !== 1;
+    if (submit) submit.hidden = current === 1;
+  };
+
+  next?.addEventListener("click", () => {
+    if (!stepOne || !stepTwo) return;
+    const fields = Array.from(stepOne.querySelectorAll<HTMLInputElement>("input[required]"));
+    const valid = fields.every((field) => field.reportValidity());
+    if (!valid) return;
+
+    current = 2;
+    // Inline display beats the `flex` utility; a class could not win here.
+    stepTwo.style.display = "";
+    stepOne.style.display = "none";
+    paint();
+    form.dispatchEvent(new CustomEvent("signup:step", { bubbles: true }));
+    stepTwo.querySelector<HTMLElement>("input")?.focus({ preventScroll: true });
+  });
+
+  form?.addEventListener("submit", (event) => {
+    // No account endpoint yet; keep the page from navigating away.
+    event.preventDefault();
+  });
+
+  paint();
+
+  const dialSelect = document.querySelector<HTMLSelectElement>("[data-signup-dial-select]");
+  const dialCode = document.querySelector<HTMLElement>("[data-signup-dial-code]");
+  const flag = document.querySelector<SVGElement>("[data-signup-flag]");
+
+  dialSelect?.addEventListener("change", () => {
+    if (dialCode) dialCode.textContent = dialSelect.value;
+    // Only an Australian flag is bundled, so it is hidden for other codes
+    // rather than showing the wrong country.
+    flag?.classList.toggle("hidden", !dialSelect.selectedOptions[0]?.textContent?.startsWith("AU"));
+  });
+</script>
