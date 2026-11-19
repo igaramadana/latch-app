@@ -1,8 +1,16 @@
 ---
+interface UseCaseArt {
+  src: string;
+  width: number;
+  height: number;
+}
+
 interface Team {
   id: string;
   label: string;
   description: string;
+  photo: UseCaseArt & { alt: string };
+  flow: UseCaseArt;
 }
 
 const teams: Team[] = [
@@ -11,24 +19,52 @@ const teams: Team[] = [
     label: "Engineering teams",
     description:
       "Ship faster with confidence because vulnerabilities are identified and validated before reaching production.",
+    photo: {
+      src: "/images/home/use-cases/avatar.webp",
+      alt: "Security engineer monitoring validated controls",
+      width: 1267,
+      height: 1004,
+    },
+    flow: { src: "/images/home/use-cases/flow.svg", width: 579, height: 319 },
   },
   {
     id: "security",
     label: "Security leaders",
     description:
       "See every risk in one place, with clear ownership and evidence that controls hold under real conditions.",
+    photo: {
+      src: "/images/home/use-cases/avatar2.webp",
+      alt: "Security lead reviewing consolidated risk findings in one dashboard",
+      width: 1444,
+      height: 1138,
+    },
+    flow: { src: "/images/home/use-cases/flow2.svg", width: 665, height: 211 },
   },
   {
     id: "compliance",
     label: "Compliance teams",
     description:
       "Keep audit-ready records of continuous testing without chasing screenshots and spreadsheets.",
+    photo: {
+      src: "/images/home/use-cases/avatar3.webp",
+      alt: "Compliance analyst collecting audit-ready evidence of continuous testing",
+      width: 1444,
+      height: 1138,
+    },
+    flow: { src: "/images/home/use-cases/flow3.svg", width: 660, height: 221 },
   },
   {
     id: "sales",
     label: "Sales teams",
     description:
       "Answer security questionnaires with current, verifiable proof instead of stale documents.",
+    photo: {
+      src: "/images/home/use-cases/avatar4.webp",
+      alt: "Sales engineer answering a security questionnaire with live proof",
+      width: 1444,
+      height: 1138,
+    },
+    flow: { src: "/images/home/use-cases/flow4.svg", width: 692, height: 321 },
   },
 ];
 
@@ -85,6 +121,13 @@ const icons: Record<string, string> = {
                       aria-expanded={isOpen ? "true" : "false"}
                       aria-controls={`use-case-panel-${team.id}`}
                       data-use-cases-trigger
+                      data-uc-photo-src={team.photo.src}
+                      data-uc-photo-alt={team.photo.alt}
+                      data-uc-photo-width={team.photo.width}
+                      data-uc-photo-height={team.photo.height}
+                      data-uc-flow-src={team.flow.src}
+                      data-uc-flow-width={team.flow.width}
+                      data-uc-flow-height={team.flow.height}
                     >
                       <span class="flex items-center gap-3">
                         <svg

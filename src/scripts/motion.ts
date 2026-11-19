@@ -1870,13 +1870,44 @@ function useCasesMotion(paused: boolean): () => void {
     });
   };
 
+  const photoImg = photo instanceof HTMLImageElement ? photo : null;
+  const flowImg = flow instanceof HTMLImageElement ? flow : null;
+
+  const setArt = (index: number) => {
+    const data = triggers[index]?.dataset;
+    if (!data) return;
+
+    if (photoImg && data.ucPhotoSrc) {
+      photoImg.src = data.ucPhotoSrc;
+      photoImg.alt = data.ucPhotoAlt ?? "";
+      photoImg.width = Number(data.ucPhotoWidth);
+      photoImg.height = Number(data.ucPhotoHeight);
+    }
+
+    if (flowImg && data.ucFlowSrc) {
+      flowImg.src = data.ucFlowSrc;
+      flowImg.width = Number(data.ucFlowWidth);
+      flowImg.height = Number(data.ucFlowHeight);
+    }
+  };
+
   const openPanel = (index: number) => {
+    setArt(index);
     triggers.forEach((trigger, i) => {
       const isOpen = i === index;
       trigger.setAttribute("aria-expanded", String(isOpen));
       if (panels[i]) setPanel(panels[i], isOpen, false);
     });
   };
+
+  // Warm the art for the panels that are not open yet, so switching is instant.
+  triggers.slice(1).forEach((trigger) => {
+    for (const src of [trigger.dataset.ucPhotoSrc, trigger.dataset.ucFlowSrc]) {
+      if (!src) continue;
+      const preload = new Image();
+      preload.src = src;
+    }
+  });
 
   triggers.forEach((trigger, index) => {
     if (panels[index]) setPanel(panels[index], index === 0, true);
