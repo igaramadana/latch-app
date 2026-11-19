@@ -1901,13 +1901,42 @@ function useCasesMotion(paused: boolean): () => void {
   };
 
   // Warm the art for the panels that are not open yet, so switching is instant.
-  triggers.slice(1).forEach((trigger) => {
-    for (const src of [trigger.dataset.ucPhotoSrc, trigger.dataset.ucFlowSrc]) {
-      if (!src) continue;
-      const preload = new Image();
-      preload.src = src;
-    }
-  });
+  // Deferred: fetching these at init competes with the hero image for bandwidth.
+  let warmed = false;
+  const warmArt = () => {
+    if (warmed) return;
+    warmed = true;
+    triggers.slice(1).forEach((trigger) => {
+      for (const src of [trigger.dataset.ucPhotoSrc, trigger.dataset.ucFlowSrc]) {
+        if (!src) continue;
+        const preload = new Image();
+        preload.src = src;
+      }
+    });
+  };
+
+  const list = triggers[0]?.closest("ul") ?? null;
+  if (list) {
+    list.addEventListener("pointerenter", warmArt);
+    list.addEventListener("focusin", warmArt);
+    cleanups.push(() => {
+      list.removeEventListener("pointerenter", warmArt);
+      list.removeEventListener("focusin", warmArt);
+    });
+  }
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        warmArt();
+        observer.disconnect();
+      },
+      { rootMargin: "400px" },
+    );
+    observer.observe(section);
+    cleanups.push(() => observer.disconnect());
+  }
 
   triggers.forEach((trigger, index) => {
     if (panels[index]) setPanel(panels[index], index === 0, true);
