@@ -1870,26 +1870,69 @@ function useCasesMotion(paused: boolean): () => void {
     });
   };
 
-  const photoImg = photo instanceof HTMLImageElement ? photo : null;
-  const flowImg = flow instanceof HTMLImageElement ? flow : null;
+  const photoLayers = photo
+    ? gsap.utils.toArray<HTMLImageElement>("[data-uc-layer]", photo)
+    : [];
+  const flowLayers = flow
+    ? gsap.utils.toArray<HTMLImageElement>("[data-uc-layer]", flow)
+    : [];
+
+  let frontLayer = 0;
+  let artTimeline: gsap.core.Timeline | null = null;
 
   const setArt = (index: number) => {
     const data = triggers[index]?.dataset;
-    if (!data) return;
+    const incomingPhoto = photoLayers[frontLayer ^ 1];
+    const incomingFlow = flowLayers[frontLayer ^ 1];
+    if (!data || !incomingPhoto || !incomingFlow) return;
 
-    if (photoImg && data.ucPhotoSrc) {
-      photoImg.src = data.ucPhotoSrc;
-      photoImg.alt = data.ucPhotoAlt ?? "";
-      photoImg.width = Number(data.ucPhotoWidth);
-      photoImg.height = Number(data.ucPhotoHeight);
+    const outgoingPhoto = photoLayers[frontLayer];
+    const outgoingFlow = flowLayers[frontLayer];
+    frontLayer ^= 1;
+
+    incomingPhoto.src = data.ucPhotoSrc ?? "";
+    incomingPhoto.alt = data.ucPhotoAlt ?? "";
+    incomingPhoto.width = Number(data.ucPhotoWidth);
+    incomingPhoto.height = Number(data.ucPhotoHeight);
+
+    incomingFlow.src = data.ucFlowSrc ?? "";
+    incomingFlow.width = Number(data.ucFlowWidth);
+    incomingFlow.height = Number(data.ucFlowHeight);
+
+    if (flow) {
+      flow.style.left = data.ucFlowLeft ?? "";
+      flow.style.top = data.ucFlowTop ?? "";
+      flow.style.width = data.ucFlowWidthCss ?? "";
     }
 
-    if (flowImg && data.ucFlowSrc) {
-      flowImg.src = data.ucFlowSrc;
-      flowImg.width = Number(data.ucFlowWidth);
-      flowImg.height = Number(data.ucFlowHeight);
-    }
+    const reveal = () => {
+      artTimeline?.kill();
+      gsap.killTweensOf(photoLayers);
+      gsap.killTweensOf(flowLayers);
+
+      if (paused) {
+        gsap.set([outgoingPhoto, outgoingFlow], { autoAlpha: 0, scale: 1, y: 0 });
+        gsap.set([incomingPhoto, incomingFlow], { autoAlpha: 1, scale: 1, y: 0 });
+        return;
+      }
+
+      artTimeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+      artTimeline
+        .to([outgoingPhoto, outgoingFlow], { autoAlpha: 0, duration: 0.3, ease: "power2.inOut" }, 0)
+        .fromTo(
+          incomingPhoto,
+          { autoAlpha: 0, scale: 1.02 },
+          { autoAlpha: 1, scale: 1, duration: 0.6 },
+          0.06,
+        )
+        .fromTo(incomingFlow, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.65 }, 0.14);
+    };
+
+    if (incomingPhoto.decode) incomingPhoto.decode().then(reveal, reveal);
+    else reveal();
   };
+
+  cleanups.push(() => artTimeline?.kill());
 
   const openPanel = (index: number) => {
     setArt(index);

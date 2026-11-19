@@ -5,12 +5,18 @@ interface UseCaseArt {
   height: number;
 }
 
+interface UseCasePlacement {
+  left: string;
+  top: string;
+  width: string;
+}
+
 interface Team {
   id: string;
   label: string;
   description: string;
   photo: UseCaseArt & { alt: string };
-  flow: UseCaseArt;
+  flow: UseCaseArt & { placement: UseCasePlacement };
 }
 
 const teams: Team[] = [
@@ -25,7 +31,12 @@ const teams: Team[] = [
       width: 1267,
       height: 1004,
     },
-    flow: { src: "/images/home/use-cases/flow.svg", width: 579, height: 319 },
+    flow: {
+      src: "/images/home/use-cases/flow.svg",
+      width: 579,
+      height: 319,
+      placement: { left: "4.9%", top: "calc(21.6% + 12px)", width: "91%" },
+    },
   },
   {
     id: "security",
@@ -38,7 +49,12 @@ const teams: Team[] = [
       width: 1444,
       height: 1138,
     },
-    flow: { src: "/images/home/use-cases/flow2.svg", width: 665, height: 211 },
+    flow: {
+      src: "/images/home/use-cases/flow2.svg",
+      width: 665,
+      height: 211,
+      placement: { left: "5.26%", top: "52.37%", width: "86.57%" },
+    },
   },
   {
     id: "compliance",
@@ -51,7 +67,12 @@ const teams: Team[] = [
       width: 1444,
       height: 1138,
     },
-    flow: { src: "/images/home/use-cases/flow3.svg", width: 660, height: 221 },
+    flow: {
+      src: "/images/home/use-cases/flow3.svg",
+      width: 660,
+      height: 221,
+      placement: { left: "5.26%", top: "48.86%", width: "90.44%" },
+    },
   },
   {
     id: "sales",
@@ -64,7 +85,12 @@ const teams: Team[] = [
       width: 1444,
       height: 1138,
     },
-    flow: { src: "/images/home/use-cases/flow4.svg", width: 692, height: 321 },
+    flow: {
+      src: "/images/home/use-cases/flow4.svg",
+      width: 692,
+      height: 321,
+      placement: { left: "3.74%", top: "44.11%", width: "94.32%" },
+    },
   },
 ];
 
@@ -128,6 +154,9 @@ const icons: Record<string, string> = {
                       data-uc-flow-src={team.flow.src}
                       data-uc-flow-width={team.flow.width}
                       data-uc-flow-height={team.flow.height}
+                      data-uc-flow-left={team.flow.placement.left}
+                      data-uc-flow-top={team.flow.placement.top}
+                      data-uc-flow-width-css={team.flow.placement.width}
                     >
                       <span class="flex items-center gap-3">
                         <svg
@@ -174,30 +203,52 @@ const icons: Record<string, string> = {
 
       <div class="relative min-[1024px]:self-center min-[1360px]:mt-[41px] min-[1360px]:self-start" data-use-cases-art>
         <div class="relative aspect-[1267/1004] w-full">
-          <img
-            data-uc-photo
-            src="/images/home/use-cases/avatar.webp"
-            alt="Security engineer monitoring validated controls"
-            class="h-full w-full object-contain"
-            width="1267"
-            height="1004"
-            loading="lazy"
-            decoding="async"
-            data-use-cases-photo
-          />
-          <img
-            src="/images/home/use-cases/flow.svg"
-            alt=""
-            aria-hidden="true"
+          <div class="absolute inset-0" data-uc-photo data-use-cases-photo>
+            <img
+              data-uc-layer
+              src={teams[0].photo.src}
+              alt={teams[0].photo.alt}
+              class="absolute inset-0 h-full w-full object-contain"
+              width={teams[0].photo.width}
+              height={teams[0].photo.height}
+              loading="lazy"
+              decoding="async"
+            />
+            <img
+              data-uc-layer
+              alt=""
+              aria-hidden="true"
+              class="absolute inset-0 h-full w-full object-contain opacity-0"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <div
             class="pointer-events-none absolute top-[calc(21.6%_+_12px)] left-[4.9%] w-[91%]"
-            width="579"
-            height="319"
-            loading="lazy"
-            decoding="async"
             data-use-cases-flow
             data-uc-parallax
             data-depth="14"
-          />
+          >
+            <img
+              data-uc-layer
+              src={teams[0].flow.src}
+              alt=""
+              aria-hidden="true"
+              class="absolute top-0 left-0 w-full"
+              width={teams[0].flow.width}
+              height={teams[0].flow.height}
+              loading="lazy"
+              decoding="async"
+            />
+            <img
+              data-uc-layer
+              alt=""
+              aria-hidden="true"
+              class="absolute top-0 left-0 w-full opacity-0"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
         </div>
       </div>
     </div>
