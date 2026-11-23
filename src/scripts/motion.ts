@@ -8,6 +8,8 @@ const EASE = "power3.out";
 const HEADER_STAGGER = 0.14;
 const HEADER_DURATION = 0.75;
 const HEADER_Y = 22;
+const REVEAL_START = "top 70%";
+const REVEAL_FOLD = 0.7;
 
 const reducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -379,7 +381,7 @@ function solutionsUseCaseIntro(paused: boolean): () => void {
   const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
   // Same guard as the sibling sections: never hide what is already on screen.
-  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD;
 
   gsap.set(header, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 22 });
   gsap.set(cards, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 28 });
@@ -401,7 +403,7 @@ function solutionsUseCaseIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   tl.to(header, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
@@ -432,7 +434,7 @@ function solutionsFeaturesIntro(paused: boolean): () => void {
 
   // A reload while already scrolled here would flash the cards hidden first, so
   // this section plays in place when it is on screen at load.
-  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD;
 
   gsap.set(header, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 22 });
   gsap.set(cards, { autoAlpha: onScreen ? 1 : 0, y: onScreen ? 0 : 30 });
@@ -456,7 +458,7 @@ function solutionsFeaturesIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   tl.to(header, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
@@ -490,7 +492,7 @@ function solutionsOverviewIntro(paused: boolean): () => void {
 
   // On tall viewports the section is already on screen at load. Hiding it first
   // would flash, so it plays a short in-place reveal instead of scrolling in.
-  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD;
 
   const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
@@ -515,7 +517,7 @@ function solutionsOverviewIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   tl.to(header, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
@@ -1037,14 +1039,14 @@ function scrollReveals(paused: boolean): () => void {
 
   const hidden = gsap
     .utils.toArray<HTMLElement>("[data-reveal]")
-    .filter((el) => el.getBoundingClientRect().top > window.innerHeight * 0.75);
+    .filter((el) => el.getBoundingClientRect().top > window.innerHeight * REVEAL_FOLD);
 
   if (!hidden.length) return () => {};
 
   gsap.set(hidden, { autoAlpha: 0, y: 32 });
 
   const triggers = ScrollTrigger.batch(hidden, {
-    start: "top 75%",
+    start: REVEAL_START,
     once: true,
     onEnter: (els) =>
       gsap.to(els, {
@@ -1075,7 +1077,7 @@ function howItWorksIntro(paused: boolean): () => void {
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD;
   if (onScreen) return () => {};
 
   gsap.set(parts, { autoAlpha: 0, y: HEADER_Y });
@@ -1083,7 +1085,7 @@ function howItWorksIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
@@ -1107,7 +1109,7 @@ function capabilitiesIntro(paused: boolean): () => void {
   if (!title || !cards.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD) return () => {};
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
   const arts = cards
@@ -1120,7 +1122,7 @@ function capabilitiesIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
@@ -1146,7 +1148,7 @@ function keyBenefitsIntro(paused: boolean): () => void {
   if (!title || !items.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD) return () => {};
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
@@ -1156,7 +1158,7 @@ function keyBenefitsIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
@@ -1186,7 +1188,7 @@ function careersPerksIntro(paused: boolean): () => void {
   if (!title || !cells.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD) return () => {};
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
@@ -1197,7 +1199,7 @@ function careersPerksIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
@@ -1326,7 +1328,7 @@ function careersProcessStory(paused: boolean): () => void {
 
   const header = gsap.timeline({
     defaults: { ease: EASE, duration: HEADER_DURATION },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   header.from(
@@ -1434,7 +1436,7 @@ function careersRolesIntro(paused: boolean): () => void {
   if (!title || !rows.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD) return () => {};
 
   const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
   const reveal = [...groups, ...rows, footer, cta].filter(Boolean) as HTMLElement[];
@@ -1446,7 +1448,7 @@ function careersRolesIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   tl.to(header, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
@@ -1476,7 +1478,7 @@ function whoWeServeIntro(paused: boolean): () => void {
   if (!title || !cards.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD) return () => {};
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
@@ -1486,7 +1488,7 @@ function whoWeServeIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   if (pattern) {
@@ -1616,7 +1618,7 @@ function howItWorksStepsMotion(paused: boolean): () => void {
 
   const header = gsap.timeline({
     defaults: { ease: EASE, duration: HEADER_DURATION },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   header.from(
@@ -1721,7 +1723,7 @@ function overviewIntro(paused: boolean): () => void {
   if (!title || !cards.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD) return () => {};
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
@@ -1730,7 +1732,7 @@ function overviewIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0).to(
@@ -1761,7 +1763,7 @@ function whyItMattersIntro(paused: boolean): () => void {
 
   const copy = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) {
+  if (section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD) {
     return () => {};
   }
 
@@ -1773,7 +1775,7 @@ function whyItMattersIntro(paused: boolean): () => void {
 
   const tl = gsap.timeline({
     defaults: { ease: EASE, duration: 0.8 },
-    scrollTrigger: { trigger: section, start: "top 75%", once: true },
+    scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
   });
 
   tl.to(art, { autoAlpha: 1, y: 0, duration: 0.9 }, 0);
@@ -2114,7 +2116,7 @@ function useCasesMotion(paused: boolean): () => void {
     });
   }
 
-  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.75;
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * REVEAL_FOLD;
   if (!belowFold) return () => cleanups.forEach((fn) => fn());
 
   const run = () => {
@@ -2131,7 +2133,7 @@ function useCasesMotion(paused: boolean): () => void {
 
     intro = gsap.timeline({
       defaults: { ease: EASE, duration: 0.8 },
-      scrollTrigger: { trigger: section, start: "top 75%", once: true },
+      scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
       onComplete: () => {
         split?.revert();
         split = null;
@@ -2241,7 +2243,7 @@ function securityImpactMotion(paused: boolean): () => void {
 
   if (paused) return killScrub;
 
-  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.75;
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * REVEAL_FOLD;
   if (!belowFold) return killScrub;
 
   const run = () => {
@@ -2276,7 +2278,7 @@ function securityImpactMotion(paused: boolean): () => void {
 
     intro = gsap.timeline({
       defaults: { ease: EASE, duration: 0.8 },
-      scrollTrigger: { trigger: section, start: "top 75%", once: true },
+      scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
       onComplete: () => {
         split?.revert();
         split = null;
@@ -2331,7 +2333,7 @@ function featuresMotion(paused: boolean): () => void {
 
   if (paused) return () => {};
 
-  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.75;
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * REVEAL_FOLD;
   if (!belowFold) return () => {};
 
   const run = () => {
@@ -2345,7 +2347,7 @@ function featuresMotion(paused: boolean): () => void {
 
     intro = gsap.timeline({
       defaults: { ease: EASE, duration: 0.8 },
-      scrollTrigger: { trigger: section, start: "top 75%", once: true },
+      scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
       onComplete: () => {
         split?.revert();
         split = null;
@@ -2425,7 +2427,7 @@ function ctaSectionMotion(paused: boolean): () => void {
     );
   });
 
-  const belowFold = section.getBoundingClientRect().top > window.innerHeight * 0.75;
+  const belowFold = section.getBoundingClientRect().top > window.innerHeight * REVEAL_FOLD;
   if (!belowFold) return teardown;
 
   const run = () => {
@@ -2440,7 +2442,7 @@ function ctaSectionMotion(paused: boolean): () => void {
 
     intro = gsap.timeline({
       defaults: { ease: EASE, duration: 0.8 },
-      scrollTrigger: { trigger: section, start: "top 75%", once: true },
+      scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
       onComplete: () => {
         split?.revert();
         split = null;
@@ -2488,7 +2490,7 @@ function comparePlansIntro(paused: boolean): () => void {
 
     const tl = gsap.timeline({
       defaults: { ease: EASE, duration: 0.8 },
-      scrollTrigger: { trigger: section, start: "top 75%", once: true },
+      scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
       onComplete: () => {
         // Restoring the unsplit heading keeps the text reflowable on resize.
         split?.revert();
@@ -2595,7 +2597,7 @@ function testimonialIntro(paused: boolean): () => void {
   if (!text || !stats.length) return () => {};
 
   // Already on screen at load: leave it alone rather than flashing a hidden state.
-  if (section.getBoundingClientRect().top <= window.innerHeight * 0.75) return () => {};
+  if (section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD) return () => {};
 
   let split: SplitText | null = null;
   let tl: gsap.core.Timeline | null = null;
@@ -2605,7 +2607,7 @@ function testimonialIntro(paused: boolean): () => void {
 
     tl = gsap.timeline({
       defaults: { ease: EASE, duration: 0.8 },
-      scrollTrigger: { trigger: section, start: "top 75%", once: true },
+      scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
       onComplete: () => {
         split?.revert();
         split = null;
@@ -2658,7 +2660,7 @@ function faqSectionMotion(paused: boolean): () => void {
   const reduced = reducedMotion();
   // Reveal animation is skipped when the section is already on screen, but the
   // accordion must stay interactive either way.
-  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
+  const onScreen = section.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD;
 
   let tl: gsap.core.Timeline | null = null;
   let split: SplitText | null = null;
@@ -2719,7 +2721,7 @@ function faqSectionMotion(paused: boolean): () => void {
 
       tl = gsap.timeline({
         defaults: { ease: EASE, duration: 0.8 },
-        scrollTrigger: { trigger: section, start: "top 75%", once: true },
+        scrollTrigger: { trigger: section, start: REVEAL_START, once: true },
         onComplete: () => {
           split?.revert();
           split = null;
