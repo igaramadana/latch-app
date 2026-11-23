@@ -39,10 +39,10 @@ const announcements = {
   </div>
 
   <div
-    class="relative mx-auto max-w-[1440px] px-6 pt-[calc(var(--spacing-nav)+150px)] pb-4 lg:pt-[calc(var(--spacing-nav)+118px)] lg:pb-0"
+    class="relative mx-auto max-w-[1440px] px-6 pt-[calc(var(--spacing-nav)+32px)] pb-4 md:px-10 md:pt-[calc(var(--spacing-nav)+48px)] lg:pt-[calc(var(--spacing-nav)+118px)] lg:pb-0"
   >
-    <div class="mx-auto flex max-w-[840px] flex-col items-center gap-8 text-center">
-      <div class="flex flex-col items-center gap-6">
+    <div class="mx-auto flex max-w-[840px] flex-col items-center gap-6 text-center md:gap-8">
+      <div class="flex flex-col items-center gap-4 md:gap-6">
         <div
           class="inline-flex flex-wrap items-center justify-center gap-3"
           data-hero-badge
@@ -95,10 +95,10 @@ const announcements = {
   </div>
 
   <div
-    class="relative mx-auto mt-0 max-w-[1440px] overflow-hidden sm:mt-0 [@media(width>=1025px)]:mt-1 [@media(width>=1025px)]:h-[729px]"
+    class="relative mx-auto mt-0 aspect-[1329/729] w-full max-w-[1329px] overflow-hidden [@media(width>=1025px)]:mt-1"
     data-hero-art
   >
-    <div class="relative mx-auto w-full max-w-[1329px]">
+    <div class="relative w-full">
       <img
         class="block w-full"
         src="/images/home/hero/isometric-fresh.svg"
@@ -109,67 +109,67 @@ const announcements = {
         decoding="async"
         fetchpriority="high"
       />
-    </div>
 
-    <div
-      class="pointer-events-none absolute inset-0 mx-auto max-w-[1329px]"
-      data-hero-cards
-    >
-      <img
-        class="absolute left-[18.6%] top-[10.5%] w-[20.5%] [@media(width>=1025px)]:top-[10.5%]"
-        src="/images/home/hero/card-left.svg"
-        alt=""
-        aria-hidden="true"
-        decoding="async"
-        width="273"
-        height="237"
-        data-hero-card="left"
-      />
-      <img
-        class="absolute left-[62.8%] top-[10.5%] w-[20.5%] [@media(width>=1025px)]:top-[10.5%]"
-        src="/images/home/hero/card-right.svg"
-        alt=""
-        aria-hidden="true"
-        decoding="async"
-        width="273"
-        height="237"
-        data-hero-card="right"
-      />
-      <img
-        class="absolute left-[82.3%] top-[41%] w-[17.7%] [@media(width>=1025px)]:top-[42.8%]"
-        src="/images/home/hero/card-far.svg"
-        alt=""
-        aria-hidden="true"
-        decoding="async"
-        width="235"
-        height="266"
-        data-hero-card="far"
-      />
-      <img
-        class="absolute left-[13.3%] top-[60%] w-[20.5%] [@media(width>=1025px)]:top-[61.7%]"
-        src="/images/home/hero/card-left.svg"
-        alt=""
-        aria-hidden="true"
-        decoding="async"
-        width="273"
-        height="237"
-        data-hero-card="lower-left"
-      />
-      <img
-        class="absolute left-[64.6%] top-[58.8%] w-[20.5%] [@media(width>=1025px)]:top-[60.5%]"
-        src="/images/home/hero/card-right.svg"
-        alt=""
-        aria-hidden="true"
-        decoding="async"
-        width="273"
-        height="237"
-        data-hero-card="lower-right"
-      />
+      <div
+        class="pointer-events-none absolute inset-0"
+        data-hero-cards
+      >
+        <img
+          class="absolute left-[18.6%] top-[7.83%] w-[20.5%]"
+          src="/images/home/hero/card-left.svg"
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          width="273"
+          height="237"
+          data-hero-card="left"
+        />
+        <img
+          class="absolute left-[62.8%] top-[7.83%] w-[20.5%]"
+          src="/images/home/hero/card-right.svg"
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          width="273"
+          height="237"
+          data-hero-card="right"
+        />
+        <img
+          class="absolute left-[82.3%] top-[31.92%] w-[17.7%]"
+          src="/images/home/hero/card-far.svg"
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          width="235"
+          height="266"
+          data-hero-card="far"
+        />
+        <img
+          class="absolute left-[13.3%] top-[46.01%] w-[20.5%]"
+          src="/images/home/hero/card-left.svg"
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          width="273"
+          height="237"
+          data-hero-card="lower-left"
+        />
+        <img
+          class="absolute left-[64.6%] top-[45.12%] w-[20.5%]"
+          src="/images/home/hero/card-right.svg"
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          width="273"
+          height="237"
+          data-hero-card="lower-right"
+        />
+      </div>
     </div>
   </div>
 
   <div
-    class="pointer-events-none absolute inset-x-0 bottom-0 h-[186px] bg-linear-to-b from-[rgb(241_246_253_/_0)] to-hero-bg"
+    class="pointer-events-none absolute inset-x-0 bottom-0 h-[clamp(64px,13vw,186px)] bg-linear-to-b from-[rgb(241_246_253_/_0)] to-hero-bg"
     aria-hidden="true"
   >
   </div>

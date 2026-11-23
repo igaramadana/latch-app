@@ -63,7 +63,7 @@ const plans: Plan[] = [
   </div>
 
   <div
-    class="relative mx-auto w-full max-w-[1440px] px-6 pt-[calc(var(--spacing-nav)+clamp(40px,7vw,101px))] pb-[clamp(56px,8.9vw,128px)] lg:px-[120px]"
+    class="relative mx-auto w-full max-w-[1440px] px-6 pt-[calc(var(--spacing-nav)+32px)] pb-14 md:px-10 md:pt-[calc(var(--spacing-nav)+48px)] md:pb-20 lg:px-[120px] lg:pt-[calc(var(--spacing-nav)+clamp(72px,7vw,101px))] lg:pb-[clamp(80px,8.9vw,128px)]"
   >
     <div class="mx-auto flex max-w-[1200px] flex-col gap-8 lg:gap-12">
       <header class="flex flex-col items-start gap-4">
@@ -130,7 +130,7 @@ const plans: Plan[] = [
           plans.map((plan) => (
             <div
               class:list={[
-                "flex flex-col gap-6 px-5 py-[26px] max-[899px]:mx-auto max-[899px]:w-full max-[899px]:max-w-[440px]",
+                "flex flex-col gap-6 px-5 py-[26px] max-[899px]:w-full",
                 plan.key !== "enterprise" && "max-[899px]:border-b max-[899px]:border-border-badge min-[900px]:border-r min-[900px]:border-border-badge",
               ]}
               data-pr-card

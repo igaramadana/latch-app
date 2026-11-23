@@ -1850,11 +1850,17 @@ function useCasesMotion(paused: boolean): () => void {
     section,
   );
   const panels = gsap.utils.toArray<HTMLElement>("[data-use-cases-panel]", section);
+  const progressBars = gsap.utils.toArray<HTMLElement>("[data-use-cases-progress]", section);
+
+  const AUTO_ADVANCE_SECONDS = 5;
 
   const cleanups: Array<() => void> = [];
   let split: SplitText | null = null;
   let intro: gsap.core.Timeline | null = null;
   let loop: gsap.core.Tween | null = null;
+  let activeIndex = 0;
+  let inView = false;
+  let progressTween: gsap.core.Tween | null = null;
 
   const setPanel = (panel: HTMLElement, open: boolean, immediate: boolean) => {
     const height = panel.scrollHeight;
@@ -1934,13 +1940,55 @@ function useCasesMotion(paused: boolean): () => void {
 
   cleanups.push(() => artTimeline?.kill());
 
+  const syncProgressPlayback = () => {
+    if (!progressTween) return;
+    if (inView && !document.hidden) progressTween.play();
+    else progressTween.pause();
+  };
+
+  const startProgress = (index: number) => {
+    progressTween?.kill();
+    progressTween = null;
+
+    if (!progressBars.length) return;
+    gsap.set(progressBars, { scaleX: 0 });
+
+    if (paused || triggers.length < 2) return;
+    const bar = progressBars[index];
+    if (!bar) return;
+
+    progressTween = gsap.fromTo(
+      bar,
+      { scaleX: 0 },
+      {
+        scaleX: 1,
+        duration: AUTO_ADVANCE_SECONDS,
+        ease: "none",
+        paused: !inView || document.hidden,
+        onComplete: () => {
+          openPanel((index + 1) % triggers.length);
+        },
+      },
+    );
+  };
+
+  cleanups.push(() => {
+    progressTween?.kill();
+    progressTween = null;
+    if (progressBars.length) gsap.set(progressBars, { clearProps: "transform" });
+  });
+
   const openPanel = (index: number) => {
-    setArt(index);
-    triggers.forEach((trigger, i) => {
-      const isOpen = i === index;
-      trigger.setAttribute("aria-expanded", String(isOpen));
-      if (panels[i]) setPanel(panels[i], isOpen, false);
-    });
+    if (index !== activeIndex) {
+      activeIndex = index;
+      setArt(index);
+      triggers.forEach((trigger, i) => {
+        const isOpen = i === index;
+        trigger.setAttribute("aria-expanded", String(isOpen));
+        if (panels[i]) setPanel(panels[i], isOpen, false);
+      });
+    }
+    startProgress(index);
   };
 
   // Warm the art for the panels that are not open yet, so switching is instant.
@@ -2000,6 +2048,28 @@ function useCasesMotion(paused: boolean): () => void {
   cleanups.push(() => window.removeEventListener("resize", onResize));
 
   if (paused) return () => cleanups.forEach((fn) => fn());
+
+  if (progressBars.length && triggers.length > 1) {
+    if ("IntersectionObserver" in window) {
+      const progressObserver = new IntersectionObserver(
+        (entries) => {
+          inView = entries.some((entry) => entry.isIntersecting);
+          syncProgressPlayback();
+        },
+        { threshold: 0.2 },
+      );
+      progressObserver.observe(section);
+      cleanups.push(() => progressObserver.disconnect());
+    } else {
+      inView = true;
+    }
+
+    const onVisibilityChange = () => syncProgressPlayback();
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    cleanups.push(() => document.removeEventListener("visibilitychange", onVisibilityChange));
+
+    startProgress(activeIndex);
+  }
 
   if (art && flow) {
     const flowTo = {
