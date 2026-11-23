@@ -5,6 +5,9 @@ import { SplitText } from "gsap/SplitText";
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const EASE = "power3.out";
+const HEADER_STAGGER = 0.14;
+const HEADER_DURATION = 0.75;
+const HEADER_Y = 22;
 
 const reducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -285,27 +288,27 @@ function heroIntro(paused: boolean): () => void {
     if (badge) {
       tl.fromTo(
         badge,
-        { autoAlpha: 0, y: -14, scale: 0.9 },
-        { autoAlpha: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(1.7)" },
-        0.15,
+        { autoAlpha: 0, y: 16 },
+        { autoAlpha: 1, y: 0, duration: 0.6 },
+        0.1,
       );
     }
 
     tl.fromTo(
       split.lines,
-      { yPercent: 115, autoAlpha: 0 },
-      { yPercent: 0, autoAlpha: 1, duration: 1, stagger: 0.11, ease: "power4.out" },
-      0.32,
+      { yPercent: 110, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 0.95, stagger: 0.1, ease: "power4.out" },
+      0.24,
     );
 
-    tl.fromTo(sub, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0 }, 0.62);
+    tl.fromTo(sub, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, 0.4);
 
     if (ctas.length) {
       tl.fromTo(
         ctas,
         { autoAlpha: 0, y: 16, scale: 0.94 },
         { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.09, ease: "back.out(1.6)" },
-        0.78,
+        0.54,
       );
     }
 
@@ -401,10 +404,10 @@ function solutionsUseCaseIntro(paused: boolean): () => void {
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.09 }, 0)
+  tl.to(header, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
     // Six cards in reading order; a 0.07 stagger keeps the grid from pulsing.
-    .to(cards, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.07 }, 0.16)
-    .to(icons, { scale: 1, duration: 0.6, stagger: 0.07, ease: "back.out(1.7)" }, 0.34);
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.07 }, 0.42)
+    .to(icons, { scale: 1, duration: 0.6, stagger: 0.07, ease: "back.out(1.7)" }, 0.56);
 
   return () => {
     tl.scrollTrigger?.kill();
@@ -456,13 +459,13 @@ function solutionsFeaturesIntro(paused: boolean): () => void {
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.09 }, 0)
-    .to(cards, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.12 }, 0.16)
+  tl.to(header, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.12 }, 0.42)
     // Chips read as results appearing after the argument, so they land last.
     .from(
       chips,
       { autoAlpha: 0, y: 10, scale: 0.96, duration: 0.45, stagger: 0.06, ease: "back.out(1.6)" },
-      0.5,
+      0.66,
     );
 
   return () => {
@@ -515,10 +518,10 @@ function solutionsOverviewIntro(paused: boolean): () => void {
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.09 }, 0)
-    .to(cards, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.1 }, 0.18)
-    .to(icons, { scale: 1, rotate: 0, duration: 0.7, stagger: 0.1, ease: "back.out(1.7)" }, 0.34)
-    .to(copies, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.1 }, 0.42);
+  tl.to(header, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.1 }, 0.42)
+    .to(icons, { scale: 1, rotate: 0, duration: 0.7, stagger: 0.1, ease: "back.out(1.7)" }, 0.56)
+    .to(copies, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.1 }, 0.64);
 
   return () => {
     tl.scrollTrigger?.kill();
@@ -734,18 +737,18 @@ function pricingHeroIntro(paused: boolean): () => void {
     }
 
     if (eyebrow) {
-      tl.fromTo(eyebrow, { autoAlpha: 0, y: -12 }, { autoAlpha: 1, y: 0, duration: 0.55 }, 0.1);
+      tl.fromTo(eyebrow, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.08);
     }
 
     tl.fromTo(
       split.lines,
-      { yPercent: 115, autoAlpha: 0 },
-      { yPercent: 0, autoAlpha: 1, duration: 1, stagger: 0.1, ease: "power4.out" },
-      0.2,
+      { yPercent: 110, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 0.95, stagger: 0.1, ease: "power4.out" },
+      0.22,
     );
 
-    if (sub) tl.fromTo(sub, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0 }, 0.44);
-    if (toggle) tl.fromTo(toggle, { autoAlpha: 0, x: 16 }, { autoAlpha: 1, x: 0 }, 0.5);
+    if (sub) tl.fromTo(sub, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, 0.38);
+    if (toggle) tl.fromTo(toggle, { autoAlpha: 0, x: 16 }, { autoAlpha: 1, x: 0 }, 0.48);
 
     // Cards rise in reading order, then their artwork settles.
     tl.fromTo(heads, { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.1 }, 0.5)
@@ -825,21 +828,21 @@ function solutionsHeroIntro(paused: boolean): () => void {
     if (eyebrow) {
       tl.fromTo(
         eyebrow,
-        { autoAlpha: 0, y: -12 },
-        { autoAlpha: 1, y: 0, duration: 0.55 },
-        0.1,
+        { autoAlpha: 0, y: 16 },
+        { autoAlpha: 1, y: 0, duration: 0.6 },
+        0.08,
       );
     }
 
     tl.fromTo(
       split.lines,
-      { yPercent: 115, autoAlpha: 0 },
-      { yPercent: 0, autoAlpha: 1, duration: 1.05, stagger: 0.11, ease: "power4.out" },
+      { yPercent: 110, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 0.95, stagger: 0.1, ease: "power4.out" },
       0.22,
     );
 
     if (copy) {
-      tl.fromTo(copy, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0 }, 0.5);
+      tl.fromTo(copy, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, 0.38);
     }
 
     if (ctas.length) {
@@ -847,7 +850,7 @@ function solutionsHeroIntro(paused: boolean): () => void {
         ctas,
         { autoAlpha: 0, y: 16, scale: 0.94 },
         { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.09, ease: "back.out(1.6)" },
-        0.6,
+        0.52,
       );
     }
 
@@ -921,21 +924,21 @@ function platformHeroIntro(paused: boolean): () => void {
     if (eyebrow) {
       tl.fromTo(
         eyebrow,
-        { autoAlpha: 0, y: -12 },
-        { autoAlpha: 1, y: 0, duration: 0.55 },
-        0.15,
+        { autoAlpha: 0, y: 16 },
+        { autoAlpha: 1, y: 0, duration: 0.6 },
+        0.08,
       );
     }
 
     tl.fromTo(
       split.lines,
-      { yPercent: 115, autoAlpha: 0 },
-      { yPercent: 0, autoAlpha: 1, duration: 1, stagger: 0.1, ease: "power4.out" },
-      0.28,
+      { yPercent: 110, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 0.95, stagger: 0.1, ease: "power4.out" },
+      0.22,
     );
 
     if (copy) {
-      tl.fromTo(copy, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0 }, 0.52);
+      tl.fromTo(copy, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, 0.38);
     }
 
     if (ctas.length) {
@@ -943,7 +946,7 @@ function platformHeroIntro(paused: boolean): () => void {
         ctas,
         { autoAlpha: 0, y: 16, scale: 0.94 },
         { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.09, ease: "back.out(1.6)" },
-        0.64,
+        0.52,
       );
     }
 
@@ -1075,7 +1078,7 @@ function howItWorksIntro(paused: boolean): () => void {
   const onScreen = section.getBoundingClientRect().top <= window.innerHeight * 0.75;
   if (onScreen) return () => {};
 
-  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(parts, { autoAlpha: 0, y: HEADER_Y });
   gsap.set(cards, { autoAlpha: 0, y: 40 });
 
   const tl = gsap.timeline({
@@ -1083,8 +1086,8 @@ function howItWorksIntro(paused: boolean): () => void {
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
-    .to(cards, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.12 }, "-=0.45");
+  tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.12 }, 0.42);
 
   return () => {
     tl.scrollTrigger?.kill();
@@ -1111,7 +1114,7 @@ function capabilitiesIntro(paused: boolean): () => void {
     .map((card) => card.querySelector<HTMLElement>("img"))
     .filter(Boolean) as HTMLElement[];
 
-  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(parts, { autoAlpha: 0, y: HEADER_Y });
   gsap.set(cards, { autoAlpha: 0, y: 44 });
   gsap.set(arts, { scale: 0.94, transformOrigin: "50% 50%" });
 
@@ -1120,8 +1123,8 @@ function capabilitiesIntro(paused: boolean): () => void {
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
-    .to(cards, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.14 }, "-=0.45")
+  tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.14 }, 0.42)
     .to(arts, { scale: 1, duration: 1.1, stagger: 0.14, ease: "power2.out" }, "<0.1");
 
   return () => {
@@ -1147,7 +1150,7 @@ function keyBenefitsIntro(paused: boolean): () => void {
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(parts, { autoAlpha: 0, y: HEADER_Y });
   gsap.set(art, { autoAlpha: 0, scale: 0.97, transformOrigin: "50% 50%" });
   gsap.set(items, { autoAlpha: 0, y: 20 });
 
@@ -1156,9 +1159,9 @@ function keyBenefitsIntro(paused: boolean): () => void {
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
-    .to(art, { autoAlpha: 1, scale: 1, duration: 1, ease: "power3.out" }, "-=0.5")
-    .to(items, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08 }, "-=0.7");
+  tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
+    .to(art, { autoAlpha: 1, scale: 1, duration: 1, ease: "power3.out" }, 0.42)
+    .to(items, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08 }, 0.5);
 
   return () => {
     tl.scrollTrigger?.kill();
@@ -1187,7 +1190,7 @@ function careersPerksIntro(paused: boolean): () => void {
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(parts, { autoAlpha: 0, y: HEADER_Y });
   gsap.set(card, { autoAlpha: 0, y: 32 });
   gsap.set(cells, { autoAlpha: 0, y: 20 });
   gsap.set([bar, ...avatars].filter(Boolean) as HTMLElement[], { autoAlpha: 0, y: 12 });
@@ -1197,9 +1200,9 @@ function careersPerksIntro(paused: boolean): () => void {
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 })
-    .to(card, { autoAlpha: 1, y: 0, duration: 0.9 }, "-=0.45")
-    .to(cells, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.07 }, "-=0.6")
+  tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
+    .to(card, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.42)
+    .to(cells, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.07 }, 0.52)
     .to(bar, { autoAlpha: 1, y: 0, duration: 0.5 }, "-=0.35")
     .to(avatars, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.05 }, "-=0.35");
 
@@ -1322,14 +1325,15 @@ function careersProcessStory(paused: boolean): () => void {
   ScrollTrigger.addEventListener("refresh", placeLine);
 
   const header = gsap.timeline({
-    defaults: { ease: EASE, duration: 0.8 },
+    defaults: { ease: EASE, duration: HEADER_DURATION },
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  header
-    .from(badge, { autoAlpha: 0, y: 16 }, 0)
-    .from(title, { autoAlpha: 0, y: 24 }, 0.08)
-    .from(sub, { autoAlpha: 0, y: 20 }, 0.16);
+  header.from(
+    [badge, title, sub].filter(Boolean) as HTMLElement[],
+    { autoAlpha: 0, y: HEADER_Y, stagger: HEADER_STAGGER },
+    0,
+  );
 
   const mm = gsap.matchMedia();
 
@@ -1435,7 +1439,7 @@ function careersRolesIntro(paused: boolean): () => void {
   const header = [badge, title, sub].filter(Boolean) as HTMLElement[];
   const reveal = [...groups, ...rows, footer, cta].filter(Boolean) as HTMLElement[];
 
-  gsap.set(header, { autoAlpha: 0, y: 24 });
+  gsap.set(header, { autoAlpha: 0, y: HEADER_Y });
   gsap.set(groups, { autoAlpha: 0, y: 16 });
   gsap.set(rows, { autoAlpha: 0, y: 14 });
   gsap.set([footer, cta].filter(Boolean) as HTMLElement[], { autoAlpha: 0, y: 12 });
@@ -1445,11 +1449,11 @@ function careersRolesIntro(paused: boolean): () => void {
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  tl.to(header, { autoAlpha: 1, y: 0, stagger: 0.1 })
-    .to(groups, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.12 }, "-=0.4")
+  tl.to(header, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0)
+    .to(groups, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.12 }, 0.42)
     // Rows follow their own group, so the two categories read one after another
     // instead of lighting up as a single block.
-    .to(rows, { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.06 }, "-=0.75")
+    .to(rows, { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.06 }, 0.5)
     .to([footer, cta].filter(Boolean) as HTMLElement[], { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.06 }, "-=0.3");
 
   return () => {
@@ -1476,7 +1480,7 @@ function whoWeServeIntro(paused: boolean): () => void {
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(parts, { autoAlpha: 0, y: HEADER_Y });
   gsap.set(cards, { autoAlpha: 0, y: 28 });
   gsap.set(bar, { autoAlpha: 0, y: 16 });
 
@@ -1488,8 +1492,8 @@ function whoWeServeIntro(paused: boolean): () => void {
   if (pattern) {
     tl.fromTo(pattern, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.2 }, 0);
   }
-  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 }, 0.1)
-    .to(cards, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.09 }, "-=0.5")
+  tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0.05)
+    .to(cards, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.09 }, 0.45)
     .to(bar, { autoAlpha: 1, y: 0, duration: 0.5 }, "-=0.45");
 
   return () => {
@@ -1611,14 +1615,15 @@ function howItWorksStepsMotion(paused: boolean): () => void {
   ScrollTrigger.addEventListener("refresh", placeLine);
 
   const header = gsap.timeline({
-    defaults: { ease: EASE, duration: 0.8 },
+    defaults: { ease: EASE, duration: HEADER_DURATION },
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  header
-    .from(badge, { autoAlpha: 0, y: 16 }, 0)
-    .from(title, { autoAlpha: 0, y: 24 }, 0.08)
-    .from(sub, { autoAlpha: 0, y: 20 }, 0.16);
+  header.from(
+    [badge, title, sub].filter(Boolean) as HTMLElement[],
+    { autoAlpha: 0, y: HEADER_Y, stagger: HEADER_STAGGER },
+    0,
+  );
 
   const mm = gsap.matchMedia();
 
@@ -1720,7 +1725,7 @@ function overviewIntro(paused: boolean): () => void {
 
   const parts = [badge, title, sub].filter(Boolean) as HTMLElement[];
 
-  gsap.set(parts, { autoAlpha: 0, y: 24 });
+  gsap.set(parts, { autoAlpha: 0, y: HEADER_Y });
   gsap.set(cards, { autoAlpha: 0, y: 40 });
 
   const tl = gsap.timeline({
@@ -1728,10 +1733,10 @@ function overviewIntro(paused: boolean): () => void {
     scrollTrigger: { trigger: section, start: "top 75%", once: true },
   });
 
-  tl.to(parts, { autoAlpha: 1, y: 0, stagger: 0.1 }).to(
+  tl.to(parts, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0).to(
     cards,
     { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.12 },
-    "-=0.45",
+    0.42,
   );
 
   return () => {
@@ -1760,7 +1765,7 @@ function whyItMattersIntro(paused: boolean): () => void {
     return () => {};
   }
 
-  gsap.set(copy, { autoAlpha: 0, y: 24 });
+  gsap.set(copy, { autoAlpha: 0, y: HEADER_Y });
   gsap.set(art, { autoAlpha: 0, y: 32 });
   if (diagram) gsap.set(diagram, { autoAlpha: 0, scale: 0.94 });
   if (halftone) gsap.set(halftone, { autoAlpha: 0 });
@@ -1785,7 +1790,7 @@ function whyItMattersIntro(paused: boolean): () => void {
     );
   }
 
-  tl.to(copy, { autoAlpha: 1, y: 0, stagger: 0.1 }, 0.35);
+  tl.to(copy, { autoAlpha: 1, y: 0, duration: HEADER_DURATION, stagger: HEADER_STAGGER }, 0.2);
 
   return () => {
     tl.scrollTrigger?.kill();
@@ -1836,10 +1841,9 @@ function useCasesMotion(paused: boolean): () => void {
   const section = document.querySelector<HTMLElement>("[data-use-cases]");
   if (!section) return () => {};
 
-  const header = section.querySelector<HTMLElement>("header");
+  const badge = section.querySelector<HTMLElement>("[data-use-cases-badge]") ?? section.querySelector<HTMLElement>("header p");
   const title = section.querySelector<HTMLElement>("[data-use-cases-title]");
-  const sub = header?.querySelector<HTMLElement>("p:last-child") ?? null;
-  const badge = header?.querySelector<HTMLElement>("p") ?? null;
+  const sub = section.querySelector<HTMLElement>("[data-use-cases-sub]") ?? section.querySelector<HTMLElement>("header p:last-child");
   const items = gsap.utils.toArray<HTMLElement>("[data-use-cases-item]", section);
   const icons = gsap.utils.toArray<SVGElement>("[data-uc-icon]", section);
   const art = section.querySelector<HTMLElement>("[data-use-cases-art]");
@@ -2118,9 +2122,9 @@ function useCasesMotion(paused: boolean): () => void {
       split = SplitText.create(title, { type: "lines", linesClass: "uc-line" });
     }
 
-    gsap.set(badge, { autoAlpha: 0, y: -12 });
+    gsap.set(badge, { autoAlpha: 0, y: HEADER_Y });
     gsap.set(split ? split.lines : title, { autoAlpha: 0, yPercent: 110 });
-    if (sub) gsap.set(sub, { autoAlpha: 0, y: 16 });
+    if (sub) gsap.set(sub, { autoAlpha: 0, y: HEADER_Y });
     gsap.set(icons, { autoAlpha: 0, scale: 0.5, rotate: -18 });
     gsap.set(art, { autoAlpha: 0, y: 36 });
     gsap.set(flow, { autoAlpha: 0, y: 18 });
@@ -2135,11 +2139,11 @@ function useCasesMotion(paused: boolean): () => void {
     });
 
     intro
-      .to(badge, { autoAlpha: 1, y: 0, duration: 0.5 }, 0)
-      .to(split ? split.lines : title, { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.08 }, 0.1)
-      .to(sub, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.32)
-      .to(art, { autoAlpha: 1, y: 0, duration: 1 }, 0.25)
-      .to(flow, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.5)
+      .to(badge, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, 0)
+      .to(split ? split.lines : title, { autoAlpha: 1, yPercent: 0, duration: 0.85, stagger: 0.08, ease: "power4.out" }, HEADER_STAGGER)
+      .to(sub, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, HEADER_STAGGER * 2)
+      .to(art, { autoAlpha: 1, y: 0, duration: 1 }, 0.32)
+      .to(flow, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.54)
       .to(
         icons,
         {
@@ -2150,9 +2154,9 @@ function useCasesMotion(paused: boolean): () => void {
           stagger: 0.09,
           ease: "back.out(2)",
         },
-        0.4,
+        0.42,
       )
-      .to(items, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.09 }, 0.42);
+      .to(items, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.09 }, 0.44);
 
     if (flow) {
       loop = gsap.to(flow, {
@@ -2188,6 +2192,7 @@ function securityImpactMotion(paused: boolean): () => void {
 
   const badge = section.querySelector<HTMLElement>("[data-impact-badge]");
   const title = section.querySelector<HTMLElement>("[data-impact-title]");
+  const sub = section.querySelector<HTMLElement>("[data-impact-sub]");
   const art = section.querySelector<HTMLElement>("[data-impact-art]");
   const composition = section.querySelector<HTMLElement>("[data-impact-composition]");
   const compositionWrap = section.querySelector<HTMLElement>("[data-impact-composition-wrap]");
@@ -2244,8 +2249,9 @@ function securityImpactMotion(paused: boolean): () => void {
       split = SplitText.create(title, { type: "lines", linesClass: "impact-line" });
     }
 
-    gsap.set(badge, { autoAlpha: 0, y: -12 });
+    gsap.set(badge, { autoAlpha: 0, y: HEADER_Y });
     gsap.set(split ? split.lines : title, { autoAlpha: 0, yPercent: 110 });
+    if (sub) gsap.set(sub, { autoAlpha: 0, y: HEADER_Y });
     gsap.set(art, { autoAlpha: 0, y: 32 });
     if (composition) gsap.set(composition, { autoAlpha: 0, scale: 0.96 });
     gsap.set(stats, { autoAlpha: 0, x: 28 });
@@ -2278,12 +2284,13 @@ function securityImpactMotion(paused: boolean): () => void {
     });
 
     intro
-      .to(badge, { autoAlpha: 1, y: 0, duration: 0.5 }, 0)
-      .to(split ? split.lines : title, { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.08 }, 0.08)
-      .to(art, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.2)
-      .to(composition, { autoAlpha: 1, scale: 1, duration: 1, ease: "power3.out" }, 0.35)
-      .to(stats, { autoAlpha: 1, x: 0, duration: 0.7, stagger: 0.12 }, 0.4)
-      .add(() => counters.forEach((tween) => tween.play()), 0.55);
+      .to(badge, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, 0)
+      .to(split ? split.lines : title, { autoAlpha: 1, yPercent: 0, duration: 0.85, stagger: 0.08, ease: "power4.out" }, HEADER_STAGGER)
+      .to(sub, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, HEADER_STAGGER * 2)
+      .to(art, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.42)
+      .to(composition, { autoAlpha: 1, scale: 1, duration: 1, ease: "power3.out" }, 0.55)
+      .to(stats, { autoAlpha: 1, x: 0, duration: 0.7, stagger: 0.12 }, 0.52)
+      .add(() => counters.forEach((tween) => tween.play()), 0.65);
 
     cleanups.push(() => counters.forEach((tween) => tween.kill()));
   };
@@ -2297,7 +2304,7 @@ function securityImpactMotion(paused: boolean): () => void {
     killScrub();
     split?.revert();
     gsap.set(
-      [badge, art, composition, ...stats].filter(Boolean) as HTMLElement[],
+      [badge, sub, art, composition, ...stats].filter(Boolean) as HTMLElement[],
       { clearProps: "all" },
     );
     values.forEach((el) => {
@@ -2330,9 +2337,9 @@ function featuresMotion(paused: boolean): () => void {
   const run = () => {
     if (title) split = SplitText.create(title, { type: "lines", linesClass: "features-line" });
 
-    gsap.set(badge, { autoAlpha: 0, y: -12 });
+    gsap.set(badge, { autoAlpha: 0, y: HEADER_Y });
     gsap.set(split ? split.lines : title, { autoAlpha: 0, yPercent: 110 });
-    gsap.set(sub, { autoAlpha: 0, y: 16 });
+    gsap.set(sub, { autoAlpha: 0, y: HEADER_Y });
     gsap.set(cards, { autoAlpha: 0, y: 28 });
     gsap.set(arts, { autoAlpha: 0, scale: 0.96, transformOrigin: "50% 0%" });
 
@@ -2346,11 +2353,11 @@ function featuresMotion(paused: boolean): () => void {
     });
 
     intro
-      .to(badge, { autoAlpha: 1, y: 0, duration: 0.5 }, 0)
-      .to(split ? split.lines : title, { autoAlpha: 1, yPercent: 0, duration: 0.9, stagger: 0.08 }, 0.1)
-      .to(sub, { autoAlpha: 1, y: 0, duration: 0.7 }, 0.3)
-      .to(cards, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.09 }, 0.34)
-      .to(arts, { autoAlpha: 1, scale: 1, duration: 0.9, stagger: 0.09 }, 0.42);
+      .to(badge, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, 0)
+      .to(split ? split.lines : title, { autoAlpha: 1, yPercent: 0, duration: 0.85, stagger: 0.08, ease: "power4.out" }, HEADER_STAGGER)
+      .to(sub, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, HEADER_STAGGER * 2)
+      .to(cards, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.09 }, 0.42)
+      .to(arts, { autoAlpha: 1, scale: 1, duration: 0.9, stagger: 0.09 }, 0.5);
 
   };
 
@@ -2492,21 +2499,21 @@ function comparePlansIntro(paused: boolean): () => void {
     tl.fromTo(
       split.lines,
       { yPercent: 110, autoAlpha: 0 },
-      { yPercent: 0, autoAlpha: 1, duration: 0.9, stagger: 0.08, ease: "power4.out" },
+      { yPercent: 0, autoAlpha: 1, duration: 0.85, stagger: 0.08, ease: "power4.out" },
       0,
     )
-      .fromTo(sub, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.24)
+      .fromTo(sub, { autoAlpha: 0, y: HEADER_Y }, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, HEADER_STAGGER)
       .fromTo(
         layers,
         { autoAlpha: 0, y: 18, scale: 0.96 },
         { autoAlpha: 1, y: 0, scale: 1, duration: 1.1, stagger: 0.09, ease: "power2.out" },
-        0.18,
+        0.24,
       )
       .fromTo(
         rows,
         { autoAlpha: 0, y: 10 },
         { autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.055 },
-        0.4,
+        0.34,
       );
 
     // Idle drift, started only once the entrance has settled.
@@ -2719,29 +2726,29 @@ function faqSectionMotion(paused: boolean): () => void {
         },
       });
 
-      tl.fromTo(
-        split.lines,
-        { yPercent: 110, autoAlpha: 0 },
-        { yPercent: 0, autoAlpha: 1, duration: 0.9, stagger: 0.08, ease: "power4.out" },
-        0,
-      )
-        .fromTo(badge, { autoAlpha: 0, y: -10 }, { autoAlpha: 1, y: 0, duration: 0.5 }, 0)
-        .fromTo(sub, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.24)
-        .fromTo(
-          items,
-          { autoAlpha: 0, y: 16 },
-          { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.07 },
-          0.3,
-        );
-
       if (art) {
         tl.fromTo(
           art,
           { autoAlpha: 0, y: 24, scale: 0.97 },
-          { autoAlpha: 1, y: 0, scale: 1, duration: 0.9, ease: "power2.out" },
-          0.36,
+          { autoAlpha: 1, y: 0, scale: 1, duration: 0.85, ease: "power2.out" },
+          0,
         );
       }
+
+      tl.fromTo(badge, { autoAlpha: 0, y: HEADER_Y }, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, 0.08)
+        .fromTo(
+          split.lines,
+          { yPercent: 110, autoAlpha: 0 },
+          { yPercent: 0, autoAlpha: 1, duration: 0.85, stagger: 0.08, ease: "power4.out" },
+          0.08 + HEADER_STAGGER,
+        )
+        .fromTo(sub, { autoAlpha: 0, y: HEADER_Y }, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, 0.08 + HEADER_STAGGER * 2)
+        .fromTo(
+          items,
+          { autoAlpha: 0, y: 16 },
+          { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.07 },
+          0.46,
+        );
     };
 
     if (document.fonts.status === "loaded") run();
@@ -2794,18 +2801,18 @@ function resourcesHeroIntro(paused: boolean): () => void {
       },
     });
 
-    tl.fromTo(eyebrow, { autoAlpha: 0, y: -10 }, { autoAlpha: 1, y: 0, duration: 0.5 }, 0)
+    tl.fromTo(eyebrow, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.08)
       .fromTo(
         split.lines,
-        { yPercent: 115, autoAlpha: 0 },
-        { yPercent: 0, autoAlpha: 1, duration: 1, stagger: 0.1, ease: "power4.out" },
-        0.12,
+        { yPercent: 110, autoAlpha: 0 },
+        { yPercent: 0, autoAlpha: 1, duration: 0.95, stagger: 0.1, ease: "power4.out" },
+        0.22,
       )
       .fromTo(
         search,
         { autoAlpha: 0, y: 18, scale: 0.98 },
         { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: "power3.out" },
-        0.44,
+        0.38,
       );
   };
 
@@ -2941,19 +2948,19 @@ function careersHeroIntro(paused: boolean): () => void {
 
     tl.fromTo(
       split.lines,
-      { yPercent: 115, autoAlpha: 0 },
-      { yPercent: 0, autoAlpha: 1, duration: 1.05, stagger: 0.11, ease: "power4.out" },
+      { yPercent: 110, autoAlpha: 0 },
+      { yPercent: 0, autoAlpha: 1, duration: 0.95, stagger: 0.1, ease: "power4.out" },
       0.1,
     );
 
-    if (copy) tl.fromTo(copy, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0 }, 0.42);
+    if (copy) tl.fromTo(copy, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: HEADER_DURATION }, 0.28);
 
     if (cta) {
       tl.fromTo(
         cta,
         { autoAlpha: 0, y: 16, scale: 0.94 },
         { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(1.6)" },
-        0.56,
+        0.42,
       );
     }
 
