@@ -66,7 +66,7 @@ const PAGE_SIZE = 9;
                 >
                   <span class="overflow-hidden">
                     <img
-                      class="aspect-[377/224] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                      class="aspect-[377/224] w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                       src={`${post.image}-755.webp`}
                       srcset={`${post.image}-377.webp 377w, ${post.image}-755.webp 755w`}
                       sizes="(min-width: 1025px) 380px, (min-width: 640px) 46vw, 88vw"
@@ -75,7 +75,6 @@ const PAGE_SIZE = 9;
                       height="448"
                       loading="lazy"
                       decoding="async"
-                      transition:name={`blog-image-${post.slug}`}
                     />
                   </span>
 
@@ -277,8 +276,8 @@ const PAGE_SIZE = 9;
         width,
         height,
         autoAlpha: 1,
-        duration: 0.46,
-        ease: "expo.out",
+        duration: 0.24,
+        ease: "power3.out",
         force3D: true,
         overwrite: "auto",
       });
@@ -385,7 +384,7 @@ const PAGE_SIZE = 9;
       const beforeHeight = grid.offsetHeight;
 
       // Case A: Disjoint swap (e.g. switching between two categories with 0 shared cards).
-      // A crisp staggered exit -> DOM swap -> staggered expo-out entrance avoids card overlap.
+      // Short, interruptible exit -> DOM swap -> calm staggered entrance (RYUX RX-UI-11).
       if (prevVisible.length > 0 && surviving.length === 0) {
         gsap.set(grid, { height: beforeHeight });
 
@@ -394,29 +393,29 @@ const PAGE_SIZE = 9;
 
         tl.to(prevVisible, {
           autoAlpha: 0,
-          y: -14,
-          scale: 0.965,
-          duration: 0.2,
-          stagger: 0.025,
+          y: -8,
+          scale: 0.975,
+          duration: 0.15,
+          stagger: 0.02,
           ease: "power2.in",
           force3D: true,
         }).add(() => {
           gsap.set(prevVisible, { clearProps: "transform,opacity,visibility" });
           apply();
-          tweenGridHeight(beforeHeight, 0.46);
+          tweenGridHeight(beforeHeight, 0.3);
 
           const entering = cards.filter((card) => !card.hidden);
           if (entering.length) {
             gsap.fromTo(
               entering,
-              { autoAlpha: 0, y: 24, scale: 0.965 },
+              { autoAlpha: 0, y: 14, scale: 0.975 },
               {
                 autoAlpha: 1,
                 y: 0,
                 scale: 1,
-                duration: 0.54,
-                stagger: 0.055,
-                ease: "expo.out",
+                duration: 0.28,
+                stagger: 0.035,
+                ease: "power3.out",
                 force3D: true,
                 clearProps: "transform,opacity,visibility",
               },
@@ -429,32 +428,32 @@ const PAGE_SIZE = 9;
       }
 
       // Case B: Overlapping set (e.g. All <-> category or live search).
-      // Use GPU-composited GSAP Flip with `simple: true` and `scale: false` so surviving cards glide crisply.
+      // GPU-composited GSAP Flip with short, calm timing and no scale distortion.
       const state = Flip.getState(cards);
 
       apply();
-      tweenGridHeight(beforeHeight, 0.54);
+      tweenGridHeight(beforeHeight, 0.32);
 
       activeAnim = Flip.from(state, {
         targets: cards,
-        duration: 0.56,
-        ease: "expo.out",
+        duration: 0.34,
+        ease: "power3.out",
         absolute: true,
         simple: true,
         scale: false,
-        stagger: 0.025,
+        stagger: 0.02,
         onEnter: (elements) =>
           gsap.fromTo(
             elements,
-            { autoAlpha: 0, y: 22, scale: 0.965 },
+            { autoAlpha: 0, y: 14, scale: 0.975 },
             {
               autoAlpha: 1,
               y: 0,
               scale: 1,
-              duration: 0.52,
-              delay: 0.06,
-              stagger: 0.045,
-              ease: "expo.out",
+              duration: 0.28,
+              delay: 0.04,
+              stagger: 0.035,
+              ease: "power3.out",
               force3D: true,
               overwrite: "auto",
             },
@@ -462,9 +461,9 @@ const PAGE_SIZE = 9;
         onLeave: (elements) =>
           gsap.to(elements, {
             autoAlpha: 0,
-            scale: 0.95,
-            y: 10,
-            duration: 0.22,
+            scale: 0.96,
+            y: 8,
+            duration: 0.15,
             ease: "power2.in",
             force3D: true,
             overwrite: "auto",

@@ -119,7 +119,17 @@
   }
 }
 
-/* Smooth page transitions (Astro ClientRouter View Transitions). */
+/* Motion tokens (RYUX Calm personality: precise, ease-out, transform + opacity only). */
+:root {
+  --ease-out-calm: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-calm: cubic-bezier(0.32, 0, 0.67, 0);
+  --dur-fast: 150ms;
+  --dur-base: 240ms;
+  --dur-page-out: 160ms;
+  --dur-page-in: 280ms;
+}
+
+/* Smooth page transitions (Astro ClientRouter View Transitions — L3 orientation). */
 @keyframes latch-page-out {
   from {
     opacity: 1;
@@ -127,14 +137,14 @@
   }
   to {
     opacity: 0;
-    transform: translate3d(0, -8px, 0);
+    transform: translate3d(0, -6px, 0);
   }
 }
 
 @keyframes latch-page-in {
   from {
     opacity: 0;
-    transform: translate3d(0, 14px, 0);
+    transform: translate3d(0, 10px, 0);
   }
   to {
     opacity: 1;
@@ -148,11 +158,11 @@
 }
 
 ::view-transition-old(page-content) {
-  animation: 190ms cubic-bezier(0.32, 0, 0.67, 0) both latch-page-out;
+  animation: var(--dur-page-out) var(--ease-in-calm) both latch-page-out;
 }
 
 ::view-transition-new(page-content) {
-  animation: 380ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both latch-page-in;
+  animation: var(--dur-page-in) var(--ease-out-calm) 60ms both latch-page-in;
 }
 
 ::view-transition-group(site-nav) {
@@ -166,10 +176,9 @@
   mix-blend-mode: normal;
 }
 
-/* Shared-element morphs (e.g. blog card cover -> detail hero image). */
 ::view-transition-group(*) {
-  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-  animation-duration: 440ms;
+  animation-timing-function: var(--ease-out-calm);
+  animation-duration: var(--dur-page-in);
 }
 
 /* Subtle top navigation progress bar during route transitions. */
@@ -186,8 +195,8 @@
   pointer-events: none;
   background: linear-gradient(90deg, #5e77ff 0%, #70a9fe 100%);
   transition:
-    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 200ms ease;
+    transform 260ms var(--ease-out-calm),
+    opacity 160ms ease;
 }
 
 .page-transition-bar[data-state="loading"] {
@@ -199,8 +208,8 @@
   opacity: 0;
   transform: scaleX(1);
   transition:
-    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 220ms ease 120ms;
+    transform 160ms var(--ease-out-calm),
+    opacity 180ms ease 100ms;
 }
 
 @media (prefers-reduced-motion: reduce) {

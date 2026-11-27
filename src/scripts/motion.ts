@@ -3019,6 +3019,7 @@ function blogDetailIntro(paused: boolean, isNavigation = false): () => void {
 
   const back = article.querySelector<HTMLElement>("[data-bd-back]");
   const metaTop = article.querySelector<HTMLElement>("[data-bd-meta-top]");
+  const title = article.querySelector<HTMLElement>("[data-bd-title]");
   const excerpt = article.querySelector<HTMLElement>("[data-bd-excerpt]");
   const author = article.querySelector<HTMLElement>("[data-bd-author]");
   const blocks = gsap.utils.toArray<HTMLElement>("[data-bd-block]", article);
@@ -3027,19 +3028,19 @@ function blogDetailIntro(paused: boolean, isNavigation = false): () => void {
     ? gsap.utils.toArray<HTMLElement>("[data-bd-related-card]", relatedSection)
     : [];
 
-  // Title and hero image use Astro View Transition shared-element morphs.
-  // On hard load, gently stagger the supporting header parts; on ClientRouter
-  // navigation, let the View Transition carry them in with zero double-flash.
-  const headerParts = [back, metaTop, excerpt, author].filter(Boolean) as HTMLElement[];
+  // Calm entrance on hard load (RYUX RX-UI-11: 30-50ms stagger, <= 320ms, transform + opacity).
+  // On ClientRouter navigation, the View Transition + .bd-hero-media CSS entrance carry
+  // above-the-fold elements in cleanly without a double-fade flash.
+  const headerParts = [back, metaTop, title, excerpt, author].filter(Boolean) as HTMLElement[];
 
   let headerTl: gsap.core.Timeline | null = null;
   if (!isNavigation && headerParts.length) {
-    headerTl = gsap.timeline({ defaults: { ease: EASE, duration: 0.65 } });
+    headerTl = gsap.timeline({ defaults: { ease: EASE, duration: 0.34 } });
     headerTl.fromTo(
       headerParts,
-      { autoAlpha: 0, y: 16 },
-      { autoAlpha: 1, y: 0, stagger: 0.07 },
-      0.08,
+      { autoAlpha: 0, y: 12 },
+      { autoAlpha: 1, y: 0, stagger: 0.04, force3D: true },
+      0.04,
     );
   }
 

@@ -234,9 +234,9 @@ const tocItems = [
 
           {/* Right Main Article Column */}
           <div class="flex min-w-0 flex-col gap-10" data-bd-body>
-            {/* Cover Image */}
+            {/* Cover Image — standard calm entrance, no shared-element morph */}
             <div
-              class="overflow-hidden rounded-xl border border-border-badge bg-white p-1.5 shadow-[0_10px_32px_rgb(13_13_18/0.06)] sm:p-2"
+              class="bd-hero-media overflow-hidden rounded-xl border border-border-badge bg-white p-1.5 shadow-[0_10px_32px_rgb(13_13_18/0.06)] sm:p-2"
               data-bd-hero-media
             >
               <img
@@ -250,7 +250,6 @@ const tocItems = [
                 loading="eager"
                 decoding="async"
                 fetchpriority="high"
-                transition:name={`blog-image-${post.slug}`}
               />
             </div>
 
@@ -413,7 +412,7 @@ const tocItems = [
                 >
                   <span class="overflow-hidden">
                     <img
-                      class="aspect-[377/224] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                      class="aspect-[377/224] w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                       src={`${item.image}-755.webp`}
                       srcset={`${item.image}-377.webp 377w, ${item.image}-755.webp 755w`}
                       sizes="(min-width: 1025px) 380px, (min-width: 640px) 46vw, 88vw"
@@ -422,7 +421,6 @@ const tocItems = [
                       height="448"
                       loading="lazy"
                       decoding="async"
-                      transition:name={`blog-image-${item.slug}`}
                     />
                   </span>
 
@@ -482,6 +480,28 @@ const tocItems = [
     background-color: #eef2ff;
     color: #3f58e8;
     font-weight: 500;
+  }
+
+  /* Calm, standard entrance for the cover image (RYUX RX-UI-11: transform + opacity, ease-out). */
+  @keyframes bd-media-enter {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+
+  .bd-hero-media {
+    animation: bd-media-enter 320ms var(--ease-out-calm, cubic-bezier(0.23, 1, 0.32, 1)) 90ms both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bd-hero-media {
+      animation: none;
+    }
   }
 </style>
 
