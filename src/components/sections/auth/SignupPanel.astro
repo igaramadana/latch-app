@@ -520,57 +520,65 @@ const positions = [
 </style>
 
 <script>
-  const form = document.querySelector<HTMLFormElement>("[data-signup-form]");
-  const steps = Array.from(document.querySelectorAll<HTMLElement>("[data-signup-step]"));
-  const next = document.querySelector<HTMLButtonElement>("[data-signup-next]");
-  const submit = document.querySelector<HTMLButtonElement>("[data-signup-submit]");
-  const stage = document.querySelector<HTMLElement>("[data-signup-stage]");
-  const count = document.querySelector<HTMLElement>("[data-signup-count]");
-  const dots = Array.from(document.querySelectorAll<HTMLElement>("[data-signup-dot]"));
-  const [stepOne, stepTwo] = steps;
+  function initSignupPanel() {
+    const form = document.querySelector<HTMLFormElement>("[data-signup-form]");
+    if (!form || form.dataset.signupInit === "true") return;
+    form.dataset.signupInit = "true";
 
-  let current = 1;
+    const steps = Array.from(document.querySelectorAll<HTMLElement>("[data-signup-step]"));
+    const next = document.querySelector<HTMLButtonElement>("[data-signup-next]");
+    const submit = document.querySelector<HTMLButtonElement>("[data-signup-submit]");
+    const stage = document.querySelector<HTMLElement>("[data-signup-stage]");
+    const count = document.querySelector<HTMLElement>("[data-signup-count]");
+    const dots = Array.from(document.querySelectorAll<HTMLElement>("[data-signup-dot]"));
+    const [stepOne, stepTwo] = steps;
 
-  const paint = () => {
-    dots.forEach((dot, index) => {
-      dot.classList.toggle("!bg-[#4472E9]", index < current);
+    let current = 1;
+
+    const paint = () => {
+      dots.forEach((dot, index) => {
+        dot.classList.toggle("!bg-[#4472E9]", index < current);
+      });
+      if (stage) stage.textContent = current === 1 ? "Personal Information" : "Company Information";
+      if (count) count.textContent = `${current} of 2`;
+      if (next) next.hidden = current !== 1;
+      if (submit) submit.hidden = current === 1;
+    };
+
+    next?.addEventListener("click", () => {
+      if (!stepOne || !stepTwo) return;
+      const fields = Array.from(stepOne.querySelectorAll<HTMLInputElement>("input[required]"));
+      const valid = fields.every((field) => field.reportValidity());
+      if (!valid) return;
+
+      current = 2;
+      // Inline display beats the `flex` utility; a class could not win here.
+      stepTwo.style.display = "";
+      stepOne.style.display = "none";
+      paint();
+      form.dispatchEvent(new CustomEvent("signup:step", { bubbles: true }));
+      stepTwo.querySelector<HTMLElement>("input")?.focus({ preventScroll: true });
     });
-    if (stage) stage.textContent = current === 1 ? "Personal Information" : "Company Information";
-    if (count) count.textContent = `${current} of 2`;
-    if (next) next.hidden = current !== 1;
-    if (submit) submit.hidden = current === 1;
-  };
 
-  next?.addEventListener("click", () => {
-    if (!stepOne || !stepTwo) return;
-    const fields = Array.from(stepOne.querySelectorAll<HTMLInputElement>("input[required]"));
-    const valid = fields.every((field) => field.reportValidity());
-    if (!valid) return;
+    form.addEventListener("submit", (event) => {
+      // No account endpoint yet; keep the page from navigating away.
+      event.preventDefault();
+    });
 
-    current = 2;
-    // Inline display beats the `flex` utility; a class could not win here.
-    stepTwo.style.display = "";
-    stepOne.style.display = "none";
     paint();
-    form.dispatchEvent(new CustomEvent("signup:step", { bubbles: true }));
-    stepTwo.querySelector<HTMLElement>("input")?.focus({ preventScroll: true });
-  });
 
-  form?.addEventListener("submit", (event) => {
-    // No account endpoint yet; keep the page from navigating away.
-    event.preventDefault();
-  });
+    const dialSelect = document.querySelector<HTMLSelectElement>("[data-signup-dial-select]");
+    const dialCode = document.querySelector<HTMLElement>("[data-signup-dial-code]");
+    const flag = document.querySelector<SVGElement>("[data-signup-flag]");
 
-  paint();
+    dialSelect?.addEventListener("change", () => {
+      if (dialCode) dialCode.textContent = dialSelect.value;
+      // Only an Australian flag is bundled, so it is hidden for other codes
+      // rather than showing the wrong country.
+      flag?.classList.toggle("hidden", !dialSelect.selectedOptions[0]?.textContent?.startsWith("AU"));
+    });
+  }
 
-  const dialSelect = document.querySelector<HTMLSelectElement>("[data-signup-dial-select]");
-  const dialCode = document.querySelector<HTMLElement>("[data-signup-dial-code]");
-  const flag = document.querySelector<SVGElement>("[data-signup-flag]");
-
-  dialSelect?.addEventListener("change", () => {
-    if (dialCode) dialCode.textContent = dialSelect.value;
-    // Only an Australian flag is bundled, so it is hidden for other codes
-    // rather than showing the wrong country.
-    flag?.classList.toggle("hidden", !dialSelect.selectedOptions[0]?.textContent?.startsWith("AU"));
-  });
+  document.addEventListener("astro:page-load", initSignupPanel);
+  initSignupPanel();
 </script>

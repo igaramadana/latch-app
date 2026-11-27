@@ -1,0 +1,582 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import CTA from "../../components/sections/shared/CTA.astro";
+import Footer from "../../components/sections/shared/Footer.astro";
+import { posts, categoryById, getRelatedPosts, type Post } from "../../lib/blog-data";
+
+export function getStaticPaths() {
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const category = categoryById.get(post.category)!;
+const related = getRelatedPosts(post.slug, post.category, 3);
+
+const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+const tocItems = [
+  { id: "key-takeaways", label: "Key takeaways" },
+  ...post.sections.map((section) => ({
+    id: slugify(section.heading),
+    label: section.heading,
+  })),
+];
+---
+
+<BaseLayout title={`${post.title} — Latch Resources`} description={post.excerpt}>
+  <article
+    class="bg-linear-to-b from-hero-bg from-0% via-white via-[420px] to-white"
+    data-blog-detail
+  >
+    <div
+      class="mx-auto w-full max-w-[1440px] px-6 pt-[calc(var(--spacing-nav)+32px)] pb-16 md:px-10 md:pt-[calc(var(--spacing-nav)+48px)] lg:px-[120px] lg:pt-[calc(var(--spacing-nav)+64px)] lg:pb-24"
+    >
+      <div class="mx-auto max-w-[1140px]">
+        {/* Top Hero Header — left-aligned editorial intro */}
+        <header class="flex max-w-[780px] flex-col gap-5 pb-10 lg:pb-12">
+          <div class="flex flex-wrap items-center gap-3" data-bd-back>
+            <a
+              href="/resources"
+              class="group inline-flex w-fit items-center gap-1.5 font-sans text-sm font-medium text-ink-muted no-underline transition-colors duration-200 hover:text-brand-600"
+            >
+              <svg
+                class="size-4 transition-transform duration-200 group-hover:-translate-x-0.5"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M10 3 5 8l5 5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Back to Resources
+            </a>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3" data-bd-meta-top>
+            <span
+              class="inline-flex h-[26px] w-fit items-center rounded-full px-3 font-tight text-xs font-medium leading-[19.2px]"
+              style={`color:${category.fg};background:${category.bg}`}
+            >
+              {category.label}
+            </span>
+            <span class="font-tight text-xs font-medium text-ink-muted">{post.readTime}</span>
+          </div>
+
+          <h1
+            class="m-0 font-display text-[clamp(32px,4.2vw,52px)] leading-[1.15] tracking-normal text-balance text-ink font-mix-medium"
+            data-bd-title
+          >
+            {post.title}
+          </h1>
+
+          <p
+            class="m-0 max-w-[660px] font-sans text-[17px] leading-[27px] text-pretty text-ink-muted sm:text-[18px] sm:leading-[29px]"
+            data-bd-excerpt
+          >
+            {post.excerpt}
+          </p>
+        </header>
+
+        {/* Two-Column Editorial Layout: Sticky Metadata/TOC Sidebar + Article Content */}
+        <div class="grid grid-cols-1 items-start gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-14 xl:gap-16">
+          {/* Left Sticky Sidebar */}
+          <aside
+            class="flex flex-col gap-7 lg:sticky lg:top-[calc(var(--spacing-nav)+32px)]"
+            aria-label="Article details and table of contents"
+            data-bd-author
+          >
+            {/* Author */}
+            <div class="flex flex-col gap-2.5">
+              <p class="m-0 font-tight text-xs font-semibold tracking-[0.2px] text-ink">Author</p>
+              <div class="flex items-center gap-2.5">
+                <img
+                  class="size-8 shrink-0 rounded-full object-cover ring-1 ring-border-badge"
+                  src={post.avatar}
+                  alt=""
+                  aria-hidden="true"
+                  width="64"
+                  height="64"
+                  loading="eager"
+                  decoding="async"
+                />
+                <div class="flex min-w-0 flex-col">
+                  <span class="truncate font-tight text-sm font-medium leading-5 text-ink">
+                    {post.author}
+                  </span>
+                  <span class="truncate font-tight text-xs leading-4 text-ink-muted">
+                    {post.authorRole}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Date */}
+            <div class="flex flex-col gap-2">
+              <p class="m-0 font-tight text-xs font-semibold tracking-[0.2px] text-ink">Date</p>
+              <div class="flex items-center gap-2 text-ink-muted">
+                <svg class="size-4 shrink-0" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <rect
+                    x="2"
+                    y="3"
+                    width="12"
+                    height="11"
+                    rx="2"
+                    stroke="currentColor"
+                    stroke-width="1.25"
+                  />
+                  <path
+                    d="M5.333 1.667v2.666M10.667 1.667v2.666M2 6.667h12"
+                    stroke="currentColor"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <time class="font-tight text-sm leading-5" datetime={post.iso}>
+                  {post.date}
+                </time>
+              </div>
+            </div>
+
+            {/* Table of Contents */}
+            <nav class="flex flex-col gap-2.5" aria-label="Table of contents" data-bd-toc>
+              <p class="m-0 font-tight text-xs font-semibold tracking-[0.2px] text-ink">
+                Table of contents
+              </p>
+              <ul class="m-0 flex list-none flex-col border-l border-[#E3E8EF] p-0">
+                {
+                  tocItems.map((item, idx) => (
+                    <li>
+                      <a
+                        href={`#${item.id}`}
+                        class="bd-toc-link -ml-px block border-l-2 border-transparent py-2 pr-3 pl-3.5 font-tight text-[13px] leading-[19px] text-ink-muted no-underline transition-[color,background-color,border-color] duration-200 hover:text-ink"
+                        data-toc-link={item.id}
+                        aria-current={idx === 0 ? "true" : undefined}
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </nav>
+
+            {/* Share */}
+            <div class="flex flex-col gap-2.5">
+              <p class="m-0 font-tight text-xs font-semibold tracking-[0.2px] text-ink">Share</p>
+              <div class="flex items-center gap-2" data-bd-share data-share-title={post.title}>
+                <button
+                  type="button"
+                  class="grid size-8 cursor-pointer place-items-center rounded-full border border-border-badge bg-white text-ink-muted transition-colors duration-200 hover:border-[#C7D7FE] hover:bg-[#EEF2FF] hover:text-brand-600"
+                  aria-label="Share on X"
+                  data-share-x
+                >
+                  <svg class="size-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M9.333 6.84 14.544.8h-1.235L8.784 6.046 5.17.8H1l5.465 7.953L1 15.107h1.235l4.778-5.554 3.816 5.554H15L9.333 6.84Zm-1.692 1.966-.554-.792L2.68 1.73h1.897l3.556 5.086.554.792 4.623 6.612h-1.897L7.641 8.806Z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="grid size-8 cursor-pointer place-items-center rounded-full border border-border-badge bg-white text-ink-muted transition-colors duration-200 hover:border-[#C7D7FE] hover:bg-[#EEF2FF] hover:text-brand-600"
+                  aria-label="Share on LinkedIn"
+                  data-share-linkedin
+                >
+                  <svg class="size-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                    <path d="M3.56 5.44H1.12V14h2.44V5.44ZM2.34 1.6a1.41 1.41 0 1 0 0 2.82 1.41 1.41 0 0 0 0-2.82ZM14.88 9.09c0-2.48-1.32-3.64-3.09-3.64-1.42 0-2.06.78-2.42 1.33V5.44H6.93c.03.69 0 8.56 0 8.56h2.44V9.22c0-.25.02-.51.09-.69.2-.51.66-1.04 1.43-1.04 1.01 0 1.41.78 1.41 1.92V14h2.44l.14-4.91Z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-border-badge bg-white px-2.5 font-tight text-xs font-medium text-ink-muted transition-colors duration-200 hover:border-[#C7D7FE] hover:bg-[#EEF2FF] hover:text-brand-600"
+                  aria-label="Copy article link"
+                  data-share-copy
+                >
+                  <svg class="size-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path
+                      d="M6.5 9.5a3 3 0 0 0 4.243 0l2-2a3 3 0 0 0-4.243-4.243l-1 1M9.5 6.5a3 3 0 0 0-4.243 0l-2 2a3 3 0 0 0 4.243 4.243l1-1"
+                      stroke="currentColor"
+                      stroke-width="1.35"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span data-share-copy-label>Copy</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Sidebar CTA */}
+            <div class="pt-1">
+              <a
+                href="/signup"
+                class="inline-flex items-center justify-center rounded-full bg-linear-to-b from-brand-500 from-[6.579%] to-brand-400 px-5 py-2.5 font-sans text-sm font-medium text-[#f8fafc] no-underline shadow-cta [border:1px_solid_#758cfd] [text-shadow:0_2px_4px_#4785f0] transition-[filter,transform] duration-200 hover:brightness-105"
+                data-cta-scale
+              >
+                Get started
+              </a>
+            </div>
+          </aside>
+
+          {/* Right Main Article Column */}
+          <div class="flex min-w-0 flex-col gap-10" data-bd-body>
+            {/* Cover Image */}
+            <div
+              class="overflow-hidden rounded-xl border border-border-badge bg-white p-1.5 shadow-[0_10px_32px_rgb(13_13_18/0.06)] sm:p-2"
+              data-bd-hero-media
+            >
+              <img
+                class="aspect-[755/448] w-full rounded-lg object-cover"
+                src={`${post.image}-755.webp`}
+                srcset={`${post.image}-377.webp 377w, ${post.image}-755.webp 755w`}
+                sizes="(min-width: 1025px) 820px, 92vw"
+                alt={post.alt}
+                width="755"
+                height="448"
+                loading="eager"
+                decoding="async"
+                fetchpriority="high"
+                transition:name={`blog-image-${post.slug}`}
+              />
+            </div>
+
+            {/* Key Takeaways */}
+            <section
+              id="key-takeaways"
+              class="scroll-mt-[calc(var(--spacing-nav)+28px)] rounded-xl border border-border-badge bg-panel p-6 sm:p-7"
+              aria-labelledby="key-takeaways-heading"
+              data-bd-block
+              data-toc-section="key-takeaways"
+            >
+              <h2
+                id="key-takeaways-heading"
+                class="m-0 mb-4 inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[0.6px] text-brand-600"
+              >
+                <span class="size-2 bg-[#607AFF]" aria-hidden="true"></span>
+                Key Takeaways
+              </h2>
+              <ul class="m-0 flex list-none flex-col gap-3 p-0">
+                {
+                  post.keyTakeaways.map((point) => (
+                    <li class="flex items-start gap-3 font-sans text-[15px] leading-6 text-ink">
+                      <svg
+                        class="mt-1 size-4 shrink-0 text-brand-500"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M3 8.5 6.2 11.7 13 4.8"
+                          stroke="currentColor"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                      <span>{point}</span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </section>
+
+            {/* Structured Article Sections */}
+            {
+              post.sections.map((section) => {
+                const sectionId = slugify(section.heading);
+                return (
+                  <section
+                    id={sectionId}
+                    class="flex scroll-mt-[calc(var(--spacing-nav)+28px)] flex-col gap-4"
+                    data-bd-block
+                    data-toc-section={sectionId}
+                  >
+                    <h2 class="m-0 font-display text-[26px] leading-[1.24] text-ink font-mix-medium sm:text-[30px]">
+                      {section.heading}
+                    </h2>
+
+                    {section.paragraphs.map((paragraph) => (
+                      <p class="m-0 font-sans text-[17px] leading-[29px] text-ink-muted">
+                        {paragraph}
+                      </p>
+                    ))}
+
+                    {section.bullets && (
+                      <ul class="m-0 mt-1 flex list-none flex-col gap-2.5 p-0">
+                        {section.bullets.map((item) => (
+                          <li class="flex items-start gap-3 font-sans text-base leading-7 text-ink">
+                            <span
+                              class="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand-500"
+                              aria-hidden="true"
+                            />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {section.callout && (
+                      <div class="mt-2 rounded-r-lg border-l-3 border-brand-500 bg-hero-bg px-5 py-4">
+                        <p class="m-0 mb-1 font-sans text-xs font-semibold uppercase tracking-[0.5px] text-brand-600">
+                          {section.callout.label}
+                        </p>
+                        <p class="m-0 font-sans text-base leading-6 text-ink">
+                          {section.callout.text}
+                        </p>
+                      </div>
+                    )}
+                  </section>
+                );
+              })
+            }
+
+            <div
+              class="flex flex-wrap items-center justify-between gap-4 border-t border-border-badge pt-8"
+              data-bd-block
+            >
+              <a
+                href="/resources"
+                class="inline-flex items-center gap-2 font-sans text-sm font-medium text-brand-600 no-underline transition-colors duration-200 hover:text-ink"
+              >
+                <svg class="size-4" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M10 3 5 8l5 5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Explore all resources
+              </a>
+              <span class="font-tight text-xs text-ink-muted">Published {post.date}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <section
+    class="border-t border-border-badge bg-[#F8FAFC] py-16 lg:py-20"
+    aria-labelledby="related-articles-title"
+    data-bd-related
+  >
+    <div class="mx-auto w-full max-w-[1440px] px-6 md:px-10 lg:px-[82px]">
+      <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div class="flex flex-col gap-2">
+          <p class="m-0 inline-flex h-7 w-fit items-center gap-2 border border-border-badge bg-white px-2.5">
+            <span class="size-2 bg-[#607AFF]" aria-hidden="true"></span>
+            <span class="font-sans text-xs font-medium uppercase tracking-[0.28px] text-ink-muted">
+              Keep Reading
+            </span>
+          </p>
+          <h2
+            id="related-articles-title"
+            class="m-0 font-display text-[28px] leading-[1.2] text-ink font-mix-medium sm:text-[34px]"
+          >
+            Related articles
+          </h2>
+        </div>
+
+        <a
+          href="/resources"
+          class="font-sans text-sm font-medium text-brand-600 no-underline transition-colors duration-200 hover:text-ink"
+        >
+          View all articles →
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          related.map((item) => {
+            const itemCat = categoryById.get(item.category)!;
+            return (
+              <article class="flex flex-col self-stretch" data-bd-related-card>
+                <a
+                  href={`/resources/${item.slug}`}
+                  class="group flex flex-1 flex-col gap-4 border border-[#F1F4F8] bg-white p-4 no-underline shadow-[0_1px_2px_rgb(13_13_18/0.04),0_1px_3px_rgb(13_13_18/0.05)] transition-[box-shadow,transform,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-[#DCE5FF] hover:shadow-[0_2px_6px_rgb(13_13_18/0.05),0_14px_30px_rgb(13_13_18/0.09)] motion-reduce:transition-none"
+                >
+                  <span class="overflow-hidden">
+                    <img
+                      class="aspect-[377/224] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                      src={`${item.image}-755.webp`}
+                      srcset={`${item.image}-377.webp 377w, ${item.image}-755.webp 755w`}
+                      sizes="(min-width: 1025px) 380px, (min-width: 640px) 46vw, 88vw"
+                      alt={item.alt}
+                      width="755"
+                      height="448"
+                      loading="lazy"
+                      decoding="async"
+                      transition:name={`blog-image-${item.slug}`}
+                    />
+                  </span>
+
+                  <div class="flex flex-1 flex-col justify-between gap-5 p-3">
+                    <div class="flex flex-col gap-2">
+                      <span
+                        class="inline-flex h-[26px] w-fit items-center rounded-md px-2.5 font-tight text-xs font-medium leading-[19.2px]"
+                        style={`color:${itemCat.fg};background:${itemCat.bg}`}
+                      >
+                        {itemCat.label}
+                      </span>
+                      <h3 class="m-0 text-pretty font-tight text-[22px] font-medium leading-[28.6px] tracking-normal text-[#0D0D12] transition-colors duration-200 group-hover:text-brand-600">
+                        {item.title}
+                      </h3>
+                      <p class="m-0 text-pretty font-tight text-sm font-normal leading-[22.4px] text-[#666D80]">
+                        {item.excerpt}
+                      </p>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2 pt-1">
+                      <div class="flex items-center gap-2.5">
+                        <img
+                          class="size-7 shrink-0 rounded-full object-cover"
+                          src={item.avatar}
+                          alt=""
+                          aria-hidden="true"
+                          width="64"
+                          height="64"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <span class="font-tight text-sm font-medium text-[#0D0D12]">
+                          {item.author}
+                        </span>
+                      </div>
+                      <span class="font-tight text-xs font-medium text-[#666D80]">
+                        {item.readTime}
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </article>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <CTA />
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  .bd-toc-link[aria-current="true"] {
+    border-left-color: #5e77ff;
+    background-color: #eef2ff;
+    color: #3f58e8;
+    font-weight: 500;
+  }
+</style>
+
+<script>
+  function initBlogDetail() {
+    const article = document.querySelector<HTMLElement>("[data-blog-detail]");
+    if (!article || article.dataset.bdInit === "true") return;
+    article.dataset.bdInit = "true";
+
+    // Table of contents scrollspy
+    const tocLinks = Array.from(article.querySelectorAll<HTMLAnchorElement>("[data-toc-link]"));
+    const sections = Array.from(article.querySelectorAll<HTMLElement>("[data-toc-section]"));
+
+    const setActive = (id: string) => {
+      for (const link of tocLinks) {
+        if (link.dataset.tocLink === id) {
+          link.setAttribute("aria-current", "true");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      }
+    };
+
+    let observer: IntersectionObserver | null = null;
+    if (tocLinks.length && sections.length) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+          const activeId = visible[0]?.target.getAttribute("data-toc-section");
+          if (activeId) setActive(activeId);
+        },
+        { rootMargin: "-18% 0px -65% 0px", threshold: 0 },
+      );
+
+      sections.forEach((section) => observer?.observe(section));
+
+      for (const link of tocLinks) {
+        link.addEventListener("click", (event) => {
+          const id = link.dataset.tocLink;
+          const target = id ? document.getElementById(id) : null;
+          if (!target) return;
+          event.preventDefault();
+          setActive(id!);
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.replaceState(null, "", `#${id}`);
+        });
+      }
+    }
+
+    // Share buttons
+    const shareWrap = article.querySelector<HTMLElement>("[data-bd-share]");
+    if (shareWrap) {
+      const title = shareWrap.dataset.shareTitle ?? document.title;
+      const shareX = shareWrap.querySelector<HTMLButtonElement>("[data-share-x]");
+      const shareLinkedin = shareWrap.querySelector<HTMLButtonElement>("[data-share-linkedin]");
+      const shareCopy = shareWrap.querySelector<HTMLButtonElement>("[data-share-copy]");
+      const copyLabel = shareWrap.querySelector<HTMLElement>("[data-share-copy-label]");
+
+      shareX?.addEventListener("click", () => {
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(window.location.href)}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      });
+
+      shareLinkedin?.addEventListener("click", () => {
+        const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      });
+
+      let copyTimer: number | undefined;
+      shareCopy?.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          if (copyLabel) copyLabel.textContent = "Copied!";
+          window.clearTimeout(copyTimer);
+          copyTimer = window.setTimeout(() => {
+            if (copyLabel) copyLabel.textContent = "Copy";
+          }, 1800);
+        } catch {
+          // Fallback ignored silently if clipboard is unavailable.
+        }
+      });
+    }
+
+    document.addEventListener(
+      "astro:before-swap",
+      () => {
+        observer?.disconnect();
+      },
+      { once: true },
+    );
+  }
+
+  document.addEventListener("astro:page-load", initBlogDetail);
+  initBlogDetail();
+</script>

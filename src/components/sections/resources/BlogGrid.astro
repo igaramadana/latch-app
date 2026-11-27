@@ -1,167 +1,7 @@
 ---
-// Copy and categories mirror the design export; image files ship as two WebP
-// widths so the grid never downloads more pixels than it paints.
-type CategoryId = "featured" | "announcement" | "guide" | "resources" | "tutorials" | "changelog" | "demo";
+import { posts, filters, categoryById } from "../../../lib/blog-data";
 
-interface Category {
-  id: CategoryId;
-  label: string;
-  /** Chip ink and its 10% wash, sampled from the design. */
-  fg: string;
-  bg: string;
-}
-
-interface Post {
-  slug: string;
-  category: CategoryId;
-  title: string;
-  excerpt: string;
-  author: string;
-  iso: string;
-  date: string;
-  image: string;
-  avatar: string;
-  alt: string;
-}
-
-const categories: Category[] = [
-  { id: "featured", label: "Featured", fg: "#6EA1FE", bg: "rgb(110 161 254 / 0.10)" },
-  { id: "announcement", label: "Announcement", fg: "#19966D", bg: "rgb(25 150 109 / 0.10)" },
-  { id: "guide", label: "Guide", fg: "#D44C1D", bg: "rgb(212 76 29 / 0.10)" },
-  { id: "resources", label: "Resources", fg: "#5E76FF", bg: "rgb(94 118 255 / 0.10)" },
-  { id: "tutorials", label: "Tutorials", fg: "#C59810", bg: "rgb(197 152 16 / 0.10)" },
-  { id: "changelog", label: "Changelog", fg: "#7C5CFF", bg: "rgb(124 92 255 / 0.10)" },
-  { id: "demo", label: "Demo", fg: "#0F8BA8", bg: "rgb(15 139 168 / 0.10)" },
-];
-
-const filters = [
-  { id: "all", label: "All" },
-  ...categories.map(({ id, label }) => ({ id, label })),
-];
-
-const byId = new Map(categories.map((category) => [category.id, category]));
-
-const posts: Post[] = [
-  {
-    slug: "point-in-time-security",
-    category: "featured",
-    title: "Why point-in-time security can't keep up with cloud-native systems",
-    excerpt:
-      "Systems change by the minute, but most security still runs on a schedule. Here's how continuous, identity-aware protection closes the gap.",
-    author: "Alex Norman",
-    iso: "2026-03-12",
-    date: "March 12, 2026",
-    image: "/images/resources/blog/blog_1",
-    avatar: "/images/resources/blog/avatar_1.webp",
-    alt: "Server corridor lit in blue with network nodes overlaid",
-  },
-  {
-    slug: "continuous-testing-cicd",
-    category: "guide",
-    title: "A practical guide to continuous testing in your CI/CD pipeline",
-    excerpt:
-      "Step-by-step: how to catch real vulnerabilities before production without slowing your team's release cadence.",
-    author: "Kevin Almeda",
-    iso: "2026-03-12",
-    date: "March 12, 2026",
-    image: "/images/resources/blog/blog_2",
-    avatar: "/images/resources/blog/avatar_2.webp",
-    alt: "Dark dashboard showing a green pipeline flowing from build to deploy",
-  },
-  {
-    slug: "identity-aware-access",
-    category: "announcement",
-    title: "Introducing identity-aware access, now live for every workspace",
-    excerpt:
-      "Latch now evaluates every user and service in real time, so access decisions follow context instead of standing permissions.",
-    author: "Axel David",
-    iso: "2026-03-12",
-    date: "March 12, 2026",
-    image: "/images/resources/blog/blog_3",
-    avatar: "/images/resources/blog/avatar_3.webp",
-    alt: "Network of violet identity nodes linked across a dark grid",
-  },
-  {
-    slug: "security-blind-spots",
-    category: "featured",
-    title: "The real cost of security blind spots across a fragmented stack",
-    excerpt:
-      "When each tool sees only a slice, risk hides in the gaps. We break down what unified visibility actually changes.",
-    author: "Sofia Alvarez",
-    iso: "2026-03-12",
-    date: "March 12, 2026",
-    image: "/images/resources/blog/blog_4",
-    avatar: "/images/resources/blog/avatar_4.webp",
-    alt: "Magenta security diagram with a padlock and shield around a stack of services",
-  },
-  {
-    slug: "connect-latch-api-oauth",
-    category: "tutorials",
-    title: "Connect Latch to your stack with API and OAuth in 10 minutes",
-    excerpt:
-      "Walk through a full setup: link your cloud, identity provider, and repos with no agents, then verify coverage end to end.",
-    author: "Arjun Kapoor",
-    iso: "2026-03-12",
-    date: "March 12, 2026",
-    image: "/images/resources/blog/blog_5",
-    avatar: "/images/resources/blog/avatar_5.webp",
-    alt: "Screen showing connected services wired into a central control node",
-  },
-  {
-    slug: "automated-response",
-    category: "announcement",
-    title: "Automated response is here: contain threats the moment they appear",
-    excerpt:
-      "New runbooks let Latch remediate confirmed risks automatically, shrinking the window between detection and fix.",
-    author: "Marcus Reed",
-    iso: "2026-03-12",
-    date: "March 12, 2026",
-    image: "/images/resources/blog/blog_6",
-    avatar: "/images/resources/blog/avatar_6.webp",
-    alt: "Glowing shield over a map of risk signals",
-  },
-  {
-    slug: "identity-first-access-rules",
-    category: "featured",
-    title: "Setting up identity-first access rules for teams and services",
-    excerpt:
-      "Learn how to model context-aware policies so access is granted on real signals, not permanent, over-broad permissions.",
-    author: "Arjun",
-    iso: "2026-03-12",
-    date: "March 12, 2026",
-    image: "/images/resources/blog/blog_7",
-    avatar: "/images/resources/blog/avatar_7.webp",
-    alt: "Blueprint of identity cards arranged in a control panel",
-  },
-  {
-    slug: "continuous-security-loop",
-    category: "guide",
-    title: "Building a continuous security loop: connect, monitor, detect, respond",
-    excerpt:
-      "A framework for keeping protection in step with a system that never stops changing, mapped to real workflows.",
-    author: "Marcus Reed",
-    iso: "2026-03-12",
-    date: "March 12, 2026",
-    image: "/images/resources/blog/blog_8",
-    avatar: "/images/resources/blog/avatar_8.webp",
-    alt: "Circular diagram labelled connect, monitor, detect and respond",
-  },
-  {
-    slug: "compliance-reporting",
-    category: "announcement",
-    title: "Compliance reporting: audit-ready evidence, generated for you",
-    excerpt:
-      "Turn continuous monitoring into structured reports for security reviews and enterprise approvals, no manual collection.",
-    author: "Devi Lestari",
-    iso: "2026-03-12",
-    date: "March 12, 2026",
-    image: "/images/resources/blog/blog_9",
-    avatar: "/images/resources/blog/avatar_9.webp",
-    alt: "Compliance score of 92 percent next to an evidence report",
-  },
-];
-
-/** One grid row per page, matching the design. */
+/** One grid page matches all 9 articles by default. */
 const PAGE_SIZE = 9;
 ---
 
@@ -171,108 +11,139 @@ const PAGE_SIZE = 9;
 
     <div class="flex flex-col gap-8">
       <div
-        class="-mx-6 flex gap-1 overflow-x-auto px-6 md:-mx-10 md:px-10 lg:mx-0 lg:flex-wrap lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        role="group"
-        aria-label="Filter articles by category"
-        data-blog-tabs
+        class="-mx-6 overflow-x-auto px-6 md:-mx-10 md:px-10 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {
-          filters.map((filter) => (
-            <button
-              type="button"
-              class="h-10 shrink-0 appearance-none rounded-lg px-4 font-tight text-base font-medium leading-6 text-[#666D80] transition-colors duration-200 hover:bg-[#F8FAFC] hover:text-ink aria-pressed:rounded-none aria-pressed:bg-[#F8FAFC] aria-pressed:text-[#5F77FF]"
-              aria-pressed={filter.id === "all" ? "true" : "false"}
-              data-blog-tab
-              data-filter={filter.id}
-            >
-              {filter.label}
-            </button>
-          ))
-        }
+        <div
+          class="relative inline-flex min-w-max items-center gap-1 lg:flex lg:min-w-0 lg:flex-wrap"
+          role="group"
+          aria-label="Filter articles by category"
+          data-blog-tabs
+        >
+          <span
+            class="pointer-events-none absolute top-0 left-0 h-10 rounded-lg border border-[#DCE5FF] bg-[#EEF2FF] opacity-0"
+            aria-hidden="true"
+            data-blog-tab-indicator
+          ></span>
+
+          {
+            filters.map((filter) => (
+              <button
+                type="button"
+                class="relative z-10 h-10 shrink-0 cursor-pointer appearance-none rounded-lg px-4 font-tight text-base font-medium leading-6 text-[#666D80] transition-colors duration-200 hover:text-ink aria-pressed:text-[#5F77FF]"
+                aria-pressed={filter.id === "all" ? "true" : "false"}
+                data-blog-tab
+                data-filter={filter.id}
+              >
+                {filter.label}
+              </button>
+            ))
+          }
+        </div>
       </div>
 
       <p class="sr-only" role="status" aria-live="polite" data-blog-status></p>
 
       <div
-        class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        class="relative grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
         data-blog-grid
         data-page-size={PAGE_SIZE}
       >
         {
           posts.map((post) => {
-            const category = byId.get(post.category)!;
+            const category = categoryById.get(post.category)!;
             const heading = `blog-title-${post.slug}`;
             return (
               <article
-                class="group flex flex-col gap-4 self-stretch border border-[#F1F4F8] bg-white p-4 shadow-[0_1px_2px_rgb(13_13_18/0.04),0_1px_3px_rgb(13_13_18/0.05)] transition-shadow duration-300 hover:shadow-[0_1px_2px_rgb(13_13_18/0.06),0_8px_24px_rgb(13_13_18/0.07)] motion-reduce:transition-none"
+                class="flex flex-col self-stretch will-change-[transform,opacity]"
                 aria-labelledby={heading}
                 data-blog-card
                 data-category={post.category}
+                data-search={`${post.title} ${post.excerpt} ${post.author} ${category.label}`.toLowerCase()}
               >
-                <span class="overflow-hidden">
-                  <img
-                    class="aspect-[377/224] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                    src={`${post.image}-755.webp`}
-                    srcset={`${post.image}-377.webp 377w, ${post.image}-755.webp 755w`}
-                    sizes="(min-width: 1025px) 380px, (min-width: 640px) 46vw, 88vw"
-                    alt={post.alt}
-                    width="755"
-                    height="448"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </span>
-
-                <div class="flex flex-1 flex-col justify-between gap-6 p-3">
-                  <div class="flex flex-col gap-2">
-                    <span
-                      class="inline-flex h-[26px] w-fit items-center rounded-md px-2.5 font-tight text-xs font-medium leading-[19.2px]"
-                      style={`color:${category.fg};background:${category.bg}`}
-                    >
-                      {category.label}
-                    </span>
-                    <h3
-                      id={heading}
-                      class="m-0 text-pretty font-tight text-[24px] font-medium leading-[31.2px] tracking-normal text-[#0D0D12]"
-                    >
-                      {post.title}
-                    </h3>
-                    <p class="m-0 text-pretty font-tight text-sm font-normal leading-[22.4px] text-[#666D80]">
-                      {post.excerpt}
-                    </p>
-                  </div>
-
-                  <div class="flex items-center gap-2.5">
+                <a
+                  href={`/resources/${post.slug}`}
+                  class="group flex flex-1 flex-col gap-4 border border-[#F1F4F8] bg-white p-4 no-underline shadow-[0_1px_2px_rgb(13_13_18/0.04),0_1px_3px_rgb(13_13_18/0.05)] transition-[box-shadow,transform,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-[#DCE5FF] hover:shadow-[0_2px_6px_rgb(13_13_18/0.05),0_14px_30px_rgb(13_13_18/0.09)] motion-reduce:transition-none"
+                >
+                  <span class="overflow-hidden">
                     <img
-                      class="size-8 shrink-0 rounded-full object-cover"
-                      src={post.avatar}
-                      alt=""
-                      aria-hidden="true"
-                      width="64"
-                      height="64"
+                      class="aspect-[377/224] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                      src={`${post.image}-755.webp`}
+                      srcset={`${post.image}-377.webp 377w, ${post.image}-755.webp 755w`}
+                      sizes="(min-width: 1025px) 380px, (min-width: 640px) 46vw, 88vw"
+                      alt={post.alt}
+                      width="755"
+                      height="448"
                       loading="lazy"
                       decoding="async"
+                      transition:name={`blog-image-${post.slug}`}
                     />
-                    <div class="flex flex-col">
-                      <span class="font-tight text-sm font-medium leading-[22.4px] text-[#0D0D12]">
-                        {post.author}
-                      </span>
-                      <time
-                        class="font-tight text-xs font-medium leading-[19.2px] text-[#666D80]"
-                        datetime={post.iso}
+                  </span>
+
+                  <div class="flex flex-1 flex-col justify-between gap-6 p-3">
+                    <div class="flex flex-col gap-2">
+                      <div class="flex items-center justify-between gap-2">
+                        <span
+                          class="inline-flex h-[26px] w-fit items-center rounded-md px-2.5 font-tight text-xs font-medium leading-[19.2px]"
+                          style={`color:${category.fg};background:${category.bg}`}
+                        >
+                          {category.label}
+                        </span>
+                        <span class="font-tight text-xs font-medium text-[#666D80]">
+                          {post.readTime}
+                        </span>
+                      </div>
+                      <h3
+                        id={heading}
+                        class="m-0 text-pretty font-tight text-[24px] font-medium leading-[31.2px] tracking-normal text-[#0D0D12] transition-colors duration-200 group-hover:text-brand-600"
                       >
-                        {post.date}
-                      </time>
+                        {post.title}
+                      </h3>
+                      <p class="m-0 text-pretty font-tight text-sm font-normal leading-[22.4px] text-[#666D80]">
+                        {post.excerpt}
+                      </p>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2.5">
+                      <div class="flex items-center gap-2.5">
+                        <img
+                          class="size-8 shrink-0 rounded-full object-cover"
+                          src={post.avatar}
+                          alt=""
+                          aria-hidden="true"
+                          width="64"
+                          height="64"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <div class="flex flex-col">
+                          <span class="font-tight text-sm font-medium leading-[22.4px] text-[#0D0D12]">
+                            {post.author}
+                          </span>
+                          <time
+                            class="font-tight text-xs font-medium leading-[19.2px] text-[#666D80]"
+                            datetime={post.iso}
+                          >
+                            {post.date}
+                          </time>
+                        </div>
+                      </div>
+
+                      <span
+                        class="inline-flex items-center gap-1 font-tight text-xs font-medium text-brand-600 opacity-0 transition-[opacity,transform] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
+                        aria-hidden="true"
+                      >
+                        Read →
+                      </span>
                     </div>
                   </div>
-                </div>
+                </a>
               </article>
             );
           })
         }
       </div>
 
-      <p class="m-0 py-6 text-center font-tight text-base leading-6 text-[#666D80]" hidden data-blog-empty>
+      <p class="m-0 py-10 text-center font-tight text-base leading-6 text-[#666D80]" hidden data-blog-empty>
         No articles in this category yet.
       </p>
 
@@ -283,7 +154,7 @@ const PAGE_SIZE = 9;
       >
         <button
           type="button"
-          class="blog-pager-arrow flex w-fit items-center gap-0.5 border-0 bg-transparent p-0 font-tight text-base leading-6 text-ink"
+          class="blog-pager-arrow flex w-fit cursor-pointer items-center gap-0.5 border-0 bg-transparent p-0 font-tight text-base leading-6 text-ink"
           data-blog-prev
         >
           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" class="size-4">
@@ -301,7 +172,7 @@ const PAGE_SIZE = 9;
 
         <button
           type="button"
-          class="blog-pager-arrow ml-auto flex w-fit items-center gap-0.5 border-0 bg-transparent p-0 font-tight text-base leading-6 text-ink"
+          class="blog-pager-arrow ml-auto flex w-fit cursor-pointer items-center gap-0.5 border-0 bg-transparent p-0 font-tight text-base leading-6 text-ink"
           data-blog-next
         >
           <span class="max-[359px]:sr-only">Next</span>
@@ -322,7 +193,7 @@ const PAGE_SIZE = 9;
     <li>
       <button
         type="button"
-        class="blog-page grid h-9 w-9 place-items-center rounded-lg bg-white font-tight text-base leading-6 text-[#677489] transition-colors duration-200 hover:bg-[#F8FAFC] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+        class="blog-page grid h-9 w-9 cursor-pointer place-items-center rounded-lg bg-white font-tight text-base leading-6 text-[#677489] transition-colors duration-200 hover:bg-[#F8FAFC] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
       ></button>
     </li>
   </template>
@@ -359,9 +230,13 @@ const PAGE_SIZE = 9;
 
   gsap.registerPlugin(Flip);
 
-  const root = document.querySelector<HTMLElement>("[data-res-blog]");
+  function initBlogGrid() {
+    const root = document.querySelector<HTMLElement>("[data-res-blog]");
+    if (!root || root.dataset.blogInit === "true") return;
+    root.dataset.blogInit = "true";
 
-  if (root) {
+    const tabsWrap = root.querySelector<HTMLElement>("[data-blog-tabs]");
+    const indicator = root.querySelector<HTMLElement>("[data-blog-tab-indicator]");
     const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-blog-tab]"));
     const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-blog-card]"));
     const grid = root.querySelector<HTMLElement>("[data-blog-grid]");
@@ -372,15 +247,49 @@ const PAGE_SIZE = 9;
     const pageTpl = root.querySelector<HTMLTemplateElement>("[data-blog-page-tpl]");
     const prev = root.querySelector<HTMLButtonElement>("[data-blog-prev]");
     const next = root.querySelector<HTMLButtonElement>("[data-blog-next]");
+    const searchInput = document.querySelector<HTMLInputElement>("#resources-search");
+    const searchForm = searchInput?.closest("form");
 
     const pageSize = Number(grid?.dataset.pageSize) || 9;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let filter = "all";
+    let query = "";
     let page = 1;
+    let activeAnim: gsap.core.Animation | null = null;
+    let heightTween: gsap.core.Tween | null = null;
+
+    const moveIndicator = (target: HTMLButtonElement | undefined, immediate = false) => {
+      if (!indicator || !tabsWrap || !target) return;
+      const x = target.offsetLeft;
+      const y = target.offsetTop;
+      const width = target.offsetWidth;
+      const height = target.offsetHeight;
+
+      if (immediate || reduced) {
+        gsap.set(indicator, { x, y, width, height, autoAlpha: 1, force3D: true });
+        return;
+      }
+
+      gsap.to(indicator, {
+        x,
+        y,
+        width,
+        height,
+        autoAlpha: 1,
+        duration: 0.46,
+        ease: "expo.out",
+        force3D: true,
+        overwrite: "auto",
+      });
+    };
 
     const filtered = () =>
-      filter === "all" ? cards : cards.filter((card) => card.dataset.category === filter);
+      cards.filter((card) => {
+        const matchesCategory = filter === "all" || card.dataset.category === filter;
+        const matchesQuery = !query || (card.dataset.search ?? "").includes(query);
+        return matchesCategory && matchesQuery;
+      });
 
     const pageCount = () => Math.max(1, Math.ceil(filtered().length / pageSize));
 
@@ -399,14 +308,11 @@ const PAGE_SIZE = 9;
         pageList.append(item);
       }
 
-      // `pageCount` clamps to 1, so an empty result set would still render a
-      // lone "1" button. Hide the whole pager when nothing matches.
       if (pager) pager.hidden = filtered().length === 0;
       if (prev) prev.disabled = page <= 1;
       if (next) next.disabled = page >= total;
     };
 
-    /** Show one page of the filtered set; everything else is removed from the DOM flow. */
     const apply = () => {
       const matches = filtered();
       page = Math.min(Math.max(page, 1), pageCount());
@@ -427,33 +333,150 @@ const PAGE_SIZE = 9;
       }
     };
 
-    /** Reflow survivors with FLIP, then fade the cards that just became page-visible. */
+    const tweenGridHeight = (beforeHeight: number, duration = 0.48) => {
+      if (!grid) return;
+      gsap.set(grid, { height: "auto" });
+      const afterHeight = grid.offsetHeight;
+      if (beforeHeight === afterHeight) return;
+
+      heightTween = gsap.fromTo(
+        grid,
+        { height: beforeHeight },
+        {
+          height: afterHeight,
+          duration,
+          ease: "expo.out",
+          onComplete: () => {
+            gsap.set(grid, { clearProps: "height" });
+          },
+        },
+      );
+    };
+
+    const revealEmpty = () => {
+      if (empty && !empty.hidden) {
+        gsap.fromTo(
+          empty,
+          { autoAlpha: 0, y: 12 },
+          { autoAlpha: 1, y: 0, duration: 0.42, delay: 0.08, ease: "expo.out" },
+        );
+      }
+    };
+
+    /** Smoothly choreograph tab/search/page transitions without CSS-transition conflicts. */
     const applyAnimated = () => {
-      if (reduced) {
+      if (reduced || !grid) {
         apply();
         return;
       }
 
-      const before = Flip.getState(cards.filter((card) => !card.hidden));
-      const wasHidden = cards.filter((card) => card.hidden);
+      activeAnim?.kill();
+      heightTween?.kill();
+      gsap.killTweensOf(cards);
+      if (empty) gsap.killTweensOf(empty);
+
+      const prevVisible = cards.filter((card) => !card.hidden);
+      const nextMatches = filtered();
+      const nextPage = Math.min(Math.max(page, 1), Math.max(1, Math.ceil(nextMatches.length / pageSize)));
+      const nextStart = (nextPage - 1) * pageSize;
+      const nextVisibleSet = new Set(nextMatches.slice(nextStart, nextStart + pageSize));
+      const surviving = prevVisible.filter((card) => nextVisibleSet.has(card));
+
+      const beforeHeight = grid.offsetHeight;
+
+      // Case A: Disjoint swap (e.g. switching between two categories with 0 shared cards).
+      // A crisp staggered exit -> DOM swap -> staggered expo-out entrance avoids card overlap.
+      if (prevVisible.length > 0 && surviving.length === 0) {
+        gsap.set(grid, { height: beforeHeight });
+
+        const tl = gsap.timeline();
+        activeAnim = tl;
+
+        tl.to(prevVisible, {
+          autoAlpha: 0,
+          y: -14,
+          scale: 0.965,
+          duration: 0.2,
+          stagger: 0.025,
+          ease: "power2.in",
+          force3D: true,
+        }).add(() => {
+          gsap.set(prevVisible, { clearProps: "transform,opacity,visibility" });
+          apply();
+          tweenGridHeight(beforeHeight, 0.46);
+
+          const entering = cards.filter((card) => !card.hidden);
+          if (entering.length) {
+            gsap.fromTo(
+              entering,
+              { autoAlpha: 0, y: 24, scale: 0.965 },
+              {
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.54,
+                stagger: 0.055,
+                ease: "expo.out",
+                force3D: true,
+                clearProps: "transform,opacity,visibility",
+              },
+            );
+          }
+          revealEmpty();
+        });
+
+        return;
+      }
+
+      // Case B: Overlapping set (e.g. All <-> category or live search).
+      // Use GPU-composited GSAP Flip with `simple: true` and `scale: false` so surviving cards glide crisply.
+      const state = Flip.getState(cards);
 
       apply();
+      tweenGridHeight(beforeHeight, 0.54);
 
-      Flip.from(before, {
-        duration: 0.5,
-        ease: "power3.inOut",
+      activeAnim = Flip.from(state, {
+        targets: cards,
+        duration: 0.56,
+        ease: "expo.out",
         absolute: true,
-        nested: true,
+        simple: true,
+        scale: false,
+        stagger: 0.025,
+        onEnter: (elements) =>
+          gsap.fromTo(
+            elements,
+            { autoAlpha: 0, y: 22, scale: 0.965 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.52,
+              delay: 0.06,
+              stagger: 0.045,
+              ease: "expo.out",
+              force3D: true,
+              overwrite: "auto",
+            },
+          ),
+        onLeave: (elements) =>
+          gsap.to(elements, {
+            autoAlpha: 0,
+            scale: 0.95,
+            y: 10,
+            duration: 0.22,
+            ease: "power2.in",
+            force3D: true,
+            overwrite: "auto",
+          }),
+        onComplete: () => {
+          cards.forEach((card) => {
+            if (!card.hidden) gsap.set(card, { clearProps: "transform,opacity,visibility" });
+          });
+        },
       });
 
-      const entering = wasHidden.filter((card) => !card.hidden);
-      if (entering.length) {
-        gsap.fromTo(
-          entering,
-          { autoAlpha: 0, y: 12 },
-          { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.03, ease: "power3.out", overwrite: "auto" },
-        );
-      }
+      revealEmpty();
     };
 
     const setFilter = (id: string) => {
@@ -461,6 +484,8 @@ const PAGE_SIZE = 9;
       filter = id;
       page = 1;
       for (const tab of tabs) tab.setAttribute("aria-pressed", String(tab.dataset.filter === id));
+      const activeTab = tabs.find((tab) => tab.dataset.filter === id);
+      moveIndicator(activeTab, false);
       applyAnimated();
     };
 
@@ -471,27 +496,50 @@ const PAGE_SIZE = 9;
       applyAnimated();
     };
 
-    const onTabClick = (event: Event) => {
-      const button = (event.currentTarget as HTMLElement).closest<HTMLButtonElement>("[data-blog-tab]");
-      if (button?.dataset.filter) setFilter(button.dataset.filter);
-    };
+    for (const tab of tabs) {
+      tab.addEventListener("click", (event) => {
+        const button = (event.currentTarget as HTMLElement).closest<HTMLButtonElement>("[data-blog-tab]");
+        if (button?.dataset.filter) setFilter(button.dataset.filter);
+      });
+    }
 
-    const onPagesClick = (event: Event) => {
+    pageList?.addEventListener("click", (event) => {
       const button = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-page]");
       if (button?.dataset.page) goTo(Number(button.dataset.page));
+    });
+
+    prev?.addEventListener("click", () => goTo(page - 1));
+    next?.addEventListener("click", () => goTo(page + 1));
+
+    searchForm?.addEventListener("submit", (event) => event.preventDefault());
+    searchInput?.addEventListener("input", () => {
+      const nextQuery = searchInput.value.trim().toLowerCase();
+      if (nextQuery === query) return;
+      query = nextQuery;
+      page = 1;
+      applyAnimated();
+    });
+
+    const onResize = () => {
+      const activeTab = tabs.find((tab) => tab.dataset.filter === filter);
+      moveIndicator(activeTab, true);
     };
-
-    const onPrev = () => goTo(page - 1);
-    const onNext = () => goTo(page + 1);
-
-    for (const tab of tabs) tab.addEventListener("click", onTabClick);
-    pageList?.addEventListener("click", onPagesClick);
-    prev?.addEventListener("click", onPrev);
-    next?.addEventListener("click", onNext);
+    window.addEventListener("resize", onResize);
 
     apply();
+    moveIndicator(tabs[0], true);
 
-    // MPA navigation (Astro's client router) replaces the body, so the listeners
-    // above die with it. Nothing to tear down here.
+    document.addEventListener(
+      "astro:before-swap",
+      () => {
+        window.removeEventListener("resize", onResize);
+        activeAnim?.kill();
+        heightTween?.kill();
+      },
+      { once: true },
+    );
   }
+
+  document.addEventListener("astro:page-load", initBlogGrid);
+  initBlogGrid();
 </script>

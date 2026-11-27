@@ -108,30 +108,35 @@ export function animateMenuToggle({
   }
 }
 
-export function initMotion() {
+export function initMotion({ isNavigation = false }: { isNavigation?: boolean } = {}) {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const paused = document.hidden || reduced;
+  // On ClientRouter navigations, the View Transition already glides the new
+  // above-the-fold view in. Skipping the initial hide-and-reveal on top hero
+  // sections avoids a jarring double-fade flash right after the swap.
+  const skipHeroIntro = paused || isNavigation;
 
   const teardowns = [
     navScrollState(),
-    loginIntro(paused),
-    signupIntro(paused),
+    loginIntro(skipHeroIntro),
+    signupIntro(skipHeroIntro),
     navIntro(paused),
     navHover(paused),
-    heroIntro(paused),
-    platformHeroIntro(paused),
-    solutionsHeroIntro(paused),
-    pricingHeroIntro(paused),
+    heroIntro(skipHeroIntro),
+    platformHeroIntro(skipHeroIntro),
+    solutionsHeroIntro(skipHeroIntro),
+    pricingHeroIntro(skipHeroIntro),
     comparePlansIntro(paused),
     faqSectionMotion(paused),
     testimonialIntro(paused),
-    resourcesHeroIntro(paused),
-    careersHeroIntro(paused),
+    resourcesHeroIntro(skipHeroIntro),
+    careersHeroIntro(skipHeroIntro),
     careersPerksIntro(paused),
     careersProcessStory(paused),
     careersRolesIntro(paused),
-    blogGridIntro(paused),
+    blogGridIntro(skipHeroIntro),
+    blogDetailIntro(paused, isNavigation),
     solutionsOverviewIntro(paused),
     solutionsFeaturesIntro(paused),
     solutionsUseCaseIntro(paused),
@@ -153,7 +158,12 @@ export function initMotion() {
     trustedMarquee(paused),
   ];
 
-  return () => teardowns.forEach((fn) => fn());
+  const refreshRaf = requestAnimationFrame(() => ScrollTrigger.refresh());
+
+  return () => {
+    cancelAnimationFrame(refreshRaf);
+    teardowns.forEach((fn) => fn());
+  };
 }
 
 function navScrollState(): () => void {
@@ -224,6 +234,8 @@ function navHover(paused: boolean): () => void {
   };
 }
 
+let navPlayed = false;
+
 function navIntro(paused: boolean): () => void {
   const header = document.querySelector<HTMLElement>("[data-nav]");
   if (!header) return () => {};
@@ -232,7 +244,8 @@ function navIntro(paused: boolean): () => void {
   const links = header.querySelectorAll<HTMLElement>("[data-nav-link]");
   const cta = header.querySelectorAll<HTMLElement>("[data-nav-cta]");
 
-  if (paused) return () => {};
+  if (paused || navPlayed) return () => {};
+  navPlayed = true;
 
   const tl = gsap.timeline({ defaults: { duration: 0.6, ease: EASE } });
 
@@ -2997,5 +3010,76 @@ function careersHeroIntro(paused: boolean): () => void {
     float?.kill();
     split?.revert();
     gsap.set([title, copy, cta, art, dots].filter(Boolean) as HTMLElement[], { clearProps: "all" });
+  };
+}
+
+function blogDetailIntro(paused: boolean, isNavigation = false): () => void {
+  const article = document.querySelector<HTMLElement>("[data-blog-detail]");
+  if (!article || paused) return () => {};
+
+  const back = article.querySelector<HTMLElement>("[data-bd-back]");
+  const metaTop = article.querySelector<HTMLElement>("[data-bd-meta-top]");
+  const excerpt = article.querySelector<HTMLElement>("[data-bd-excerpt]");
+  const author = article.querySelector<HTMLElement>("[data-bd-author]");
+  const blocks = gsap.utils.toArray<HTMLElement>("[data-bd-block]", article);
+  const relatedSection = document.querySelector<HTMLElement>("[data-bd-related]");
+  const relatedCards = relatedSection
+    ? gsap.utils.toArray<HTMLElement>("[data-bd-related-card]", relatedSection)
+    : [];
+
+  // Title and hero image use Astro View Transition shared-element morphs.
+  // On hard load, gently stagger the supporting header parts; on ClientRouter
+  // navigation, let the View Transition carry them in with zero double-flash.
+  const headerParts = [back, metaTop, excerpt, author].filter(Boolean) as HTMLElement[];
+
+  let headerTl: gsap.core.Timeline | null = null;
+  if (!isNavigation && headerParts.length) {
+    headerTl = gsap.timeline({ defaults: { ease: EASE, duration: 0.65 } });
+    headerTl.fromTo(
+      headerParts,
+      { autoAlpha: 0, y: 16 },
+      { autoAlpha: 1, y: 0, stagger: 0.07 },
+      0.08,
+    );
+  }
+
+  const blockTweens: gsap.core.Tween[] = [];
+  blocks.forEach((block) => {
+    const onScreen = block.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD;
+    if (onScreen) return;
+    gsap.set(block, { autoAlpha: 0, y: 24 });
+    blockTweens.push(
+      gsap.to(block, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.7,
+        ease: EASE,
+        scrollTrigger: { trigger: block, start: REVEAL_START, once: true },
+      }),
+    );
+  });
+
+  let relatedTl: gsap.core.Timeline | null = null;
+  if (relatedSection && relatedCards.length) {
+    const onScreen = relatedSection.getBoundingClientRect().top <= window.innerHeight * REVEAL_FOLD;
+    if (!onScreen) {
+      gsap.set(relatedCards, { autoAlpha: 0, y: 26 });
+      relatedTl = gsap.timeline({
+        defaults: { ease: EASE, duration: 0.7 },
+        scrollTrigger: { trigger: relatedSection, start: REVEAL_START, once: true },
+      });
+      relatedTl.to(relatedCards, { autoAlpha: 1, y: 0, stagger: 0.09 });
+    }
+  }
+
+  return () => {
+    headerTl?.kill();
+    blockTweens.forEach((tw) => {
+      tw.scrollTrigger?.kill();
+      tw.kill();
+    });
+    relatedTl?.scrollTrigger?.kill();
+    relatedTl?.kill();
+    gsap.set([...headerParts, ...blocks, ...relatedCards], { clearProps: "all" });
   };
 }

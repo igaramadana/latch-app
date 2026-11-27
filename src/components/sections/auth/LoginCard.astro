@@ -392,10 +392,12 @@ const providers = [
 </style>
 
 <script>
-  const reveal = document.querySelector<HTMLButtonElement>("[data-login-reveal]");
-  const password = document.querySelector<HTMLInputElement>("#login-password");
+  function initLoginCard() {
+    const reveal = document.querySelector<HTMLButtonElement>("[data-login-reveal]");
+    const password = document.querySelector<HTMLInputElement>("#login-password");
+    if (!reveal || !password || reveal.dataset.loginInit === "true") return;
+    reveal.dataset.loginInit = "true";
 
-  if (reveal && password) {
     reveal.addEventListener("click", () => {
       const shown = password.type === "text";
       password.type = shown ? "password" : "text";
@@ -403,4 +405,7 @@ const providers = [
       reveal.setAttribute("aria-label", shown ? "Show password" : "Hide password");
     });
   }
+
+  document.addEventListener("astro:page-load", initLoginCard);
+  initLoginCard();
 </script>

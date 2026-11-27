@@ -118,3 +118,99 @@
     }
   }
 }
+
+/* Smooth page transitions (Astro ClientRouter View Transitions). */
+@keyframes latch-page-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+  }
+}
+
+@keyframes latch-page-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Prevent the browser from height-morphing the entire <main> bounding box. */
+::view-transition-group(page-content) {
+  animation: none;
+}
+
+::view-transition-old(page-content) {
+  animation: 190ms cubic-bezier(0.32, 0, 0.67, 0) both latch-page-out;
+}
+
+::view-transition-new(page-content) {
+  animation: 380ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both latch-page-in;
+}
+
+::view-transition-group(site-nav) {
+  animation-duration: 0ms;
+  z-index: 60;
+}
+
+::view-transition-old(site-nav),
+::view-transition-new(site-nav) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Shared-element morphs (e.g. blog card cover -> detail hero image). */
+::view-transition-group(*) {
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-duration: 440ms;
+}
+
+/* Subtle top navigation progress bar during route transitions. */
+.page-transition-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 90;
+  height: 2.5px;
+  width: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, #5e77ff 0%, #70a9fe 100%);
+  transition:
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 200ms ease;
+}
+
+.page-transition-bar[data-state="loading"] {
+  opacity: 1;
+  transform: scaleX(0.72);
+}
+
+.page-transition-bar[data-state="finishing"] {
+  opacity: 0;
+  transform: scaleX(1);
+  transition:
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 220ms ease 120ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+
+  .page-transition-bar {
+    display: none;
+  }
+}

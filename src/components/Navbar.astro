@@ -10,6 +10,7 @@ const isActive = (href: string) =>
 
 <header
   class="fixed inset-x-0 top-0 z-50 border-b border-border-subtle bg-transparent transition-colors duration-200 data-[scrolled]:bg-surface/90 data-[scrolled]:backdrop-blur-md"
+  transition:name="site-nav"
   data-nav
 >
   <nav
@@ -147,10 +148,12 @@ const isActive = (href: string) =>
 <script>
   import { animateMenuToggle } from "../scripts/motion";
 
-  const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
-  const menu = document.getElementById("nav-menu");
+  function initNavbar() {
+    const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+    const menu = document.getElementById("nav-menu");
+    if (!toggle || !menu || toggle.dataset.navInit === "true") return;
+    toggle.dataset.navInit = "true";
 
-  if (toggle && menu) {
     let open = false;
 
     const apply = (next: boolean) => {
@@ -172,18 +175,16 @@ const isActive = (href: string) =>
       });
     };
 
-    toggle.addEventListener("click", () => apply(!open));
-
-    document.addEventListener("keydown", (e) => {
+    const onToggle = () => apply(!open);
+    const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && open) {
         apply(false);
         toggle.focus();
       }
-    });
+    };
 
-    // Crossing into desktop must not run the mobile exit tween: the same <ul>
-    // is the horizontal nav there, so fading it would blink the links out.
-    window.matchMedia("(min-width: 1025px)").addEventListener("change", (e) => {
+    const mq = window.matchMedia("(min-width: 1025px)");
+    const onMediaChange = (e: MediaQueryListEvent) => {
       if (!e.matches || !open) return;
 
       open = false;
@@ -191,6 +192,23 @@ const isActive = (href: string) =>
       toggle.setAttribute("aria-label", "Open menu");
       menu.classList.remove("is-open");
       animateMenuToggle({ toggle, menu, open: false, skipPanel: true });
-    });
+    };
+
+    toggle.addEventListener("click", onToggle);
+    document.addEventListener("keydown", onKeyDown);
+    mq.addEventListener("change", onMediaChange);
+
+    document.addEventListener(
+      "astro:before-swap",
+      () => {
+        toggle.removeEventListener("click", onToggle);
+        document.removeEventListener("keydown", onKeyDown);
+        mq.removeEventListener("change", onMediaChange);
+      },
+      { once: true },
+    );
   }
+
+  document.addEventListener("astro:page-load", initNavbar);
+  initNavbar();
 </script>

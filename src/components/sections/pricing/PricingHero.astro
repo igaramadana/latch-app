@@ -271,9 +271,11 @@ const plans: Plan[] = [
 </section>
 
 <script>
-  const toggle = document.querySelector<HTMLButtonElement>("[data-billing-toggle]");
+  function initPricingHero() {
+    const toggle = document.querySelector<HTMLButtonElement>("[data-billing-toggle]");
+    if (!toggle || toggle.dataset.pricingInit === "true") return;
+    toggle.dataset.pricingInit = "true";
 
-  if (toggle) {
     const amounts = Array.from(document.querySelectorAll<HTMLElement>("[data-pr-amount]"));
 
     const render = (yearly: boolean) => {
@@ -289,6 +291,9 @@ const plans: Plan[] = [
       render(toggle.getAttribute("aria-checked") !== "true");
     });
   }
+
+  document.addEventListener("astro:page-load", initPricingHero);
+  initPricingHero();
 </script>
 
 <style>

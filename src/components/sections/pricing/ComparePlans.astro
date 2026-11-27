@@ -548,15 +548,20 @@ const features: Feature[] = [
 </style>
 
 <script>
-  const section = document.querySelector<HTMLElement>("[data-compare-plans]");
+  function initComparePlans() {
+    const section = document.querySelector<HTMLElement>("[data-compare-plans]");
+    if (!section || section.dataset.compareInit === "true") return;
+    section.dataset.compareInit = "true";
 
-  if (section) {
     for (const hint of section.querySelectorAll<HTMLButtonElement>("[data-cp-hint]")) {
       hint.addEventListener("click", () => {
         hint.setAttribute("aria-expanded", String(hint.getAttribute("aria-expanded") !== "true"));
       });
     }
   }
+
+  document.addEventListener("astro:page-load", initComparePlans);
+  initComparePlans();
 </script>
 
 <style is:global>
