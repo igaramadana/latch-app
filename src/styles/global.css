@@ -152,33 +152,50 @@
   }
 }
 
-/* Prevent the browser from height-morphing the entire <main> bounding box. */
-::view-transition-group(page-content) {
+/* Transition the viewport root (locked to current scroll position) so scrolled
+   pages never flash back to y=0 of the previous page during exit. */
+::view-transition-group(root) {
   animation: none;
 }
 
-::view-transition-old(page-content) {
-  animation: var(--dur-page-out) var(--ease-in-calm) both latch-page-out;
+::view-transition-image-pair(root) {
+  isolation: isolate;
 }
 
-::view-transition-new(page-content) {
-  animation: var(--dur-page-in) var(--ease-out-calm) 60ms both latch-page-in;
+::view-transition-old(root) {
+  animation: var(--dur-page-out) var(--ease-in-calm) both latch-page-out;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: var(--dur-page-in) var(--ease-out-calm) 45ms both latch-page-in;
+  mix-blend-mode: normal;
 }
 
 ::view-transition-group(site-nav) {
-  animation-duration: 0ms;
+  animation: none;
   z-index: 60;
 }
 
-::view-transition-old(site-nav),
+/* Keep only the incoming navbar visible when both pages have it so a scrolled
+   opaque navbar never bleeds behind a transparent one at y=0. */
+::view-transition-old(site-nav) {
+  animation: none;
+  opacity: 0;
+}
+
 ::view-transition-new(site-nav) {
   animation: none;
   mix-blend-mode: normal;
 }
 
-::view-transition-group(*) {
-  animation-timing-function: var(--ease-out-calm);
-  animation-duration: var(--dur-page-in);
+/* Fade navbar cleanly when entering/leaving bare auth pages (/login, /signup). */
+::view-transition-old(site-nav):only-child {
+  animation: var(--dur-page-out) var(--ease-in-calm) both latch-page-out;
+}
+
+::view-transition-new(site-nav):only-child {
+  animation: var(--dur-page-in) var(--ease-out-calm) 45ms both latch-page-in;
 }
 
 /* Subtle top navigation progress bar during route transitions. */

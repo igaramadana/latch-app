@@ -69,7 +69,6 @@ const {
     <main
       id="main"
       tabindex="-1"
-      transition:name="page-content"
       class={bare ? "flex min-h-dvh flex-col" : undefined}
     >
       <slot />
@@ -115,6 +114,11 @@ const {
         cleanups.forEach((fn) => fn());
         cleanups = [];
         started = false;
+      });
+
+      document.addEventListener("astro:after-swap", () => {
+        const header = document.querySelector<HTMLElement>("[data-nav]");
+        if (header) header.toggleAttribute("data-scrolled", window.scrollY > 8);
       });
 
       document.addEventListener("astro:page-load", () => {
